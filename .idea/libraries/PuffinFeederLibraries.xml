@@ -1,0 +1,35 @@
+<component name="libraryTable">
+  <library name="PuffinFeederLibraries">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/actionbarsherlock-4.3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/commons-io-1.3.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/jackson-annotations-2.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/jackson-core-2.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/jackson-databind-2.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/robospice-1.4.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/robospice-cache-1.4.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/robospice-spring-android-1.4.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/spring-android-core-1.0.1.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/commons-lang3-3.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/commons-io-1.3.2-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/robospice-1.4.4-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/robospice-spring-android-1.4.4-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/spring-android-core-1.0.1.RELEASE-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/spring-android-rest-template-1.0.1.RELEASE-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/actionbarsherlock-4.3.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/commons-io-1.3.2-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/jackson-annotations-2.2.2-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/jackson-core-2.2.2-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/jackson-databind-2.2.2-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/robospice-1.4.4-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/robospice-cache-1.4.4-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/robospice-spring-android-1.4.4-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/spring-android-core-1.0.1.RELEASE-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/PuffinFeeder/libs/spring-android-rest-template-1.0.1.RELEASE-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
