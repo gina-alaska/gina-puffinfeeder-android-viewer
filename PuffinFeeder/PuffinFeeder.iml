@@ -78,6 +78,7 @@
     <orderEntry type="library" name="spring-android-rest-template-1.0.1.RELEASE" level="project" />
     <orderEntry type="library" name="jackson-databind-2.2.2" level="project" />
     <orderEntry type="library" name="commons-lang3-3.0.1" level="project" />
+    <orderEntry type="library" name="picasso-1.1.1" level="project" />
   </component>
 </module>
 

@@ -20,8 +20,7 @@ public final class R {
         public static final int ic_menu_refresh=0x7f020002;
     }
     public static final class id {
-        public static final int action_refresh=0x7f080007;
-        public static final int action_settings=0x7f080006;
+        public static final int action_refresh=0x7f080006;
         public static final int actionbar_progress_bar=0x7f080000;
         public static final int content_frame=0x7f080004;
         public static final int drawer_List=0x7f080005;

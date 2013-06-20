@@ -2,6 +2,7 @@ package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -24,25 +25,26 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.util.ArrayList;
 
-public class MainLauncherActivity extends SherlockActivity {
+public class MainLauncherActivity extends SherlockFragmentActivity {
     private static final String JSON_CACHE_KEY = "feeds_json_array";
     protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
     protected ArrayList<String> listItems = new ArrayList<String>();
     protected ArrayAdapter<String> primary;
     protected Feed[] masterFeedsList;
     protected MenuItem mMenuItem;
+    protected int current = -1;
 
     DrawerLayout mDrawerLayout; //Contains the entire activity.
     ListView mDrawerList; //ListView of Nav Drawer.
     ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
-    String mTitle = null; //Title of Action Bar.
+    String mTitle = "GINA Puffin Feeder"; //Title of Action Bar.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity_launcher);
 
-        mTitle = (String) getTitle();
+        getSupportActionBar().setTitle(mTitle);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mMenuItem = (MenuItem) findViewById(R.id.action_refresh);
         mDrawerList = (ListView) findViewById(R.id.drawer_List);
@@ -53,7 +55,11 @@ public class MainLauncherActivity extends SherlockActivity {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
-                getSupportActionBar().setTitle(mTitle);
+                if (current == -1)
+                    getSupportActionBar().setTitle(mTitle);
+                else
+                    getSupportActionBar().setTitle(masterFeedsList[current].getTitle());
+
                 invalidateOptionsMenu();
             }
 
@@ -65,7 +71,10 @@ public class MainLauncherActivity extends SherlockActivity {
         };
 
         primary = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
+
         mDrawerList.setAdapter(primary);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -79,24 +88,24 @@ public class MainLauncherActivity extends SherlockActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mSpiceManager.start(this);
-
+        mSpiceManager.start(this.getBaseContext());
         refreshFeedsList(DurationInMillis.ONE_DAY);
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mTitle = masterFeedsList[position].getTitle();
+                current = position;
                 ImageFeedFragment iFrag = new ImageFeedFragment();
                 Bundle intel = new Bundle();
 
                 intel.putInt("position", position);
-                intel.putString("title", mTitle);
+                intel.putString("title", masterFeedsList[position].getTitle());
                 intel.putString("entries", masterFeedsList[position].getEntries());
+                intel.putString("slug", masterFeedsList[position].getSlug());
                 intel.putBoolean("status", masterFeedsList[position].getStatus());
 
                 iFrag.setArguments(intel);
-                getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag).addToBackStack(null).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag).addToBackStack(null).commit();
 
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
@@ -108,6 +117,7 @@ public class MainLauncherActivity extends SherlockActivity {
     public void refreshFeedsList(long expiration_time) {
         //mMenuItem.setActionView(R.layout.actionbar_progress_bar);
         //mMenuItem.expandActionView();
+
         mSpiceManager.execute(new FeedsJsonRequest(), JSON_CACHE_KEY, expiration_time, new FeedsRequestListener());
     }
 
@@ -133,6 +143,10 @@ public class MainLauncherActivity extends SherlockActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
+                //mMenuItem = (MenuItem) findViewById(R.id.action_refresh);
+                //mMenuItem.setActionView(R.layout.actionbar_progress_bar);
+                //mMenuItem.expandActionView();
+
                 if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
                     refreshFeedsList(DurationInMillis.ALWAYS_EXPIRED);
                     primary.notifyDataSetChanged();
@@ -162,12 +176,14 @@ public class MainLauncherActivity extends SherlockActivity {
                     primary.notifyDataSetChanged();
                 }
             });
+
+            Toast.makeText(getApplicationContext(), "Feed list reloaded.", 5000).show();
         }
 
         @Override
         public void onRequestFailure(SpiceException e) {
-            Log.d("Feeder Viewer", "Feeds list load fail! " + e.getMessage());
-            Toast.makeText(getApplicationContext(), "Feed list load fail!", 5000).show();
+            Log.d("Feeder Viewer", "Feeds list load fail! " + e.getMessage() + "\n" + e.getStackTrace());
+            Toast.makeText(getApplicationContext(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
         }
     }
 }

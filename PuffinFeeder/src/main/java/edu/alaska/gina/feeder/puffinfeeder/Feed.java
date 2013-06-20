@@ -7,6 +7,7 @@ public class Feed {
     private boolean status;
     private String title;
     private String entries;
+    private String slug;
 
     public boolean getStatus() {
         return status;
@@ -20,6 +21,10 @@ public class Feed {
         return entries;
     }
 
+    public String getSlug() {
+        return slug;
+    }
+
     public void setStatus(String status) {
         if (status.equals("online"))
             this.status = true;
@@ -27,7 +32,19 @@ public class Feed {
             this.status = false;
     }
 
+    public void setStatusBoolean(Boolean status) {
+        this.status = status;
+    }
+
     public void setEntries(String entries) {
         this.entries = entries;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 }

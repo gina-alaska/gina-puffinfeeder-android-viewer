@@ -1,15 +1,95 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.Toast;
 
-public class ImageFeedFragment extends Fragment {
+import com.actionbarsherlock.app.SherlockFragment;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.DurationInMillis;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
+
+import java.util.ArrayList;
+
+public class ImageFeedFragment extends SherlockFragment {
+    private static String JSON_CACHE_KEY;
+    protected Feed imageFeed = new Feed();
+    ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
+    SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
+    PicassoImageAdapter mImageAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //Return inflated view containing GridView of image feed.
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View v = inflater.inflate(R.layout.fragment_image_feed, container, false);
+
+        Bundle extras = getArguments();
+        imageFeed.setTitle(extras.getString("title"));
+        imageFeed.setStatusBoolean(extras.getBoolean("status"));
+        imageFeed.setEntries(extras.getString("entries"));
+        imageFeed.setSlug(extras.getString("slug"));
+        JSON_CACHE_KEY = imageFeed.getSlug() + "_json";
+
+        mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+        mImageAdapter = new PicassoImageAdapter(this.getActivity(), mList);
+
+        getSherlockActivity().getSupportActionBar().setTitle(imageFeed.getTitle());
+
+        return v;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mSpiceManager.start(this.getActivity());
+
+        GridView gridView = (GridView) getActivity().findViewById(R.id.image_grid);
+        gridView.setAdapter(mImageAdapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getActivity(), mList.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mImageAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStop() {
+        mSpiceManager.shouldStop();
+        super.onStop();
+    }
+
+    public void refreshImageFeed() {
+        mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+    }
+
+    private class ImageFeedRequestListener implements RequestListener<FeedImage[]> {
+
+        @Override
+        public void onRequestFailure(SpiceException spiceException) {
+            Log.d("Feeder Viewer", "Image Feed load fail!" + spiceException.getMessage());
+            Toast.makeText(getActivity().getApplicationContext(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onRequestSuccess(FeedImage[] feedImages) {
+            for (FeedImage pii : feedImages)
+                mList.add(pii);
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mImageAdapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 }
