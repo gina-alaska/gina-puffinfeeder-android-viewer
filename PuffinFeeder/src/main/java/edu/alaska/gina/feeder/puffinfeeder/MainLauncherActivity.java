@@ -34,10 +34,10 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     protected MenuItem mMenuItem;
     protected int current = -1;
 
-    DrawerLayout mDrawerLayout; //Contains the entire activity.
-    ListView mDrawerList; //ListView of Nav Drawer.
-    ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
-    String mTitle = "GINA Puffin Feeder"; //Title of Action Bar.
+    protected DrawerLayout mDrawerLayout; //Contains the entire activity.
+    protected ListView mDrawerList; //ListView of Nav Drawer.
+    protected ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
+    protected String mTitle = "GINA Puffin Feeder"; //Title of Action Bar.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +56,16 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
             @Override
             public void onDrawerClosed(View drawerView) {
                 if (current == -1)
-                    getSupportActionBar().setTitle(mTitle);
+                    getSupportActionBar().setTitle("@string/app_name");
                 else
-                    getSupportActionBar().setTitle(masterFeedsList[current].getTitle());
+                    getSupportActionBar().setTitle(mTitle);
 
                 invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
+                mTitle = (String) getSupportActionBar().getTitle();
                 getSupportActionBar().setTitle("Select a Feed");
                 invalidateOptionsMenu();
             }
@@ -129,7 +130,10 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_refresh).setVisible(true);
+        if (mDrawerLayout.isDrawerOpen(mDrawerList))
+            menu.findItem(R.id.action_refresh).setVisible(true);
+        else
+            menu.findItem(R.id.action_refresh).setVisible(false);
         return super.onPrepareOptionsMenu(menu);
     }
 

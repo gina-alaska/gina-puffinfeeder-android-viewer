@@ -4,13 +4,14 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         tools:context=".MainActivity"
-        android:id="@+id/drawer_layout">
+        android:id="@+id/drawer_layout"
+        android:background="#555555">
 
     <FrameLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#FFFFFF" />
+            android:background="#555555" />
 
     <ListView
             android:id="@+id/drawer_List"

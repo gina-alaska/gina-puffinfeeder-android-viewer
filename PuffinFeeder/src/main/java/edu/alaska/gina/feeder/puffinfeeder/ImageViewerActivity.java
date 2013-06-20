@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 /**
  * Takes the information passed from the main activity, converts it into a REST
@@ -11,15 +12,20 @@ import android.webkit.WebView;
  * Created by bobby on 6/14/13.
  */
 public class ImageViewerActivity extends Activity {
-    String image_url;
+    protected String image_url;
+    protected String title;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_image_viewer);
 
         Bundle extra = getIntent().getExtras();
-        if (extra != null)
+        if (extra != null) {
             image_url = extra.getString("image_url");
+            title = extra.getString("title");
+        }
         else {
             Log.d("Puffin Feeder", "No Image URL. Please Fix that...");
+            Toast.makeText(this, "No Image URL. Please fix that...", Toast.LENGTH_SHORT).show();
             return;
         }
 

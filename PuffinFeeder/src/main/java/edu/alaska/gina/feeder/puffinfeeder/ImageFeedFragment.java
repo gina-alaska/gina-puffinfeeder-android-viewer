@@ -1,5 +1,6 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,9 +21,10 @@ import java.util.ArrayList;
 public class ImageFeedFragment extends SherlockFragment {
     private static String JSON_CACHE_KEY;
     protected Feed imageFeed = new Feed();
-    ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
-    SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
-    PicassoImageAdapter mImageAdapter;
+    protected ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
+    protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
+    protected PicassoImageAdapter mImageAdapter;
+    protected int pageNum = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,6 +57,10 @@ public class ImageFeedFragment extends SherlockFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(getActivity(), mList.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+                Intent photoView = new Intent(getActivity(), ImageViewerActivity.class);
+                photoView.putExtra("image_url", mList.get(position).getImage());
+                photoView.putExtra("bar_title", imageFeed.getTitle() + " - " + mList.get(position).getTitle());
+                startActivity(photoView);
             }
         });
 
