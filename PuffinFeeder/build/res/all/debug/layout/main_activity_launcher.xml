@@ -5,13 +5,13 @@
         android:layout_height="fill_parent"
         tools:context=".MainActivity"
         android:id="@+id/drawer_layout"
-        android:background="#555555">
+        android:background="#ffbfbfbf">
 
     <FrameLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#555555" />
+            android:background="#ffbfbfbf" />
 
     <ListView
             android:id="@+id/drawer_List"
@@ -21,6 +21,6 @@
             android:choiceMode="singleChoice"
             android:dividerHeight="0.5dp"
             android:divider="@android:color/darker_gray"
-            android:background="#FFFFFF" />
+            android:background="#ffd0d0d0" />
 
 </android.support.v4.widget.DrawerLayout>
