@@ -2,6 +2,10 @@ package edu.alaska.gina.feeder.puffinfeeder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * Object used to represent a single feed.
+ * Created by bobby on 6/14/13.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Feed {
     private boolean status;

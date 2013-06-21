@@ -1,6 +1,5 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -12,7 +11,7 @@ import com.actionbarsherlock.view.MenuItem;
 
 /**
  * Takes the information passed from the main activity, converts it into a REST
- * compatable URL, then displays the content at that link (the image) in a WebView.
+ * compatible URL, then displays the content at that link (the image) in a WebView.
  * Created by bobby on 6/14/13.
  */
 public class ImageViewerActivity extends SherlockActivity {
@@ -21,6 +20,8 @@ public class ImageViewerActivity extends SherlockActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_viewer);
+
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.fade_out);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -46,6 +47,8 @@ public class ImageViewerActivity extends SherlockActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
+                finish();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
                 return true;
         }
 

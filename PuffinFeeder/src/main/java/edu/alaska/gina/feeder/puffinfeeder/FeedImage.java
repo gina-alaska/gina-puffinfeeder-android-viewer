@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Object representing an image from a feed.
  * Created by bobby on 6/19/13.
  */
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FeedImage {
     private int id;

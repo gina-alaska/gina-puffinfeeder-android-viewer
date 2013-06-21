@@ -6,6 +6,7 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 /**
+ * Currently unused Adapter for adding online indicators to the drawer in the future.
  * Created by bobby on 6/20/13.
  */
 public class DrawerListAdapter extends ArrayAdapter<String> {

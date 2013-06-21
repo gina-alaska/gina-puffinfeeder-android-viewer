@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -12,7 +11,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 /**
- * Adapter that puts feeder thumbnails into the primar
+ * Adapter that places thumbnails off the feed into the primary GridView.
  * Created by bobby on 6/19/13.
  */
 public class PicassoImageAdapter extends BaseAdapter {

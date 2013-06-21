@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
 
 /**
- * Kick-starts feed image metadata grabbing process.
+ * Spring/Robospice request to grab image feed JSON array from feeder.
  * Created by bobby on 6/19/13.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

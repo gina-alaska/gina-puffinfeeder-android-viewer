@@ -27,6 +27,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * Robospice service that handles requesting and parsing JSON objects.
+ * Created by bobby on 6/14/13.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JsonSpiceService extends SpringAndroidSpiceService {
     private static final int WEBSERVICES_TIMEOUT = 10000;

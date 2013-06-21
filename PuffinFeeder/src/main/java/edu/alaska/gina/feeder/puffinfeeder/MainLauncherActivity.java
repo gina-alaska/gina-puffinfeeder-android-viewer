@@ -2,7 +2,6 @@ package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -15,8 +14,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.*;
-import com.actionbarsherlock.internal.view.menu.MenuWrapper;
-import com.actionbarsherlock.view.*;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.octo.android.robospice.*;
@@ -26,6 +23,10 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.util.ArrayList;
 
+/**
+ * Class that handles navigation drawer and startup.
+ * created by bobby on 6/14/13.
+ */
 public class MainLauncherActivity extends SherlockFragmentActivity {
     private static final String JSON_CACHE_KEY = "feeds_json_array";
     protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);

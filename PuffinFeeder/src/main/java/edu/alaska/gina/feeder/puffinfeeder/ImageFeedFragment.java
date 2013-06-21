@@ -18,6 +18,10 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.util.ArrayList;
 
+/**
+ * Fragment used to display the list of feed images in a GridView.
+ * Created by bobby on 6/14/13.
+ */
 public class ImageFeedFragment extends SherlockFragment {
     private static String JSON_CACHE_KEY;
     protected Feed imageFeed = new Feed();
@@ -56,11 +60,12 @@ public class ImageFeedFragment extends SherlockFragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), mList.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), mList.get(position).getTitle(), Toast.LENGTH_SHORT).show();
                 Intent photoView = new Intent(getActivity(), ImageViewerActivity.class);
                 photoView.putExtra("image_url", mList.get(position).getImage());
                 photoView.putExtra("bar_title", imageFeed.getTitle() + " - " + mList.get(position).getTitle());
-                startActivity(photoView);
+
+                getSherlockActivity().startActivity(photoView);
             }
         });
 
