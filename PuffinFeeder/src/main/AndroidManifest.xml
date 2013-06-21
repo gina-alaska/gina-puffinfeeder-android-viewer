@@ -27,7 +27,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ImageViewerActivity" />
+        <activity android:name=".ImageViewerActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.alaska.gina.feeder.puffinfeeder.ImageViewerActivity" />
+        </activity>
 
         <service
                 android:name="edu.alaska.gina.feeder.puffinfeeder.JsonSpiceService"
