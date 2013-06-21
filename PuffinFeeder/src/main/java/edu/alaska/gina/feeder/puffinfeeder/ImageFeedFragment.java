@@ -49,6 +49,7 @@ public class ImageFeedFragment extends SherlockFragment {
     public void onStart() {
         super.onStart();
         mSpiceManager.start(this.getActivity());
+        getSherlockActivity().getSupportActionBar().setTitle(imageFeed.getTitle());
 
         GridView gridView = (GridView) getActivity().findViewById(R.id.image_grid);
         gridView.setAdapter(mImageAdapter);

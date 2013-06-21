@@ -3,6 +3,7 @@ package edu.alaska.gina.feeder.puffinfeeder;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -44,28 +45,28 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity_launcher);
 
-        getSupportActionBar().setTitle(mTitle);
+        //if (getSupportActionBar().getTitle() == null)
+            //getSupportActionBar().setTitle(mTitle);
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mMenuItem = (MenuItem) findViewById(R.id.action_refresh);
         mDrawerList = (ListView) findViewById(R.id.drawer_List);
 
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
         listItems.add("Nothing to see.");
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+            private String titleTemp;
+
             @Override
             public void onDrawerClosed(View drawerView) {
-                if (current == -1)
-                    getSupportActionBar().setTitle("@string/app_name");
-                else
-                    getSupportActionBar().setTitle(mTitle);
-
+                getSupportActionBar().setTitle(titleTemp);
                 invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                mTitle = (String) getSupportActionBar().getTitle();
+                titleTemp = (String) getSupportActionBar().getTitle();
                 getSupportActionBar().setTitle("Select a Feed");
                 invalidateOptionsMenu();
             }
@@ -76,8 +77,8 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         mDrawerList.setAdapter(primary);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
@@ -115,6 +116,12 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         primary.notifyDataSetChanged();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
     public void refreshFeedsList(long expiration_time) {
         //mMenuItem.setActionView(R.layout.actionbar_progress_bar);
         //mMenuItem.expandActionView();
@@ -146,11 +153,17 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                if (mDrawerLayout.isDrawerOpen(mDrawerList))
+                    mDrawerLayout.closeDrawer(mDrawerList);
+                else
+                    mDrawerLayout.openDrawer(mDrawerList);
+                return true;
+
             case R.id.action_refresh:
                 //mMenuItem = (MenuItem) findViewById(R.id.action_refresh);
                 //mMenuItem.setActionView(R.layout.actionbar_progress_bar);
                 //mMenuItem.expandActionView();
-
                 if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
                     refreshFeedsList(DurationInMillis.ALWAYS_EXPIRED);
                     primary.notifyDataSetChanged();
@@ -181,7 +194,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 }
             });
 
-            Toast.makeText(getApplicationContext(), "Feed list reloaded.", 5000).show();
+            Toast.makeText(getApplicationContext(), "Feed list reloaded.", Toast.LENGTH_SHORT).show();
         }
 
         @Override
