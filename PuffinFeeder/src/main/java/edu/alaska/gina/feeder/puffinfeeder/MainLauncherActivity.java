@@ -38,15 +38,15 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     protected DrawerLayout mDrawerLayout; //Contains the entire activity.
     protected ListView mDrawerList; //ListView of Nav Drawer.
     protected ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
-    protected String mTitle = "GINA Puffin Feeder"; //Title of Action Bar.
+    protected String mTitle; //Title of Action Bar.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity_launcher);
 
-        //if (getSupportActionBar().getTitle() == null)
-            //getSupportActionBar().setTitle(mTitle);
+        StartFragment sFrag = new StartFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag).addToBackStack(null).commit();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mMenuItem = (MenuItem) findViewById(R.id.action_refresh);
@@ -56,17 +56,17 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         listItems.add("Nothing to see.");
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
-            private String titleTemp;
-
             @Override
             public void onDrawerClosed(View drawerView) {
-                getSupportActionBar().setTitle(titleTemp);
+                if (current < 0)
+                    getSupportActionBar().setTitle("GINA Puffin Feeder");
+                else
+                    getSupportActionBar().setTitle(masterFeedsList[current].getTitle());
                 invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                titleTemp = (String) getSupportActionBar().getTitle();
                 getSupportActionBar().setTitle("Select a Feed");
                 invalidateOptionsMenu();
             }
