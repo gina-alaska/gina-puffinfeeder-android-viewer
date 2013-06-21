@@ -28,7 +28,7 @@ public class ImageViewerActivity extends SherlockActivity {
         Bundle extra = getIntent().getExtras();
         if (extra != null) {
             image_url = extra.getString("image_url");
-            title = extra.getString("title");
+            title = extra.getString("bar_title");
         }
         else {
             Log.d("Puffin Feeder", "No Image URL. Please Fix that...");
@@ -36,6 +36,7 @@ public class ImageViewerActivity extends SherlockActivity {
             return;
         }
 
+        getSupportActionBar().setTitle(title);
         WebView image_frame = (WebView) findViewById(R.id.feed_image_webView);
         image_frame.loadUrl(image_url);
     }
