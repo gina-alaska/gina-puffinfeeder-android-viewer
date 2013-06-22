@@ -17,6 +17,8 @@ import com.actionbarsherlock.view.MenuItem;
 public class ImageViewerActivity extends SherlockActivity {
     protected String image_url;
     protected String title;
+    protected WebView image_frame;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_viewer);
@@ -37,9 +39,13 @@ public class ImageViewerActivity extends SherlockActivity {
             return;
         }
 
-        getSupportActionBar().setTitle(title);
-        WebView image_frame = (WebView) findViewById(R.id.feed_image_webView);
-        image_frame.loadUrl(image_url);
+        if (image_frame == null) {
+            getSupportActionBar().setTitle(title);
+            WebView image_frame = (WebView) findViewById(R.id.feed_image_webView);
+            image_frame.getSettings().setBuiltInZoomControls(true);
+            image_frame.getSettings().setUseWideViewPort(true);
+            image_frame.loadUrl(image_url);
+        }
     }
 
     @Override
