@@ -39,13 +39,12 @@ public class ImageViewerActivity extends SherlockActivity {
             return;
         }
 
-        if (image_frame == null) {
-            getSupportActionBar().setTitle(title);
-            WebView image_frame = (WebView) findViewById(R.id.feed_image_webView);
-            image_frame.getSettings().setBuiltInZoomControls(true);
-            image_frame.getSettings().setUseWideViewPort(true);
-            image_frame.loadUrl(image_url);
-        }
+        getSupportActionBar().setTitle(title);
+        WebView image_frame = (WebView) findViewById(R.id.feed_image_webView);
+        image_frame.getSettings().setBuiltInZoomControls(true);
+        image_frame.getSettings().setLoadWithOverviewMode(true);
+        image_frame.getSettings().setUseWideViewPort(true);
+        image_frame.loadUrl(image_url);
     }
 
     @Override

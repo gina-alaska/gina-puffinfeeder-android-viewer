@@ -78,7 +78,7 @@ public class ImageFeedFragment extends SherlockFragment {
         super.onStop();
     }
 
-    public void refreshImageFeed() {
+    public void refreshThumbs() {
         mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 

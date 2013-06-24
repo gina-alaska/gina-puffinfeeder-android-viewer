@@ -34,7 +34,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     protected ArrayAdapter<String> primary;
     protected Feed[] masterFeedsList;
     protected MenuItem mMenuItem;
-    protected int current = -1;
+    protected int current = -2;
 
     protected DrawerLayout mDrawerLayout; //Contains the entire activity.
     protected ListView mDrawerList; //ListView of Nav Drawer.
@@ -47,7 +47,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         setContentView(R.layout.main_activity_launcher);
 
         StartFragment sFrag = new StartFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag).addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag).commit();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mMenuItem = (MenuItem) findViewById(R.id.action_refresh);
@@ -92,7 +92,8 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     protected void onStart() {
         super.onStart();
         mSpiceManager.start(this.getBaseContext());
-        refreshFeedsList(DurationInMillis.ONE_DAY);
+
+            refreshFeedsList(DurationInMillis.ONE_DAY);
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
