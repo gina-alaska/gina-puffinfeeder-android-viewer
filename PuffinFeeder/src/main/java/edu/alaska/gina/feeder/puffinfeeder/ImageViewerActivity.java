@@ -17,7 +17,6 @@ import com.actionbarsherlock.view.MenuItem;
 public class ImageViewerActivity extends SherlockActivity {
     protected String image_url;
     protected String title;
-    protected WebView image_frame;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,5 +57,12 @@ public class ImageViewerActivity extends SherlockActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
+        super.onBackPressed();
     }
 }

@@ -3,4 +3,13 @@
           android:title="Refresh"
           android:showAsAction="always"
           android:icon="@drawable/ic_menu_refresh" />
+
+    <item android:id="@+id/action_load_more"
+          android:title="Load More Images"
+          android:showAsAction="always"
+          android:icon="@android:drawable/ic_media_play" />
+
+    <item android:id="@+id/action_clear_cache"
+          android:title="Clear Cache"
+          android:showAsAction="never" />
 </menu>

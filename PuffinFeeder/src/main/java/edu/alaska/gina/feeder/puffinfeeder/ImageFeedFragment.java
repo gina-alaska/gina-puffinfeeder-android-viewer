@@ -11,6 +11,9 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -28,11 +31,13 @@ public class ImageFeedFragment extends SherlockFragment {
     protected ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
     protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
     protected PicassoImageAdapter mImageAdapter;
-    protected int pageNum = 0;
+    private MenuItem loadMore;
+    private int page = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_image_feed, container, false);
+        setHasOptionsMenu(true);
 
         Bundle extras = getArguments();
         imageFeed.setTitle(extras.getString("title"));
@@ -41,9 +46,10 @@ public class ImageFeedFragment extends SherlockFragment {
         imageFeed.setSlug(extras.getString("slug"));
         JSON_CACHE_KEY = imageFeed.getSlug() + "_json";
 
-        mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+        mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, 1), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
         mImageAdapter = new PicassoImageAdapter(this.getActivity(), mList);
 
+        loadMore = (MenuItem) getSherlockActivity().findViewById(R.id.action_load_more);
         getSherlockActivity().getSupportActionBar().setTitle(imageFeed.getTitle());
 
         return v;
@@ -79,7 +85,18 @@ public class ImageFeedFragment extends SherlockFragment {
     }
 
     public void refreshThumbs() {
-        mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+        page++;
+        mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_load_more:
+                refreshThumbs();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private class ImageFeedRequestListener implements RequestListener<FeedImage[]> {

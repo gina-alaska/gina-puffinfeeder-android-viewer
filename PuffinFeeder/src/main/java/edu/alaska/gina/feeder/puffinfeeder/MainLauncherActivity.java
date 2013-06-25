@@ -139,10 +139,14 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mDrawerLayout.isDrawerOpen(mDrawerList))
+        if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
             menu.findItem(R.id.action_refresh).setVisible(true);
-        else
+            menu.findItem(R.id.action_load_more).setVisible(false);
+        }
+        else {
             menu.findItem(R.id.action_refresh).setVisible(false);
+            menu.findItem(R.id.action_load_more).setVisible(true);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
