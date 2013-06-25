@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.MenuItem;
-import com.squareup.picasso.LruCache;
 
 /**
  * Fragment displayed on startup.
@@ -25,11 +24,9 @@ public class StartFragment extends SherlockFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.action_clear_cache:
-                LruCache l = new LruCache(getActivity());
-                l.evictAll();
+        if (item.getItemId() == R.id.action_load_more) {
+            Toast.makeText(getActivity(), "No Feed Selected!", Toast.LENGTH_SHORT).show();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

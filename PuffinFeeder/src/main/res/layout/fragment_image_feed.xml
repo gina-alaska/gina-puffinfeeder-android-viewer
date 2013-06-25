@@ -10,4 +10,5 @@
         android:verticalSpacing="2dp"
         android:stretchMode="spacingWidthUniform"
         android:gravity="fill_horizontal"
-        android:background="#ffbfbfbf" />
+        android:background="#ffbfbfbf"
+        android:clickable="true"/>

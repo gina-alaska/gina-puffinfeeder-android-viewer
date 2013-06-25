@@ -20,7 +20,6 @@ public final class R {
         public static final int ic_menu_refresh=0x7f020002;
     }
     public static final class id {
-        public static final int action_clear_cache=0x7f08000c;
         public static final int action_load_more=0x7f08000b;
         public static final int action_refresh=0x7f08000a;
         public static final int actionbar_progress_bar=0x7f080000;

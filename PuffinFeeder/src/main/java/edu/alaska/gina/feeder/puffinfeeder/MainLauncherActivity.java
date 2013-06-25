@@ -33,13 +33,11 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     protected ArrayList<String> listItems = new ArrayList<String>();
     protected ArrayAdapter<String> primary;
     protected Feed[] masterFeedsList;
-    protected MenuItem mMenuItem;
     protected int current = -2;
 
     protected DrawerLayout mDrawerLayout; //Contains the entire activity.
     protected ListView mDrawerList; //ListView of Nav Drawer.
     protected ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
-    protected String mTitle; //Title of Action Bar.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +45,9 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         setContentView(R.layout.main_activity_launcher);
 
         StartFragment sFrag = new StartFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag).commit();
+        getSupportFragmentManager().beginTransaction().add(sFrag, "start").replace(R.id.content_frame, sFrag).commit();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mMenuItem = (MenuItem) findViewById(R.id.action_refresh);
         mDrawerList = (ListView) findViewById(R.id.drawer_List);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -147,6 +144,9 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
             menu.findItem(R.id.action_refresh).setVisible(false);
             menu.findItem(R.id.action_load_more).setVisible(true);
         }
+        if (getFragmentManager().findFragmentByTag("start") != null)
+            menu.findItem(R.id.action_load_more).setVisible(true);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
