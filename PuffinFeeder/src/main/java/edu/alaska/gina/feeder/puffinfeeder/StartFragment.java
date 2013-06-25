@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.MenuItem;
+import com.squareup.picasso.LruCache;
 
 /**
  * Fragment displayed on startup.
@@ -18,5 +21,16 @@ public class StartFragment extends SherlockFragment {
         getSherlockActivity().getSupportActionBar().setTitle("GINA Puffin Feeder");
 
         return v;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_clear_cache:
+                LruCache l = new LruCache(getActivity());
+                l.evictAll();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

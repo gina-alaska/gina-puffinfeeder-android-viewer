@@ -10,14 +10,16 @@ import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceReques
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FeedImagesJsonRequest extends SpringAndroidSpiceRequest<FeedImage[]> {
     Feed feed;
+    int page;
 
-    public FeedImagesJsonRequest(Feed feed) {
+    public FeedImagesJsonRequest(Feed feed, int page) {
         super(FeedImage[].class);
         this.feed = feed;
+        this.page = page;
     }
 
     @Override
     public FeedImage[] loadDataFromNetwork() throws Exception {
-        return getRestTemplate().getForObject(feed.getEntries(), FeedImage[].class);
+        return getRestTemplate().getForObject(feed.getEntries() + "?page=" + page, FeedImage[].class);
     }
 }
