@@ -11,8 +11,6 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
@@ -31,7 +29,6 @@ public class ImageFeedFragment extends SherlockFragment {
     protected ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
     protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
     protected PicassoImageAdapter mImageAdapter;
-    private MenuItem loadMore;
     private int page = 1;
 
     @Override
@@ -49,7 +46,6 @@ public class ImageFeedFragment extends SherlockFragment {
         mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, 1), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
         mImageAdapter = new PicassoImageAdapter(this.getActivity(), mList);
 
-        loadMore = (MenuItem) getSherlockActivity().findViewById(R.id.action_load_more);
         getSherlockActivity().getSupportActionBar().setTitle(imageFeed.getTitle());
 
         return v;
