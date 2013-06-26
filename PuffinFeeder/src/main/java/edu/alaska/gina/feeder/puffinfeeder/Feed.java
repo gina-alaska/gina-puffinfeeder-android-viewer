@@ -12,6 +12,8 @@ public class Feed {
     private String title;
     private String entries;
     private String slug;
+    private String description;
+    private String where;
 
     public boolean getStatus() {
         return status;
@@ -27,6 +29,14 @@ public class Feed {
 
     public String getSlug() {
         return slug;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getWhere() {
+        return where;
     }
 
     public void setStatus(String status) {
@@ -50,5 +60,13 @@ public class Feed {
 
     public void setSlug(String slug) {
         this.slug = slug;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setWhere(String where) {
+        this.where = where;
     }
 }

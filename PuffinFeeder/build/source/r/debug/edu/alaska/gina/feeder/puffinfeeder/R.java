@@ -15,13 +15,18 @@ public final class R {
         public static final int activity_vertical_margin=0x7f040001;
     }
     public static final class drawable {
-        public static final int ic_drawer=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int ic_menu_refresh=0x7f020002;
+        public static final int ic_action_about=0x7f020000;
+        public static final int ic_action_help=0x7f020001;
+        public static final int ic_drawer=0x7f020002;
+        public static final int ic_launcher=0x7f020003;
+        public static final int ic_menu_refresh=0x7f020004;
+        public static final int ic_navigation_forward=0x7f020005;
+        public static final int ic_navigation_next_item=0x7f020006;
     }
     public static final class id {
-        public static final int action_load_more=0x7f08000b;
-        public static final int action_refresh=0x7f08000a;
+        public static final int action_display_short_description=0x7f08000a;
+        public static final int action_load_more=0x7f08000c;
+        public static final int action_refresh=0x7f08000b;
         public static final int actionbar_progress_bar=0x7f080000;
         public static final int content_frame=0x7f080008;
         public static final int drawer_List=0x7f080009;

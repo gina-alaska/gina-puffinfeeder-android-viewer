@@ -1,4 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_display_short_description"
+          android:title="Short Description"
+          android:showAsAction="always"
+          android:icon="@drawable/ic_action_about" />
+
     <item android:id="@+id/action_refresh"
           android:title="Refresh"
           android:showAsAction="always"
@@ -7,5 +12,5 @@
     <item android:id="@+id/action_load_more"
           android:title="Load More Images"
           android:showAsAction="always"
-          android:icon="@android:drawable/ic_media_play" />
+          android:icon="@drawable/ic_navigation_forward" />
 </menu>
