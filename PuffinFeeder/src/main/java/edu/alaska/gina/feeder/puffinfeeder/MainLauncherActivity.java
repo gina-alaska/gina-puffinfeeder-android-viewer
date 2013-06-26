@@ -3,6 +3,8 @@ package edu.alaska.gina.feeder.puffinfeeder;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -21,6 +23,7 @@ import com.octo.android.robospice.persistence.*;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 
 /**
@@ -139,13 +142,13 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
             menu.findItem(R.id.action_refresh).setVisible(true);
             menu.findItem(R.id.action_load_more).setVisible(false);
+            menu.findItem(R.id.action_display_short_description).setVisible(false);
         }
         else {
             menu.findItem(R.id.action_refresh).setVisible(false);
             menu.findItem(R.id.action_load_more).setVisible(true);
+            menu.findItem(R.id.action_display_short_description).setVisible(true);
         }
-        if (getFragmentManager().findFragmentByTag("start") != null)
-            menu.findItem(R.id.action_load_more).setVisible(true);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -176,8 +179,34 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                     return true;
                 }
                 break;
+
+            case R.id.action_display_short_description:
+                Bundle info = new Bundle();
+                info.putString("description", masterFeedsList[current].getDescription());
+                info.putString("title", masterFeedsList[current].getTitle());
+                //info.putString("slug", masterFeedsList[current].getSlug());
+
+                if (masterFeedsList[current].getDescription() == null)
+                    Toast.makeText(this, "No Description.", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(this, "Description: " + masterFeedsList[current].getDescription(), Toast.LENGTH_SHORT).show();
+
+                ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
+                dFrag.setArguments(info);
+
+                dFrag.show(getFragmentManager(), "description_dialog");
+
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm10_1 = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        NetworkInfo nFo = cm10_1.getActiveNetworkInfo();
+        if (nFo != null && nFo.isConnectedOrConnecting())
+            return true;
+        return false;
     }
 
     private class FeedsRequestListener implements RequestListener<Feed[]> {
@@ -200,7 +229,10 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 }
             });
 
-            Toast.makeText(getApplicationContext(), "Feed list reloaded.", Toast.LENGTH_SHORT).show();
+            if (isOnline())
+                Toast.makeText(getApplicationContext(), "Feed list reloaded.", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(getApplicationContext(), "Feed list reloaded from cache. Please check internet connection.", Toast.LENGTH_LONG).show();
         }
 
         @Override
