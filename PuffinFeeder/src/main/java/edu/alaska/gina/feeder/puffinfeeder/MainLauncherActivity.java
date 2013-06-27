@@ -184,12 +184,6 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 Bundle info = new Bundle();
                 info.putString("description", masterFeedsList[current].getDescription());
                 info.putString("title", masterFeedsList[current].getTitle());
-                //info.putString("slug", masterFeedsList[current].getSlug());
-
-                if (masterFeedsList[current].getDescription() == null)
-                    Toast.makeText(this, "No Description.", Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(this, "Description: " + masterFeedsList[current].getDescription(), Toast.LENGTH_SHORT).show();
 
                 ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
                 dFrag.setArguments(info);
