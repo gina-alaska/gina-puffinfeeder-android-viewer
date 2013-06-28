@@ -112,7 +112,8 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         super.onStart();
         mSpiceManager.start(this.getBaseContext());
 
-        refreshFeedsList(DurationInMillis.ONE_DAY);
+        if (current < 0)
+            refreshFeedsList(DurationInMillis.ONE_DAY);
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
