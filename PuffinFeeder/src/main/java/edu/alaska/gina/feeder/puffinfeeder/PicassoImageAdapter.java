@@ -40,11 +40,14 @@ public class PicassoImageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView imageView = new ImageView(mContext);
-        imageView.setPadding(0,0,0,0);
+        ImageView view = (ImageView) convertView;
+        if (view == null)
+            view = new ImageView(mContext);
 
-        Picasso.with(mContext).load(mFeedImages.get(position).getThumbnail()).resize(250, 250).centerCrop().into(imageView);
+        view.setPadding(0,0,0,0);
 
-        return imageView;
+        Picasso.with(mContext).load(mFeedImages.get(position).getThumbnail()).resize(250, 250).centerCrop().into(view);
+
+        return view;
     }
 }

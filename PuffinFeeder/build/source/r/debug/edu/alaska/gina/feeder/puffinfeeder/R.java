@@ -22,6 +22,7 @@ public final class R {
         public static final int ic_menu_refresh=0x7f020004;
         public static final int ic_navigation_forward=0x7f020005;
         public static final int ic_navigation_next_item=0x7f020006;
+        public static final int image_loading_placeholder=0x7f020007;
     }
     public static final class id {
         public static final int action_display_short_description=0x7f080008;

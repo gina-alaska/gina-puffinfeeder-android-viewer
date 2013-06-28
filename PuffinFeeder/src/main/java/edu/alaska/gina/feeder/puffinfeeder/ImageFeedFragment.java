@@ -11,6 +11,8 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
@@ -25,9 +27,13 @@ import java.util.ArrayList;
  */
 public class ImageFeedFragment extends SherlockFragment {
     private static String JSON_CACHE_KEY;
+    protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
+
+    protected Menu aBarMenu;
+    protected MenuItem menuItem;
+
     protected Feed imageFeed = new Feed();
     protected ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
-    protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
     protected PicassoImageAdapter mImageAdapter;
     private int page = 1;
 
@@ -62,7 +68,6 @@ public class ImageFeedFragment extends SherlockFragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(getActivity(), mList.get(position).getTitle(), Toast.LENGTH_SHORT).show();
                 Intent photoView = new Intent(getActivity(), ImageViewerActivity.class);
                 photoView.putExtra("image_url", mList.get(position).getImage());
                 photoView.putExtra("bar_title", imageFeed.getTitle() + " - " + mList.get(position).getTitle());
@@ -81,8 +86,18 @@ public class ImageFeedFragment extends SherlockFragment {
     }
 
     public void refreshThumbs() {
+        menuItem = aBarMenu.findItem(R.id.action_load_more);
+        menuItem.setActionView(R.layout.actionbar_progress_bar);
+        menuItem.expandActionView();
+
         page++;
         mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        aBarMenu = menu;
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -99,12 +114,20 @@ public class ImageFeedFragment extends SherlockFragment {
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
+            menuItem.collapseActionView();
+            menuItem.setActionView(null);
+
             Log.d("Feeder Viewer", "Image Feed load fail!" + spiceException.getMessage());
             Toast.makeText(getActivity().getApplicationContext(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onRequestSuccess(FeedImage[] feedImages) {
+            if (menuItem != null) {
+                menuItem.collapseActionView();
+                menuItem.setActionView(null);
+            }
+
             for (FeedImage pii : feedImages)
                 mList.add(pii);
 
