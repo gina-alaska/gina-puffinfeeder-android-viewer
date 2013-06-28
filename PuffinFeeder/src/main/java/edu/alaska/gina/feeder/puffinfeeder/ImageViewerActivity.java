@@ -34,23 +34,19 @@ public class ImageViewerActivity extends SherlockActivity {
         image_frame.getSettings().setLoadWithOverviewMode(true);
         image_frame.getSettings().setUseWideViewPort(true);
 
-        if (savedInstanceState != null)
-            image_frame.restoreState(savedInstanceState);
-        else {
-            Bundle extra = getIntent().getExtras();
-            if (extra != null) {
-                image_url = extra.getString("image_url");
-                title = extra.getString("bar_title");
-            }
-            else {
-                Log.d("Puffin Feeder", "No Image URL. Please Fix that...");
-                Toast.makeText(this, "No Image URL. Please fix that...", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            getSupportActionBar().setTitle(title);
-            image_frame.loadUrl(image_url);
+        Bundle extra = getIntent().getExtras();
+        if (extra != null) {
+            image_url = extra.getString("image_url");
+            title = extra.getString("bar_title");
         }
+        else {
+            Log.d("Puffin Feeder", "No Image URL. Please Fix that...");
+            Toast.makeText(this, "No Image URL. Please fix that...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        getSupportActionBar().setTitle(title);
+        image_frame.loadUrl(image_url);
     }
 
     @Override
