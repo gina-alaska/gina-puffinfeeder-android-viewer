@@ -47,8 +47,26 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity_launcher);
 
-        StartFragment sFrag = new StartFragment();
-        getSupportFragmentManager().beginTransaction().add(sFrag, "start").replace(R.id.content_frame, sFrag).commit();
+        if (savedInstanceState != null)
+            current = savedInstanceState.getInt("current");
+
+        if (current <= 0) {
+            StartFragment sFrag = new StartFragment();
+            getSupportFragmentManager().beginTransaction().add(sFrag, "start").replace(R.id.content_frame, sFrag).commit();
+        }
+        else {
+            ImageFeedFragment iFrag = new ImageFeedFragment();
+            Bundle arggh = new Bundle();
+
+            arggh.putInt("position", current);
+            arggh.putString("title", masterFeedsList[current].getTitle());
+            arggh.putString("entries", masterFeedsList[current].getEntries());
+            arggh.putString("slug", masterFeedsList[current].getSlug());
+            arggh.putBoolean("status", masterFeedsList[current].getStatus());
+
+            iFrag.setArguments(arggh);
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag).addToBackStack(null).commit();
+        }
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_List);
@@ -93,7 +111,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         super.onStart();
         mSpiceManager.start(this.getBaseContext());
 
-            refreshFeedsList(DurationInMillis.ONE_DAY);
+        refreshFeedsList(DurationInMillis.ONE_DAY);
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -122,6 +140,12 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("current", current);
     }
 
     public void refreshFeedsList(long expiration_time) {
