@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.*;
+import com.actionbarsherlock.internal.view.menu.ActionMenuItem;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.octo.android.robospice.*;
@@ -33,11 +34,15 @@ import java.util.ArrayList;
 public class MainLauncherActivity extends SherlockFragmentActivity {
     private static final String JSON_CACHE_KEY = "feeds_json_array";
     protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
+
     protected ArrayList<String> listItems = new ArrayList<String>();
     protected ArrayAdapter<String> primary;
     protected Feed[] masterFeedsList;
     protected int current = -2;
+
     protected Menu aBarMenu;
+    protected MenuItem menuItem;
+    protected boolean runSpinner = false;
 
     protected DrawerLayout mDrawerLayout; //Contains the entire activity.
     protected ListView mDrawerList; //ListView of Nav Drawer.
@@ -113,7 +118,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         mSpiceManager.start(this.getBaseContext());
 
         if (current < 0)
-            refreshFeedsList(DurationInMillis.ONE_DAY);
+            refreshFeedsList(DurationInMillis.ONE_DAY, false);
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -150,9 +155,14 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         outState.putInt("current", current);
     }
 
-    public void refreshFeedsList(long expiration_time) {
-        //mMenuItem.setActionView(R.layout.actionbar_progress_bar);
-        //mMenuItem.expandActionView();
+    public void refreshFeedsList(long expiration_time, boolean runSpinnerNow) {
+        this.runSpinner = runSpinnerNow;
+
+        if (runSpinner) {
+            menuItem = aBarMenu.findItem(R.id.action_refresh);
+            menuItem.setActionView(R.layout.actionbar_progress_bar);
+            menuItem.expandActionView();
+        }
 
         mSpiceManager.execute(new FeedsJsonRequest(), JSON_CACHE_KEY, expiration_time, new FeedsRequestListener());
     }
@@ -219,11 +229,8 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 return true;
 
             case R.id.action_refresh:
-                //mMenuItem = (MenuItem) findViewById(R.id.action_refresh);
-                //mMenuItem.setActionView(R.layout.actionbar_progress_bar);
-                //mMenuItem.expandActionView();
                 if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
-                    refreshFeedsList(DurationInMillis.ALWAYS_EXPIRED);
+                    refreshFeedsList(DurationInMillis.ALWAYS_EXPIRED, true);
                     primary.notifyDataSetChanged();
                     return true;
                 }
@@ -255,8 +262,10 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     private class FeedsRequestListener implements RequestListener<Feed[]> {
         @Override
         public void onRequestSuccess(Feed[] feed) {
-            //mMenuItem.collapseActionView();
-            //mMenuItem.setActionView(null);
+            if (runSpinner) {
+                menuItem.collapseActionView();
+                menuItem.setActionView(null);
+            }
 
             masterFeedsList = feed;
 
@@ -280,6 +289,11 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
 
         @Override
         public void onRequestFailure(SpiceException e) {
+            if (runSpinner) {
+                menuItem.collapseActionView();
+                menuItem.setActionView(null);
+            }
+
             Log.d("Feeder Viewer", "Feeds list load fail! " + e.getMessage() + "\n" + e.getStackTrace());
             Toast.makeText(getApplicationContext(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
         }
