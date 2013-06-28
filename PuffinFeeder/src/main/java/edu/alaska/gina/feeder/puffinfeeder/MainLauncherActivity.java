@@ -37,6 +37,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     protected ArrayAdapter<String> primary;
     protected Feed[] masterFeedsList;
     protected int current = -2;
+    protected Menu aBarMenu;
 
     protected DrawerLayout mDrawerLayout; //Contains the entire activity.
     protected ListView mDrawerList; //ListView of Nav Drawer.
@@ -52,7 +53,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
 
         if (current <= 0) {
             StartFragment sFrag = new StartFragment();
-            getSupportFragmentManager().beginTransaction().add(sFrag, "start").replace(R.id.content_frame, sFrag).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
         }
         else {
             ImageFeedFragment iFrag = new ImageFeedFragment();
@@ -127,7 +128,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 intel.putBoolean("status", masterFeedsList[position].getStatus());
 
                 iFrag.setArguments(intel);
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag).addToBackStack(null).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
 
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
@@ -162,16 +163,38 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
+            aBarMenu.findItem(R.id.action_refresh).setVisible(false);
+            aBarMenu.findItem(R.id.action_load_more).setVisible(false);
+            aBarMenu.findItem(R.id.action_display_short_description).setVisible(false);
+        }
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
-            menu.findItem(R.id.action_refresh).setVisible(true);
+        if (getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
             menu.findItem(R.id.action_load_more).setVisible(false);
             menu.findItem(R.id.action_display_short_description).setVisible(false);
+
+            if (mDrawerLayout.isDrawerOpen(mDrawerList))
+                menu.findItem(R.id.action_refresh).setVisible(true);
+            else
+                menu.findItem(R.id.action_refresh).setVisible(false);
         }
+
         else {
-            menu.findItem(R.id.action_refresh).setVisible(false);
-            menu.findItem(R.id.action_load_more).setVisible(true);
-            menu.findItem(R.id.action_display_short_description).setVisible(true);
+            if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+                menu.findItem(R.id.action_refresh).setVisible(true);
+                menu.findItem(R.id.action_load_more).setVisible(false);
+                menu.findItem(R.id.action_display_short_description).setVisible(false);
+            }
+            else {
+                menu.findItem(R.id.action_refresh).setVisible(false);
+                menu.findItem(R.id.action_load_more).setVisible(true);
+                menu.findItem(R.id.action_display_short_description).setVisible(true);
+            }
         }
 
         return super.onPrepareOptionsMenu(menu);
@@ -180,6 +203,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.launcher, menu);
+        aBarMenu = menu;
         return true;
     }
 
