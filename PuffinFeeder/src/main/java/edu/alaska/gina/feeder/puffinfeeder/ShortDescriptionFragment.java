@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 /**
+ * Small Dialog that displays the description of the currently selected feed.
  * Created by bobby on 6/25/13.
  */
 public class ShortDescriptionFragment extends DialogFragment {
@@ -15,10 +16,9 @@ public class ShortDescriptionFragment extends DialogFragment {
         Bundle args = getArguments();
         String description = args.getString("description");
         String title = args.getString("title");
-        //String slug = args.getString("slug");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(title).setMessage(description).setNeutralButton("Do Nothing", null);
+        builder.setTitle(title).setMessage(description).setNeutralButton("Dismiss", null);
 
         return builder.create();
     }

@@ -16,7 +16,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.*;
-import com.actionbarsherlock.internal.view.menu.ActionMenuItem;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.octo.android.robospice.*;
@@ -24,7 +23,6 @@ import com.octo.android.robospice.persistence.*;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
-import java.net.NetworkInterface;
 import java.util.ArrayList;
 
 /**

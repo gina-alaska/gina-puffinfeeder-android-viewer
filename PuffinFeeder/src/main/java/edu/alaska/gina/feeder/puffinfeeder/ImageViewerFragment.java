@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 
 /**
+ * Fragment containing WebView that displays full-sized image.
  * Created by bobby on 7/1/13.
  */
 public class ImageViewerFragment extends SherlockFragment{
