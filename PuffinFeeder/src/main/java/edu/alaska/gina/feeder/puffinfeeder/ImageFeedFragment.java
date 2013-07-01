@@ -34,6 +34,8 @@ public class ImageFeedFragment extends SherlockFragment {
 
     protected Feed imageFeed = new Feed();
     protected ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
+    protected ArrayList<String> mTitles = new ArrayList<String>();
+    protected ArrayList<String> mUrls = new ArrayList<String>();
     protected PicassoImageAdapter mImageAdapter;
     private int page = 1;
 
@@ -68,9 +70,15 @@ public class ImageFeedFragment extends SherlockFragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent photoView = new Intent(getActivity(), ImageViewerActivity.class);
-                photoView.putExtra("image_url", mList.get(position).getImage());
-                photoView.putExtra("bar_title", imageFeed.getTitle() + " - " + mList.get(position).getTitle());
+                Intent photoView = new Intent(getSherlockActivity(), ImageViewFrameActivty.class);
+
+                Bundle args = new Bundle();
+                args.putAll(encodeBundle(mUrls, "url"));
+                args.putAll(encodeBundle(mTitles, "title"));
+                args.putString("feed_name", imageFeed.getTitle());
+                args.putInt("position", position);
+
+                photoView.putExtras(args);
 
                 getSherlockActivity().startActivity(photoView);
             }
@@ -94,11 +102,11 @@ public class ImageFeedFragment extends SherlockFragment {
         mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
-    public Bundle encodeBundle(ArrayList<String> notEncoded) {
+    public Bundle encodeBundle(ArrayList<String> notEncoded, String key) {
         Bundle encoded = new Bundle();
 
         for (int i = 0; i < notEncoded.size(); i++)
-            encoded.putString("image_url_" + i, notEncoded.get(i));
+            encoded.putString("image_" + key + "_" + i, notEncoded.get(i));
 
         return encoded;
     }
@@ -139,6 +147,11 @@ public class ImageFeedFragment extends SherlockFragment {
 
             for (FeedImage pii : feedImages)
                 mList.add(pii);
+
+            for (FeedImage f : mList) {
+                mTitles.add(f.getTitle());
+                mUrls.add(f.getImage());
+            }
 
             getActivity().runOnUiThread(new Runnable() {
                 @Override
