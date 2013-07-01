@@ -51,15 +51,15 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     }
 
     public void newImage(int newPos) {
-        position = newPos;
-
         ImageViewerFragment iFrag = new ImageViewerFragment();
         Bundle info = new Bundle();
-        info.putString("image_url", urls.get(position));
-        info.putString("bar_title", feed + " - " + titles.get(position));
+        info.putString("image_url", urls.get(newPos));
+        info.putString("bar_title", feed + " - " + titles.get(newPos));
         iFrag.setArguments(info);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.image_content_frame, iFrag).commit();
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).replace(R.id.image_content_frame, iFrag).commit();
+
+        position = newPos;
     }
 
     public ArrayList<String> decodeBundle(Bundle encoded, String key) {
