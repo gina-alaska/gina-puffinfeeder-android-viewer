@@ -36,6 +36,14 @@
                 android:value="edu.alaska.gina.feeder.puffinfeeder.ImageViewerActivity" />
         </activity>
 
+        <activity
+                android:name=".ImageViewFrameActivty"
+                android:configChanges="orientation|screenSize">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="edu.alaska.gina.feeder.puffinfeeder.ImageViewerActivity" />
+        </activity>
+
         <service
                 android:name="edu.alaska.gina.feeder.puffinfeeder.JsonSpiceService"
                 android:exported="false" />

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/image_content_frame"
+            android:layout_above="@+id/relativeLayout">
+
+    </FrameLayout>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/relativeLayout">
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:layout_marginLeft="4dip"
+                android:layout_marginRight="4dip"
+                android:background="?android:attr/dividerVertical"
+                android:layout_alignParentTop="true"/>
+        <View
+                android:id="@+id/ViewColorPickerHelper"
+                android:layout_width="1dip"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="4dip"
+                android:layout_marginTop="4dip"
+                android:background="?android:attr/dividerVertical"
+                android:layout_centerHorizontal="true"/>
+        <Button
+                android:id="@+id/navigation_newer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@id/ViewColorPickerHelper"
+                android:background="?android:attr/selectableItemBackground"
+                android:text="Newer Image"
+                android:drawableLeft="@drawable/ic_navigation_newer_image"
+                android:layout_alignParentBottom="true"/>
+        <Button
+                android:id="@+id/navigation_older"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:text="Older Image"
+                android:layout_alignParentBottom="true"
+                android:drawableRight="@drawable/ic_navigation_older_image"
+                android:layout_toRightOf="@id/ViewColorPickerHelper"/>
+    </RelativeLayout>
+
+</RelativeLayout>
