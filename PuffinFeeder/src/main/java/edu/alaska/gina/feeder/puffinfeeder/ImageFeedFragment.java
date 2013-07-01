@@ -94,6 +94,15 @@ public class ImageFeedFragment extends SherlockFragment {
         mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
+    public Bundle encodeBundle(ArrayList<String> notEncoded) {
+        Bundle encoded = new Bundle();
+
+        for (int i = 0; i < notEncoded.size(); i++)
+            encoded.putString("image_url_" + i, notEncoded.get(i));
+
+        return encoded;
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         aBarMenu = menu;
