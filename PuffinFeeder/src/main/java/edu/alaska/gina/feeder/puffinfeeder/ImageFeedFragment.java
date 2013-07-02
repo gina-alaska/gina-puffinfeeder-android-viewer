@@ -148,6 +148,8 @@ public class ImageFeedFragment extends SherlockFragment {
             for (FeedImage pii : feedImages)
                 mList.add(pii);
 
+            mTitles.clear();
+            mUrls.clear();
             for (FeedImage f : mList) {
                 mTitles.add(f.getTitle());
                 mUrls.add(f.getImage());
