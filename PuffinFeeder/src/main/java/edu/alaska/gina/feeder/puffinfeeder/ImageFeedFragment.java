@@ -72,6 +72,8 @@ public class ImageFeedFragment extends SherlockFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent photoView = new Intent(getSherlockActivity(), ImageViewFrameActivty.class);
 
+                Toast.makeText(getActivity(), mTitles.get(position), Toast.LENGTH_LONG).show();
+
                 Bundle args = new Bundle();
                 args.putAll(encodeBundle(mUrls, "url"));
                 args.putAll(encodeBundle(mTitles, "title"));
@@ -148,6 +150,8 @@ public class ImageFeedFragment extends SherlockFragment {
             for (FeedImage pii : feedImages)
                 mList.add(pii);
 
+            mTitles.clear();
+            mUrls.clear();
             for (FeedImage f : mList) {
                 mTitles.add(f.getTitle());
                 mUrls.add(f.getImage());
