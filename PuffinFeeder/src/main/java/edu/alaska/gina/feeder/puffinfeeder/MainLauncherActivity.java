@@ -81,7 +81,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
-                if (current < 0)
+                if (getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment)
                     getSupportActionBar().setTitle("GINA Puffin Feeder");
                 else
                     getSupportActionBar().setTitle(masterFeedsList[current].getTitle());
@@ -177,6 +177,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
             aBarMenu.findItem(R.id.action_refresh).setVisible(false);
             aBarMenu.findItem(R.id.action_load_more).setVisible(false);
             aBarMenu.findItem(R.id.action_display_short_description).setVisible(false);
+            getSupportActionBar().setTitle("GINA Puffin Feeder");
         }
         super.onBackPressed();
     }
