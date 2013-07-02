@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -18,6 +19,11 @@ public class ImageViewerFragment extends SherlockFragment{
     protected String image_url;
     protected String title;
     protected WebView image_frame;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,6 +41,19 @@ public class ImageViewerFragment extends SherlockFragment{
         image_frame.getSettings().setLoadWithOverviewMode(true);
         image_frame.getSettings().setUseWideViewPort(true);
 
+        image_frame.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                getSherlockActivity().setSupportProgress(newProgress * 100);
+                if (newProgress >= 0)
+                    getSherlockActivity().setSupportProgressBarIndeterminate(false);
+                if (newProgress >= 100) {
+                    getSherlockActivity().setSupportProgressBarVisibility(false);
+                    getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
+                }
+            }
+        });
+
         Bundle extra = getArguments();
         if (extra != null) {
             image_url = extra.getString("image_url");
@@ -47,6 +66,11 @@ public class ImageViewerFragment extends SherlockFragment{
         }
 
         getSherlockActivity().getSupportActionBar().setTitle(title);
+
+        getSherlockActivity().setSupportProgressBarVisibility(true);
+        getSherlockActivity().setSupportProgressBarIndeterminate(true);
+        getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
+
         image_frame.loadUrl(image_url);
     }
 }
