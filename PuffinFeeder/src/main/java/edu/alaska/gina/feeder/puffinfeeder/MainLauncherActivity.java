@@ -186,6 +186,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         if (getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
             menu.findItem(R.id.action_load_more).setVisible(false);
             menu.findItem(R.id.action_display_short_description).setVisible(false);
+            menu.findItem(R.id.action_refresh_feed).setVisible(false);
 
             if (mDrawerLayout.isDrawerOpen(mDrawerList))
                 menu.findItem(R.id.action_refresh).setVisible(true);
@@ -198,11 +199,13 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 menu.findItem(R.id.action_refresh).setVisible(true);
                 menu.findItem(R.id.action_load_more).setVisible(false);
                 menu.findItem(R.id.action_display_short_description).setVisible(false);
+                menu.findItem(R.id.action_refresh_feed).setVisible(false);
             }
             else {
                 menu.findItem(R.id.action_refresh).setVisible(false);
                 menu.findItem(R.id.action_load_more).setVisible(true);
                 menu.findItem(R.id.action_display_short_description).setVisible(true);
+                menu.findItem(R.id.action_refresh_feed).setVisible(true);
             }
         }
 
