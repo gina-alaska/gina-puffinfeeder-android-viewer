@@ -28,8 +28,9 @@ public final class R {
     public static final class id {
         public static final int ViewColorPickerHelper=0x7f080003;
         public static final int action_display_short_description=0x7f08000e;
-        public static final int action_load_more=0x7f080010;
+        public static final int action_load_more=0x7f080011;
         public static final int action_refresh=0x7f08000f;
+        public static final int action_refresh_feed=0x7f080010;
         public static final int actionbar_progress_bar=0x7f080000;
         public static final int content_frame=0x7f08000c;
         public static final int drawer_List=0x7f08000d;
