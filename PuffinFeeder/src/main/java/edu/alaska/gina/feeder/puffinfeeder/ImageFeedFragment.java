@@ -51,8 +51,10 @@ public class ImageFeedFragment extends SherlockFragment {
         imageFeed.setSlug(extras.getString("slug"));
         JSON_CACHE_KEY = imageFeed.getSlug() + "_json";
 
+        getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
+
         mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, 1), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
-        mImageAdapter = new PicassoImageAdapter(this.getActivity(), mList);
+        mImageAdapter = new PicassoImageAdapter(this.getActivity(), this.getSherlockActivity(), mList);
 
         getSherlockActivity().getSupportActionBar().setTitle(imageFeed.getTitle());
 
@@ -94,9 +96,10 @@ public class ImageFeedFragment extends SherlockFragment {
     }
 
     public void refreshThumbs() {
-        menuItem = aBarMenu.findItem(R.id.action_load_more);
-        menuItem.setActionView(R.layout.actionbar_progress_bar);
-        menuItem.expandActionView();
+        //menuItem = aBarMenu.findItem(R.id.action_load_more);
+        //menuItem.setActionView(R.layout.actionbar_progress_bar);
+        //menuItem.expandActionView();
+        getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
 
         page++;
         mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
@@ -159,6 +162,7 @@ public class ImageFeedFragment extends SherlockFragment {
                 @Override
                 public void run() {
                     mImageAdapter.notifyDataSetChanged();
+                    getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
                 }
             });
         }

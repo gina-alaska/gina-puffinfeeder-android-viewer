@@ -13,11 +13,14 @@ import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.*;
+import com.actionbarsherlock.view.*;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.octo.android.robospice.*;
 import com.octo.android.robospice.persistence.*;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -40,6 +43,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
 
     protected Menu aBarMenu;
     protected MenuItem menuItem;
+    protected ProgressBar aBarProgress;
     protected boolean runSpinner = false;
 
     protected DrawerLayout mDrawerLayout; //Contains the entire activity.
@@ -49,6 +53,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main_activity_launcher);
 
         if (savedInstanceState != null)
