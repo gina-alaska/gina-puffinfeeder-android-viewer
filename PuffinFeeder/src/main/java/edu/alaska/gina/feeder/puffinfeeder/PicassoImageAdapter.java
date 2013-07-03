@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -18,17 +17,11 @@ import java.util.ArrayList;
 public class PicassoImageAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<FeedImage> mFeedImages;
-    private SherlockFragmentActivity mActivity;
-    private ArrayList<Boolean> isViewed = new ArrayList<Boolean>();
     private int maxPosition = 10;
 
-    public PicassoImageAdapter(Context c, SherlockFragmentActivity a, ArrayList<FeedImage> feedImages) {
+    public PicassoImageAdapter(Context c, ArrayList<FeedImage> feedImages) {
         this.mContext = c;
         this.mFeedImages = feedImages;
-        this.mActivity = a;
-
-        for (int i = 0; i < mFeedImages.size(); i++)
-            isViewed.add(false);
     }
 
     @Override
@@ -48,7 +41,6 @@ public class PicassoImageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //checkBooleanListPopulation();
         if (position > maxPosition)
             maxPosition = position;
 
@@ -59,29 +51,9 @@ public class PicassoImageAdapter extends BaseAdapter {
 
         view.setPadding(0,0,0,0);
 
-        //if (!isViewed.get(position))
-            //mActivity.setSupportProgressBarIndeterminateVisibility(true);
-
         Picasso.with(mContext).load(R.drawable.blank_feed_item).resize(250, 250).into(view);
         Picasso.with(mContext).load(mFeedImages.get(position).getThumbnail()).resize(250, 250).centerCrop().into(view);
-        //isViewed.set(position, true);
-
-        //if (position == maxPosition)
-            //mActivity.setSupportProgressBarIndeterminateVisibility(false);
 
         return view;
-    }
-
-    private void checkBooleanListPopulation() {
-        if (isViewed.size() < mFeedImages.size())
-            for (int i = isViewed.size(); i < mFeedImages.size(); i++)
-                isViewed.add(false);
-    }
-
-    private boolean viewedPrevious(int position) {
-        for (int i = position; i >= 0; i--)
-            if (!isViewed.get(i))
-                return false;
-        return true;
     }
 }
