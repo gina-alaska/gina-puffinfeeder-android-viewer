@@ -25,12 +25,14 @@ public final class R {
         public static final int ic_navigation_newer_image=0x7f020007;
         public static final int ic_navigation_next_item=0x7f020008;
         public static final int ic_navigation_older_image=0x7f020009;
+        public static final int ic_share=0x7f02000a;
     }
     public static final class id {
         public static final int ViewColorPickerHelper=0x7f080003;
         public static final int action_display_short_description=0x7f08000e;
         public static final int action_load_more=0x7f080010;
         public static final int action_refresh=0x7f08000f;
+        public static final int action_share_image=0x7f080011;
         public static final int actionbar_progress_bar=0x7f080000;
         public static final int content_frame=0x7f08000c;
         public static final int drawer_List=0x7f08000d;
@@ -56,6 +58,7 @@ public final class R {
     }
     public static final class menu {
         public static final int launcher=0x7f070000;
+        public static final int viewer=0x7f070001;
     }
     public static final class string {
         public static final int action_settings=0x7f050000;
