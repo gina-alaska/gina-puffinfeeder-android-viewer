@@ -22,8 +22,8 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     protected String feed;
     protected int position;
 
-    Button newer;
-    Button older;
+    protected Button newer;
+    protected Button older;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
