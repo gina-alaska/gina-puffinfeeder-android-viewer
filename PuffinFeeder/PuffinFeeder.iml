@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.system.id="GRADLE" type="JAVA_MODULE" version="4">
+<module external.linked.project.path="C:\Users\bobby\AndroidStudioProjects\gina-puffinfeeder-android-viewer" external.system.id="GRADLE" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="android" name="Android">
       <configuration>
@@ -53,7 +53,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/instrumentTest/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/instrumentTest/res" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/instrumentTest/resources" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/build/apk" />
       <excludeFolder url="file://$MODULE_DIR$/build/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/bundles" />
@@ -69,18 +68,18 @@
     <orderEntry type="jdk" jdkName="Android 4.2.2 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="android-support-v4" level="project" />
-    <orderEntry type="library" name="robospice-1.4.4" level="project" />
     <orderEntry type="library" name="actionbarsherlock-4.3.1" level="project" />
     <orderEntry type="library" name="commons-io-1.3.2" level="project" />
+    <orderEntry type="library" name="commons-lang3-3.0.1" level="project" />
     <orderEntry type="library" name="jackson-annotations-2.2.2" level="project" />
     <orderEntry type="library" name="jackson-core-2.2.2" level="project" />
+    <orderEntry type="library" name="jackson-databind-2.2.2" level="project" />
+    <orderEntry type="library" name="picasso-1.1.1" level="project" />
+    <orderEntry type="library" name="robospice-1.4.4" level="project" />
     <orderEntry type="library" name="robospice-cache-1.4.4" level="project" />
     <orderEntry type="library" name="robospice-spring-android-1.4.4" level="project" />
     <orderEntry type="library" name="spring-android-core-1.0.1.RELEASE" level="project" />
     <orderEntry type="library" name="spring-android-rest-template-1.0.1.RELEASE" level="project" />
-    <orderEntry type="library" name="jackson-databind-2.2.2" level="project" />
-    <orderEntry type="library" name="commons-lang3-3.0.1" level="project" />
-    <orderEntry type="library" name="picasso-1.1.1" level="project" />
   </component>
 </module>
 
