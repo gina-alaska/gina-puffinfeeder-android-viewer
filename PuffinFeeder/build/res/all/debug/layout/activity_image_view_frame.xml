@@ -60,4 +60,4 @@
                 android:layout_toRightOf="@id/ViewColorPickerHelper"/>
     </RelativeLayout>
 
-</RelativeLayout>
+</RelativeLayout><!-- From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/layout/activity_image_view_frame.xml -->

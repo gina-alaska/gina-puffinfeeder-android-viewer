@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 
 import java.util.ArrayList;
 
@@ -25,6 +26,8 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_PROGRESS);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_image_view_frame);
 
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.fade_out);
