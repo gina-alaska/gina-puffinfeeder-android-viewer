@@ -11,19 +11,23 @@ public final class R {
     public static final class attr {
     }
     public static final class dimen {
+        /**  From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/values/dimens.xml 
+ From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/values-sw720dp-land/dimens.xml 
+         */
         public static final int activity_horizontal_margin=0x7f040000;
         public static final int activity_vertical_margin=0x7f040001;
     }
     public static final class drawable {
-        public static final int ic_action_about=0x7f020000;
-        public static final int ic_action_help=0x7f020001;
-        public static final int ic_drawer=0x7f020002;
-        public static final int ic_launcher=0x7f020003;
-        public static final int ic_menu_refresh=0x7f020004;
-        public static final int ic_navigation_forward=0x7f020005;
-        public static final int ic_navigation_newer_image=0x7f020006;
-        public static final int ic_navigation_next_item=0x7f020007;
-        public static final int ic_navigation_older_image=0x7f020008;
+        public static final int blank_feed_item=0x7f020000;
+        public static final int ic_action_about=0x7f020001;
+        public static final int ic_action_help=0x7f020002;
+        public static final int ic_drawer=0x7f020003;
+        public static final int ic_launcher=0x7f020004;
+        public static final int ic_menu_refresh=0x7f020005;
+        public static final int ic_navigation_forward=0x7f020006;
+        public static final int ic_navigation_newer_image=0x7f020007;
+        public static final int ic_navigation_next_item=0x7f020008;
+        public static final int ic_navigation_older_image=0x7f020009;
     }
     public static final class id {
         public static final int ViewColorPickerHelper=0x7f080003;
@@ -58,6 +62,8 @@ public final class R {
         public static final int launcher=0x7f070000;
     }
     public static final class string {
+        /**  From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/values/strings.xml 
+         */
         public static final int action_settings=0x7f050000;
         public static final int app_name=0x7f050001;
         public static final int drawer_close=0x7f050002;
@@ -65,12 +71,15 @@ public final class R {
         public static final int hello_world=0x7f050004;
     }
     public static final class style {
-        /** 
+        /**  From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/values/styles.xml 
+
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         
+ From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/values-v11/styles.xml 
  API 11 theme customizations can go here. 
+ From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/values-v14/styles.xml 
  API 14 theme customizations can go here. 
          */
         public static final int AppBaseTheme=0x7f060000;

@@ -11,4 +11,4 @@
         android:stretchMode="spacingWidthUniform"
         android:gravity="fill_horizontal"
         android:background="#ffbfbfbf"
-        android:clickable="true"/>
+        android:clickable="true"/><!-- From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/layout/fragment_image_feed.xml -->

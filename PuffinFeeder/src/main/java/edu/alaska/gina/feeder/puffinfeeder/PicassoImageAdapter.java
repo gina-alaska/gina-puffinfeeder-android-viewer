@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class PicassoImageAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<FeedImage> mFeedImages;
+    private int maxPosition = 10;
 
     public PicassoImageAdapter(Context c, ArrayList<FeedImage> feedImages) {
         this.mContext = c;
@@ -35,17 +36,22 @@ public class PicassoImageAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        if (position > maxPosition)
+            maxPosition = position;
+
         ImageView view = (ImageView) convertView;
+
         if (view == null)
             view = new ImageView(mContext);
 
         view.setPadding(0,0,0,0);
 
+        Picasso.with(mContext).load(R.drawable.blank_feed_item).resize(250, 250).into(view);
         Picasso.with(mContext).load(mFeedImages.get(position).getThumbnail()).resize(250, 250).centerCrop().into(view);
 
         return view;

@@ -6,4 +6,4 @@
          android:focusableInTouchMode="false"
          android:id="@+id/fragment_feed_image_webview">
 
-</WebView>
+</WebView><!-- From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/layout/fragment_image_viewer.xml -->
