@@ -24,17 +24,18 @@ public final class R {
         public static final int ic_drawer=0x7f020003;
         public static final int ic_launcher=0x7f020004;
         public static final int ic_menu_refresh=0x7f020005;
-        public static final int ic_navigation_forward=0x7f020006;
-        public static final int ic_navigation_newer_image=0x7f020007;
-        public static final int ic_navigation_next_item=0x7f020008;
-        public static final int ic_navigation_older_image=0x7f020009;
+        public static final int ic_navigation_back=0x7f020006;
+        public static final int ic_navigation_forward=0x7f020007;
+        public static final int ic_navigation_newer_image=0x7f020008;
+        public static final int ic_navigation_next_item=0x7f020009;
+        public static final int ic_navigation_older_image=0x7f02000a;
     }
     public static final class id {
         public static final int ViewColorPickerHelper=0x7f080003;
         public static final int action_display_short_description=0x7f08000e;
-        public static final int action_load_more=0x7f080011;
-        public static final int action_refresh=0x7f08000f;
-        public static final int action_refresh_feed=0x7f080010;
+        public static final int action_load_next=0x7f080010;
+        public static final int action_load_prev=0x7f08000f;
+        public static final int action_refresh=0x7f080011;
         public static final int actionbar_progress_bar=0x7f080000;
         public static final int content_frame=0x7f08000c;
         public static final int drawer_List=0x7f08000d;
@@ -66,9 +67,10 @@ public final class R {
          */
         public static final int action_settings=0x7f050000;
         public static final int app_name=0x7f050001;
-        public static final int drawer_close=0x7f050002;
-        public static final int drawer_open=0x7f050003;
-        public static final int hello_world=0x7f050004;
+        public static final int app_tag=0x7f050002;
+        public static final int drawer_close=0x7f050003;
+        public static final int drawer_open=0x7f050004;
+        public static final int hello_world=0x7f050005;
     }
     public static final class style {
         /**  From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/values/styles.xml 

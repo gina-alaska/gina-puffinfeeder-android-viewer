@@ -97,10 +97,16 @@ public class ImageFeedFragment extends SherlockFragment {
         super.onStop();
     }
 
-    public void refreshThumbs() {
+    public void refreshThumbs(boolean isNew, boolean isNext) {
         getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
 
-        page++;
+        if (isNew) {
+            if (isNext)
+                page++;
+            else
+                page--;
+        }
+
         mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
@@ -116,14 +122,26 @@ public class ImageFeedFragment extends SherlockFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         aBarMenu = menu;
+
+        if (page <= 1)
+            aBarMenu.findItem(R.id.action_load_prev).setVisible(false);
+        else
+            aBarMenu.findItem(R.id.action_load_prev).setVisible(true);
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_load_more:
-                refreshThumbs();
+            case R.id.action_load_next:
+                refreshThumbs(true, true);
+                return true;
+            case R.id.action_load_prev:
+                refreshThumbs(true, false);
+                return true;
+            case R.id.action_refresh:
+                refreshThumbs(false, false);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -133,34 +151,40 @@ public class ImageFeedFragment extends SherlockFragment {
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Log.d("Feeder Viewer", "Image Feed load fail!" + spiceException.getMessage());
+            Log.d(getString(R.string.app_tag), "Image Feed load fail!" + spiceException.getMessage());
             Toast.makeText(getActivity().getApplicationContext(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
+            getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
         }
 
         @Override
         public void onRequestSuccess(FeedImage[] feedImages) {
-            if (menuItem != null) {
-                menuItem.collapseActionView();
-                menuItem.setActionView(null);
-            }
+            if (page <= 1)
+                aBarMenu.findItem(R.id.action_load_prev).setVisible(false);
+            else
+                aBarMenu.findItem(R.id.action_load_prev).setVisible(true);
 
-            for (FeedImage pii : feedImages)
-                mList.add(pii);
+            if (mList.size() > 0 && !feedImages[0].equals(mList.get(0)))
+                mList.clear();
 
-            mTitles.clear();
-            mUrls.clear();
-            for (FeedImage f : mList) {
-                mTitles.add(f.getTitle());
-                mUrls.add(f.getImage());
-            }
+            if (mList.size() <= 0) {
+                for (FeedImage pii : feedImages)
+                    mList.add(pii);
 
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mImageAdapter.notifyDataSetChanged();
-                    getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
+                mTitles.clear();
+                mUrls.clear();
+                for (FeedImage f : mList) {
+                    mTitles.add(f.getTitle());
+                    mUrls.add(f.getImage());
                 }
-            });
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mImageAdapter.notifyDataSetChanged();
+                        getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
+                    }
+                });
+            }
         }
     }
 }
