@@ -106,6 +106,9 @@ public class ImageFeedFragment extends SherlockFragment {
             else
                 page--;
         }
+        else
+            if (!isNext)
+                page = 1;
 
         mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
@@ -124,9 +127,9 @@ public class ImageFeedFragment extends SherlockFragment {
         aBarMenu = menu;
 
         if (page <= 1)
-            aBarMenu.findItem(R.id.action_load_prev).setVisible(false);
+            aBarMenu.findItem(R.id.action_load_prev).setIcon(R.drawable.ic_navigation_back_dud);
         else
-            aBarMenu.findItem(R.id.action_load_prev).setVisible(true);
+            aBarMenu.findItem(R.id.action_load_prev).setIcon(R.drawable.ic_navigation_back);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -138,9 +141,15 @@ public class ImageFeedFragment extends SherlockFragment {
                 refreshThumbs(true, true);
                 return true;
             case R.id.action_load_prev:
-                refreshThumbs(true, false);
+                if (page > 1)
+                    refreshThumbs(true, false);
                 return true;
             case R.id.action_refresh:
+                refreshThumbs(false, true);
+                return true;
+            case R.id.action_load_first:
+                if (page <= 1)
+                    Toast.makeText(getActivity(), "Already on first page.", Toast.LENGTH_SHORT).show();
                 refreshThumbs(false, false);
                 return true;
         }
@@ -158,10 +167,14 @@ public class ImageFeedFragment extends SherlockFragment {
 
         @Override
         public void onRequestSuccess(FeedImage[] feedImages) {
-            if (page <= 1)
-                aBarMenu.findItem(R.id.action_load_prev).setVisible(false);
-            else
-                aBarMenu.findItem(R.id.action_load_prev).setVisible(true);
+            if (page <= 1) {
+                aBarMenu.findItem(R.id.action_load_prev).setIcon(R.drawable.ic_navigation_back_dud);
+                aBarMenu.findItem(R.id.action_load_first).setIcon(R.drawable.ic_navigation_first_dud);
+            }
+            else {
+                aBarMenu.findItem(R.id.action_load_prev).setIcon(R.drawable.ic_navigation_back);
+                aBarMenu.findItem(R.id.action_load_first).setIcon(R.drawable.ic_navigation_first);
+            }
 
             if (mList.size() > 0 && !feedImages[0].equals(mList.get(0)))
                 mList.clear();
