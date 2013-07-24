@@ -40,7 +40,7 @@ public class ImageViewerActivity extends SherlockActivity {
             title = extra.getString("bar_title");
         }
         else {
-            Log.d("Puffin Feeder", "No Image URL. Please Fix that...");
+            Log.d(getString(R.string.app_tag), "No Image URL. Please Fix that...");
             Toast.makeText(this, "No Image URL. Please fix that...", Toast.LENGTH_SHORT).show();
             return;
         }
