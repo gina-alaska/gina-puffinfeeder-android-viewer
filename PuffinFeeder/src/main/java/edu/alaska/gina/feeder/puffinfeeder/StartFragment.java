@@ -24,7 +24,7 @@ public class StartFragment extends SherlockFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_load_more) {
+        if (item.getItemId() == R.id.action_load_next) {
             Toast.makeText(getActivity(), "No Feed Selected!", Toast.LENGTH_SHORT).show();
             return true;
         }
