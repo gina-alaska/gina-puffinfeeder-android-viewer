@@ -54,7 +54,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         if (savedInstanceState != null)
             current = savedInstanceState.getInt("current");
 
-        if (current <= 0) {
+        if (current < 0) {
             StartFragment sFrag = new StartFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
         }
@@ -139,6 +139,8 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         });
 
         primary.notifyDataSetChanged();
+
+
     }
 
     @Override
@@ -180,6 +182,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         if (getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
             menu.findItem(R.id.action_load_next).setVisible(false);
             menu.findItem(R.id.action_load_prev).setVisible(false);
+            menu.findItem(R.id.action_load_first).setVisible(false);
             menu.findItem(R.id.action_display_short_description).setVisible(false);
 
             if (mDrawerLayout.isDrawerOpen(mDrawerList))
@@ -192,11 +195,15 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
             if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
                 menu.findItem(R.id.action_refresh).setVisible(true);
                 menu.findItem(R.id.action_load_next).setVisible(false);
+                menu.findItem(R.id.action_load_prev).setVisible(false);
+                menu.findItem(R.id.action_load_first).setVisible(false);
                 menu.findItem(R.id.action_display_short_description).setVisible(false);
             }
             else {
                 menu.findItem(R.id.action_refresh).setVisible(true);
                 menu.findItem(R.id.action_load_next).setVisible(true);
+                menu.findItem(R.id.action_load_prev).setVisible(true);
+                menu.findItem(R.id.action_load_first).setVisible(true);
                 menu.findItem(R.id.action_display_short_description).setVisible(true);
             }
         }
@@ -266,6 +273,8 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 @Override
                 public void run() {
                     primary.notifyDataSetChanged();
+                    if (getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && current < 0)
+                        mDrawerLayout.openDrawer(mDrawerList);
                 }
             });
 
