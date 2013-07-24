@@ -1,17 +1,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item android:id="@+id/action_display_short_description"
           android:title="Short Description"
-          android:showAsAction="always"
+          android:showAsAction="ifRoom"
           android:icon="@drawable/ic_action_about" />
+
+    <item android:id="@+id/action_load_prev"
+          android:title="Load Prev. Page"
+          android:showAsAction="ifRoom"
+          android:icon="@drawable/ic_navigation_back" />
+
+    <item android:id="@+id/action_load_next"
+          android:title="Load Next Page"
+          android:showAsAction="ifRoom"
+          android:icon="@drawable/ic_navigation_forward" />
 
     <item android:id="@+id/action_refresh"
           android:title="Refresh"
-          android:showAsAction="always"
+          android:showAsAction="never"
           android:icon="@drawable/ic_menu_refresh" />
 
-    <item android:id="@+id/action_load_more"
-          android:title="Load More Images"
-          android:showAsAction="always"
-          android:icon="@drawable/ic_navigation_forward" />
-</menu>
-<!-- From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/menu/launcher.xml -->
+    <item android:id="@+id/action_load_first"
+          android:title="Jump to Most Recent"
+          android:showAsAction="never"
+          android:icon="@drawable/ic_navigation_first" />
+
+</menu><!-- From: file:/C:/Users/bobby/AndroidStudioProjects/gina-puffinfeeder-android-viewer/PuffinFeeder/src/main/res/menu/launcher.xml -->
