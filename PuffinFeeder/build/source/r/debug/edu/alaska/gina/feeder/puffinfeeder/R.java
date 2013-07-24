@@ -16,27 +16,29 @@ public final class R {
     }
     public static final class drawable {
         public static final int blank_feed_item=0x7f020000;
-        public static final int ic_action_about=0x7f020001;
-        public static final int ic_action_help=0x7f020002;
-        public static final int ic_drawer=0x7f020003;
-        public static final int ic_launcher=0x7f020004;
-        public static final int ic_menu_refresh=0x7f020005;
-        public static final int ic_navigation_forward=0x7f020006;
-        public static final int ic_navigation_newer_image=0x7f020007;
-        public static final int ic_navigation_next_item=0x7f020008;
-        public static final int ic_navigation_older_image=0x7f020009;
+        public static final int gina_puffin=0x7f020001;
+        public static final int ic_action_about=0x7f020002;
+        public static final int ic_action_help=0x7f020003;
+        public static final int ic_drawer=0x7f020004;
+        public static final int ic_launcher=0x7f020005;
+        public static final int ic_menu_refresh=0x7f020006;
+        public static final int ic_navigation_forward=0x7f020007;
+        public static final int ic_navigation_newer_image=0x7f020008;
+        public static final int ic_navigation_next_item=0x7f020009;
+        public static final int ic_navigation_older_image=0x7f02000a;
     }
     public static final class id {
         public static final int ViewColorPickerHelper=0x7f080003;
-        public static final int action_display_short_description=0x7f08000e;
-        public static final int action_load_more=0x7f080010;
-        public static final int action_refresh=0x7f08000f;
+        public static final int action_display_short_description=0x7f08000f;
+        public static final int action_load_more=0x7f080011;
+        public static final int action_refresh=0x7f080010;
         public static final int actionbar_progress_bar=0x7f080000;
-        public static final int content_frame=0x7f08000c;
-        public static final int drawer_List=0x7f08000d;
-        public static final int drawer_layout=0x7f08000b;
+        public static final int content_frame=0x7f08000d;
+        public static final int drawer_List=0x7f08000e;
+        public static final int drawer_layout=0x7f08000c;
         public static final int feed_image_webView=0x7f080006;
         public static final int fragment_feed_image_webview=0x7f080008;
+        public static final int imageView=0x7f08000b;
         public static final int image_content_frame=0x7f080001;
         public static final int image_grid=0x7f080007;
         public static final int navigation_newer=0x7f080004;
