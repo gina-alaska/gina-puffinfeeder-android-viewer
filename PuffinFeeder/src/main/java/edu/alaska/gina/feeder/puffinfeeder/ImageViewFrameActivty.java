@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
@@ -109,12 +108,6 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
                 break;
         }
         endOfLine();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.viewer, menu);
-        return true;
     }
 
     @Override
