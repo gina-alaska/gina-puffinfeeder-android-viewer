@@ -1,7 +1,9 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +32,9 @@ public class ImageFeedFragment extends SherlockFragment {
     protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
     protected Menu aBarMenu;
-    protected MenuItem menuItem;
+
+    protected SharedPreferences sharedPreferences;
+    protected int mSizeNum = 1;
 
     protected Feed imageFeed = new Feed();
     protected ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
@@ -69,12 +73,22 @@ public class ImageFeedFragment extends SherlockFragment {
         GridView gridView = (GridView) getActivity().findViewById(R.id.image_grid);
         gridView.setAdapter(mImageAdapter);
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent photoView = new Intent(getSherlockActivity(), ImageViewFrameActivty.class);
 
                 Toast.makeText(getActivity(), mTitles.get(position), Toast.LENGTH_LONG).show();
+
+                int sizeNum = getImageSizeNum(sharedPreferences.getString("pref_viewer_image_size", "med"));
+                if (sizeNum != mSizeNum) {
+                    mUrls.clear();
+                    for (FeedImage f : mList) {
+                        mUrls.add(f.getPreviews().getAll()[sizeNum]);
+                    }
+                }
 
                 Bundle args = new Bundle();
                 args.putAll(encodeBundle(mUrls, "url"));
@@ -156,12 +170,25 @@ public class ImageFeedFragment extends SherlockFragment {
         return super.onOptionsItemSelected(item);
     }
 
+    private int getImageSizeNum(String sizeString) {
+        int sizeNum = 1;
+
+        if (sizeString.equals("small"))
+            sizeNum = 0;
+        if (sizeString.equals("med"))
+            sizeNum = 1;
+        if (sizeString.equals("large"))
+            sizeNum = 2;
+
+        return sizeNum;
+    }
+
     private class ImageFeedRequestListener implements RequestListener<FeedImage[]> {
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Log.d(getString(R.string.app_tag), "Image Feed load fail!" + spiceException.getMessage());
-            Toast.makeText(getActivity().getApplicationContext(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
             getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
         }
 
@@ -176,6 +203,10 @@ public class ImageFeedFragment extends SherlockFragment {
                 aBarMenu.findItem(R.id.action_load_first).setIcon(R.drawable.ic_navigation_first);
             }
 
+            int sizeNum = getImageSizeNum(sharedPreferences.getString("pref_viewer_image_size", "med"));
+            if (sizeNum != mSizeNum)
+                mSizeNum = sizeNum;
+
             if (mList.size() > 0 && !feedImages[0].equals(mList.get(0)))
                 mList.clear();
 
@@ -187,7 +218,7 @@ public class ImageFeedFragment extends SherlockFragment {
                 mUrls.clear();
                 for (FeedImage f : mList) {
                     mTitles.add(f.getTitle());
-                    mUrls.add(f.getImage());
+                    mUrls.add(f.getPreviews().getAll()[mSizeNum]);
                 }
 
                 getActivity().runOnUiThread(new Runnable() {

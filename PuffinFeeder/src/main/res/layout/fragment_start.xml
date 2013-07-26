@@ -10,19 +10,18 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Welcome to Feeder!"
             android:id="@+id/textViewBig"
+            android:layout_marginTop="77dp"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="155dp"/>
+            android:layout_centerHorizontal="true"/>
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Swipe from the left to select a feed."
+            android:text="Swipe from the left edge to select a feed."
             android:id="@+id/textViewSmall"
             android:layout_below="@+id/textViewBig"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="11dp"/>
+            android:layout_centerHorizontal="true"/>
 
     <ImageView
             android:layout_width="wrap_content"
