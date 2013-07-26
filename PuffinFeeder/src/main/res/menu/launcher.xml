@@ -1,10 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/action_display_short_description"
-          android:title="Short Description"
-          android:showAsAction="ifRoom"
-          android:icon="@drawable/ic_action_about" />
-
     <item android:id="@+id/action_load_prev"
           android:title="Load Prev. Page"
           android:showAsAction="ifRoom"
@@ -24,5 +19,15 @@
           android:title="Jump to Most Recent"
           android:showAsAction="never"
           android:icon="@drawable/ic_navigation_first" />
+
+    <item android:id="@+id/action_display_short_description"
+          android:title="View Short Description"
+          android:showAsAction="never"
+          android:icon="@drawable/ic_action_about" />
+
+    <item android:id="@+id/action_open_preferences"
+          android:title="Preferences"
+          android:showAsAction="never"
+          android:icon="@drawable/ic_action_preferences" />
 
 </menu>

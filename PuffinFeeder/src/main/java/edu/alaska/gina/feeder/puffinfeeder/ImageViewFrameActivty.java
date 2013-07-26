@@ -114,7 +114,6 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
                 return true;
