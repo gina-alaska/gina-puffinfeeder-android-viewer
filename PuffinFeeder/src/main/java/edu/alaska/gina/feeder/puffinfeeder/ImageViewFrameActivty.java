@@ -1,11 +1,13 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.View;
 import android.widget.Button;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
@@ -111,14 +113,22 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.viewer, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
                 return true;
+            case R.id.action_open_preferences:
+                this.startActivity(new Intent(this, PreferencesActivity.class));
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
