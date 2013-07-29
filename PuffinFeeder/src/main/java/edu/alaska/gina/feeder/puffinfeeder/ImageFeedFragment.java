@@ -73,14 +73,14 @@ public class ImageFeedFragment extends SherlockFragment {
         GridView gridView = (GridView) getActivity().findViewById(R.id.image_grid);
         gridView.setAdapter(mImageAdapter);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent photoView = new Intent(getSherlockActivity(), ImageViewFrameActivty.class);
 
-                //Toast.makeText(getActivity(), mTitles.get(position), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), mTitles.get(position), Toast.LENGTH_LONG).show();
 
                 int sizeNum = getImageSizeNum(sharedPreferences.getString("pref_viewer_image_size", "med"));
                 if (sizeNum != mSizeNum) {
@@ -91,7 +91,6 @@ public class ImageFeedFragment extends SherlockFragment {
                 }
 
                 Bundle args = new Bundle();
-                Toast.makeText(getActivity(), " " + mUrls.size(), Toast.LENGTH_SHORT).show();
                 args.putAll(encodeBundle(mUrls, "url", 3));
                 args.putAll(encodeBundle(mTitles, "title"));
                 args.putString("feed_name", imageFeed.getTitle());
