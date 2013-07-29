@@ -21,34 +21,35 @@
         android:theme="@style/AppTheme" >
 
         <activity
-            android:name=".MainLauncherActivity"
-            android:label="@string/app_name"
-            android:configChanges="orientation|screenSize">
+            android:name="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
-                android:name=".ImageViewerActivity"
-                android:configChanges="orientation|screenSize">
+            android:name="edu.alaska.gina.feeder.puffinfeeder.ImageViewFrameActivty"
+            android:configChanges="orientation|screenSize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.alaska.gina.feeder.puffinfeeder.ImageViewerActivity" />
+                android:value="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity" />
         </activity>
 
         <activity
-                android:name=".ImageViewFrameActivty"
-                android:configChanges="orientation|screenSize">
+                android:name="edu.alaska.gina.feeder.puffinfeeder.PreferencesActivity"
+                android:configChanges="orientation|screenSize" >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="edu.alaska.gina.feeder.puffinfeeder.ImageViewerActivity" />
+                    android:value="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity" />
         </activity>
 
         <service
-                android:name="edu.alaska.gina.feeder.puffinfeeder.JsonSpiceService"
-                android:exported="false" />
+            android:name="edu.alaska.gina.feeder.puffinfeeder.JsonSpiceService"
+            android:exported="false" />
 
     </application>
 
