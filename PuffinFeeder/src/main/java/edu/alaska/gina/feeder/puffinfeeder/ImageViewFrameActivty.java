@@ -1,8 +1,9 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 
@@ -23,6 +24,9 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     protected String feed;
     protected int position;
 
+    protected int curSize = 1;
+    protected int numSizes = 3;
+
     protected Button newer;
     protected Button older;
 
@@ -34,11 +38,14 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
 
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.fade_out);
 
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        curSize = getImageSizeNum(sharedPreferences.getString("pref_viewer_image_size", "med"));
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         Bundle args = getIntent().getExtras();
-        urls = decodeBundle(args, "url");
+        urls = decodeUrlBundle(args, "url");
         titles = decodeBundle(args, "title");
         position = args.getInt("position");
         feed = args.getString("feed_name");
@@ -56,7 +63,7 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     public void newImage(int newPos) {
         ImageViewerFragment iFrag = new ImageViewerFragment();
         Bundle info = new Bundle();
-        info.putString("image_url", urls.get(newPos));
+        info.putString("image_url", urls.get((newPos*numSizes) + curSize));
         info.putString("bar_title", feed + " - " + titles.get(newPos));
         iFrag.setArguments(info);
 
@@ -70,6 +77,19 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
 
         for (int i = 0; encoded.getString("image_" + key + "_" + i) != null; i++)
             decoded.add(encoded.getString("image_" + key + "_" + i));
+
+        return decoded;
+    }
+
+    public ArrayList<String> decodeUrlBundle(Bundle encoded, String key) {
+        ArrayList<String> decoded = new ArrayList<String>();
+        this.numSizes = encoded.getInt("num_image_sizes");
+
+        for (int i = 0; encoded.getString("image_" + key + "_" + i + "_0") != null; i++) {
+            for (int j = 0; j < numSizes; j++)
+                decoded.add(encoded.getString("image_" + key + "_" + i + "_" + j));
+            ;
+        }
 
         return decoded;
     }
@@ -95,6 +115,19 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
             older.setClickable(true);
             older.setVisibility(View.VISIBLE);
         }
+    }
+
+    private int getImageSizeNum(String sizeString) {
+        int sizeNum = 1;
+
+        if (sizeString.equals("small"))
+            sizeNum = 0;
+        if (sizeString.equals("med"))
+            sizeNum = 1;
+        if (sizeString.equals("large"))
+            sizeNum = 2;
+
+        return sizeNum;
     }
 
     @Override

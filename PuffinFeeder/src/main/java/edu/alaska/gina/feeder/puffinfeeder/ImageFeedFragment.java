@@ -39,7 +39,7 @@ public class ImageFeedFragment extends SherlockFragment {
     protected Feed imageFeed = new Feed();
     protected ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
     protected ArrayList<String> mTitles = new ArrayList<String>();
-    protected ArrayList<String> mUrls = new ArrayList<String>();
+    protected ArrayList<String[]> mUrls = new ArrayList<String[]>();
     protected PicassoImageAdapter mImageAdapter;
     private int page = 1;
 
@@ -80,18 +80,19 @@ public class ImageFeedFragment extends SherlockFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent photoView = new Intent(getSherlockActivity(), ImageViewFrameActivty.class);
 
-                Toast.makeText(getActivity(), mTitles.get(position), Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity(), mTitles.get(position), Toast.LENGTH_LONG).show();
 
                 int sizeNum = getImageSizeNum(sharedPreferences.getString("pref_viewer_image_size", "med"));
                 if (sizeNum != mSizeNum) {
                     mUrls.clear();
                     for (FeedImage f : mList) {
-                        mUrls.add(f.getPreviews().getAll()[sizeNum]);
+                        mUrls.add(f.getPreviews().getAll());
                     }
                 }
 
                 Bundle args = new Bundle();
-                args.putAll(encodeBundle(mUrls, "url"));
+                Toast.makeText(getActivity(), " " + mUrls.size(), Toast.LENGTH_SHORT).show();
+                args.putAll(encodeBundle(mUrls, "url", 3));
                 args.putAll(encodeBundle(mTitles, "title"));
                 args.putString("feed_name", imageFeed.getTitle());
                 args.putInt("position", position);
@@ -132,6 +133,17 @@ public class ImageFeedFragment extends SherlockFragment {
 
         for (int i = 0; i < notEncoded.size(); i++)
             encoded.putString("image_" + key + "_" + i, notEncoded.get(i));
+
+        return encoded;
+    }
+
+    public Bundle encodeBundle(ArrayList<String[]> notEncoded, String key, int numSizes) {
+        Bundle encoded = new Bundle();
+        encoded.putInt("num_image_sizes", numSizes);
+
+        for (int i = 0; i < notEncoded.size(); i++)
+            for (int j = 0; j < numSizes; j++)
+                encoded.putString("image_" + key + "_" + i + "_" + j, notEncoded.get(i)[j]);
 
         return encoded;
     }
@@ -218,7 +230,7 @@ public class ImageFeedFragment extends SherlockFragment {
                 mUrls.clear();
                 for (FeedImage f : mList) {
                     mTitles.add(f.getTitle());
-                    mUrls.add(f.getPreviews().getAll()[mSizeNum]);
+                    mUrls.add(f.getPreviews().getAll());
                 }
 
                 getActivity().runOnUiThread(new Runnable() {

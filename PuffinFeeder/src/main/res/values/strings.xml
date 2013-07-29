@@ -23,6 +23,6 @@
         <item>med</item>
         <item>large</item>
     </string-array>
-    <string name="pref_viewer_image_size_defaultValue">normal</string>
+    <string name="pref_viewer_image_size_defaultValue">med</string>
 
 </resources>
