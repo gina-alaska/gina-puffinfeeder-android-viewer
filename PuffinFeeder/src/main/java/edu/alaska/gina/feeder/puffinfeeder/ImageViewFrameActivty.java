@@ -38,7 +38,13 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
 
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.fade_out);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+                newImage(position);
+            }
+        });
         curSize = getImageSizeNum(sharedPreferences.getString("pref_viewer_image_size", "med"));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -63,7 +69,7 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     public void newImage(int newPos) {
         ImageViewerFragment iFrag = new ImageViewerFragment();
         Bundle info = new Bundle();
-        info.putString("image_url", urls.get((newPos*numSizes) + curSize));
+        info.putString("image_url", urls.get((newPos * numSizes) + curSize));
         info.putString("bar_title", feed + " - " + titles.get(newPos));
         iFrag.setArguments(info);
 
