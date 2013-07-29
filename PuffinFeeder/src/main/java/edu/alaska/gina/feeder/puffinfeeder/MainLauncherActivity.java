@@ -2,6 +2,7 @@ package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -155,6 +156,12 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         outState.putInt("current", current);
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+    }
+
     public void refreshFeedsList(long expiration_time) {
         mSpiceManager.execute(new FeedsJsonRequest(), JSON_CACHE_KEY, expiration_time, new FeedsRequestListener());
     }
@@ -246,6 +253,9 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
 
                 dFrag.show(getFragmentManager(), "description_dialog");
 
+                return true;
+            case R.id.action_open_preferences:
+                this.startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);

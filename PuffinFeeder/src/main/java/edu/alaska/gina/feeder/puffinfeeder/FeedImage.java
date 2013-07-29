@@ -13,6 +13,7 @@ public class FeedImage {
     private String updated_at;
     private String thumbnail;
     private String image;
+    private FeedImageImages previews;
 
     public int getId() {
         return this.id;
@@ -34,6 +35,10 @@ public class FeedImage {
         return image;
     }
 
+    public FeedImageImages getPreviews() {
+        return previews;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -52,5 +57,9 @@ public class FeedImage {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public void setPreviews(FeedImageImages preview) {
+        this.previews = preview;
     }
 }

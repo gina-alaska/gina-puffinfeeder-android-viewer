@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="pref_viewer_image_size"
+        android:title="Select Image Size"
+        android:dialogTitle="Select Size:"
+        android:entries="@array/pref_viewer_image_size_entries"
+        android:entryValues="@array/pref_viewer_image_size_entryValues"
+        android:defaultValue="@string/pref_viewer_image_size_defaultValue" />
+
+</PreferenceScreen>

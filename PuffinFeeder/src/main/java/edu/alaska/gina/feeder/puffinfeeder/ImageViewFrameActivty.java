@@ -1,11 +1,12 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.view.View;
 import android.widget.Button;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
@@ -16,10 +17,12 @@ import java.util.ArrayList;
  * Created by bobby on 7/1/13.
  */
 public class ImageViewFrameActivty extends SherlockFragmentActivity implements View.OnClickListener {
-    protected ArrayList<String> urls = new ArrayList<String>();
+    protected ArrayList<String[]> urls = new ArrayList<String[]>();
     protected ArrayList<String> titles = new ArrayList<String>();
     protected String feed;
     protected int position;
+
+    protected int numSizes = 3;
 
     protected Button newer;
     protected Button older;
@@ -36,7 +39,7 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         getSupportActionBar().setHomeButtonEnabled(true);
 
         Bundle args = getIntent().getExtras();
-        urls = decodeBundle(args, "url");
+        urls = build3SizeArrayStructure(decodeUrlBundle(args, "url"));
         titles = decodeBundle(args, "title");
         position = args.getInt("position");
         feed = args.getString("feed_name");
@@ -54,7 +57,9 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     public void newImage(int newPos) {
         ImageViewerFragment iFrag = new ImageViewerFragment();
         Bundle info = new Bundle();
-        info.putString("image_url", urls.get(newPos));
+        info.putString("image_url_small", urls.get(newPos)[0]);
+        info.putString("image_url_med", urls.get(newPos)[1]);
+        info.putString("image_url_large", urls.get(newPos)[2]);
         info.putString("bar_title", feed + " - " + titles.get(newPos));
         iFrag.setArguments(info);
 
@@ -70,6 +75,27 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
             decoded.add(encoded.getString("image_" + key + "_" + i));
 
         return decoded;
+    }
+
+    public ArrayList<String> decodeUrlBundle(Bundle encoded, String key) {
+        ArrayList<String> decoded = new ArrayList<String>();
+        this.numSizes = encoded.getInt("num_image_sizes");
+
+        for (int i = 0; encoded.getString("image_" + key + "_" + i + "_0") != null; i++) {
+            for (int j = 0; j < numSizes; j++)
+                decoded.add(encoded.getString("image_" + key + "_" + i + "_" + j));
+        }
+
+        return decoded;
+    }
+
+    public ArrayList<String[]> build3SizeArrayStructure(ArrayList<String> unstructured) {
+        ArrayList<String[]> export = new ArrayList<String[]>();
+
+        for (int i = 0; i < unstructured.size(); i += 3)
+            export.add(new String[]{unstructured.get(i), unstructured.get(i + 1), unstructured.get(i + 2)});
+
+        return export;
     }
 
     public void endOfLine() {
@@ -111,15 +137,22 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.viewer, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
                 return true;
+            case R.id.action_open_preferences:
+                this.startActivity(new Intent(this, PreferencesActivity.class));
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

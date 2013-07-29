@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Application Info -->
     <string name="app_name" >GINA Puffin Feeder</string>
     <string name="app_tag" >Feeder_App</string>
-    <string name="action_settings" >Settings</string>
-    <string name="hello_world" >Hello world!</string>
+
+    <!-- Accessibility Strings -->
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- Settings Menu Resources -->
+    <string name="action_settings" >Settings</string>
+
+    <!-- Image Size Selection Data -->
+    <string-array name="pref_viewer_image_size_entries">
+        <item>Small</item>
+        <item>Normal</item>
+        <item>Large</item>
+    </string-array>
+    <string-array name="pref_viewer_image_size_entryValues">
+        <item>small</item>
+        <item>med</item>
+        <item>large</item>
+    </string-array>
+    <string name="pref_viewer_image_size_defaultValue">med</string>
 
 </resources>
