@@ -2,7 +2,6 @@ package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
