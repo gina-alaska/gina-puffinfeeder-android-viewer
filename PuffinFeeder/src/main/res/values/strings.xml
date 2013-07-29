@@ -25,4 +25,17 @@
     </string-array>
     <string name="pref_viewer_image_size_defaultValue">med</string>
 
+    <!-- Smart Sizing Selection Data -->
+    <string-array name="pref_smart_sizing_size_entries">
+        <item>Small</item>
+        <item>Normal</item>
+        <item>Large (WARNING: HIGH DATA USE!)</item>
+    </string-array>
+    <string-array name="pref_smart_sizing_size_entryValues">
+        <item>small</item>
+        <item>med</item>
+        <item>large</item>
+    </string-array>
+    <string name="pref_smart_sizing_size_defaultValue">small</string>
+
 </resources>
