@@ -198,7 +198,7 @@ public class ImageFeedFragment extends SherlockFragment {
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Log.d(getString(R.string.app_tag), "Image Feed load fail!" + spiceException.getMessage());
+            Log.d(getString(R.string.app_tag), "Image Feed load fail! " + spiceException.getMessage());
             Toast.makeText(getActivity(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
             getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
         }
