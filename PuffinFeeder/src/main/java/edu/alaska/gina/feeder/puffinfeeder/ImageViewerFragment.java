@@ -119,7 +119,7 @@ public class ImageViewerFragment extends SherlockFragment{
         NetworkInfo nf = connectivityManager.getActiveNetworkInfo();
 
         if (nf != null) {
-            if (sharedPreferences.getBoolean("pref_smart_sizing_on/off", true) && isMetered(nf))
+            if (isMetered(nf))
                 return sharedPreferences.getString("pref_smart_sizing_size", "small");
             else
                 return sharedPreferences.getString("pref_viewer_image_size", "med");
