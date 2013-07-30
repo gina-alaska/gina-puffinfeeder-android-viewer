@@ -104,10 +104,16 @@ public class ImageViewerFragment extends SherlockFragment{
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
         NetworkInfo nf = cm.getActiveNetworkInfo();
 
-        if (sharedPreferences.getBoolean("pref_smart_sizing_on/off", true) && isMetered(nf))
-            return sharedPreferences.getString("pref_smart_sizing_size", "small");
-        else
+        if (nf != null) {
+            if (sharedPreferences.getBoolean("pref_smart_sizing_on/off", true) && isMetered(nf))
+                return sharedPreferences.getString("pref_smart_sizing_size", "small");
+            else
+                return sharedPreferences.getString("pref_viewer_image_size", "med");
+        }
+        else {
+            Log.d(getString(R.string.app_tag), "NetworkInfo null!");
             return sharedPreferences.getString("pref_viewer_image_size", "med");
+        }
     }
 
     private void loadme(String size) {
