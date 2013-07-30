@@ -1,6 +1,9 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.ListPreference;
+import android.preference.Preference;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -9,7 +12,7 @@ import com.actionbarsherlock.view.MenuItem;
  * Activity that starts settings fragment.
  * Created by bobby on 7/25/13.
  */
-public class PreferencesActivity extends SherlockPreferenceActivity {
+public class PreferencesActivity extends SherlockPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,6 +22,27 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
         getSupportActionBar().setTitle("Settings");
 
         addPreferencesFromResource(R.xml.preferences);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        Preference p = findPreference(s);
+        if (p instanceof ListPreference) {
+            ListPreference l = (ListPreference) p;
+            p.setSummary(l.getEntry());
+        }
     }
 
     @Override
