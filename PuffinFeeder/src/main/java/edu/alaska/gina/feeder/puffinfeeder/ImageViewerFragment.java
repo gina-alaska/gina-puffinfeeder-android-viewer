@@ -26,6 +26,7 @@ public class ImageViewerFragment extends SherlockFragment{
     protected String title;
     protected WebView image_frame;
     protected SharedPreferences sharedPreferences;
+    protected ConnectivityManager connectivityManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,6 +43,7 @@ public class ImageViewerFragment extends SherlockFragment{
         image_frame.getSettings().setBuiltInZoomControls(true);
         image_frame.getSettings().setLoadWithOverviewMode(true);
 
+        connectivityManager = getConnectivityManager();
 
         image_frame.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -54,8 +56,8 @@ public class ImageViewerFragment extends SherlockFragment{
                         getSherlockActivity().setSupportProgressBarVisibility(false);
                         getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
                     }
-                } catch (NullPointerException nXe) {
-                    Log.d(getString(R.string.app_tag), "ProgressBar NullPointer!\n" + nXe.getStackTrace());
+                } catch (NullPointerException e) {
+                    Log.d(getString(R.string.app_tag), "ProgressBar NullPointer!\n" + e.getStackTrace());
                 }
             }
         });
@@ -83,17 +85,18 @@ public class ImageViewerFragment extends SherlockFragment{
         sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+            if (isAdded())
                 loadme(pickLoadSize());
             }
         });
 
-        loadme(pickLoadSize());
+        if (isAdded())
+            loadme(pickLoadSize());
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-
         image_frame.destroy();
     }
 
@@ -112,8 +115,8 @@ public class ImageViewerFragment extends SherlockFragment{
     }
 
     private String pickLoadSize() {
-        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
-        NetworkInfo nf = cm.getActiveNetworkInfo();
+        connectivityManager = getConnectivityManager();
+        NetworkInfo nf = connectivityManager.getActiveNetworkInfo();
 
         if (nf != null) {
             if (sharedPreferences.getBoolean("pref_smart_sizing_on/off", true) && isMetered(nf))
@@ -146,5 +149,11 @@ public class ImageViewerFragment extends SherlockFragment{
             return image_url_large;
 
         return null;
+    }
+
+    private ConnectivityManager getConnectivityManager() {
+        if (isAdded())
+            return (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
+        return this.connectivityManager;
     }
 }
