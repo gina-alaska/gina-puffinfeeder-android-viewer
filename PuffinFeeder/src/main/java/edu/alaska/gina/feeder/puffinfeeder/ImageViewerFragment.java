@@ -46,12 +46,16 @@ public class ImageViewerFragment extends SherlockFragment{
         image_frame.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                getSherlockActivity().setSupportProgress(newProgress * 100);
-                if (newProgress >= 0)
-                    getSherlockActivity().setSupportProgressBarIndeterminate(false);
-                if (newProgress >= 100) {
-                    getSherlockActivity().setSupportProgressBarVisibility(false);
-                    getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
+                try {
+                    getSherlockActivity().setSupportProgress(newProgress * 100);
+                    if (newProgress >= 0)
+                        getSherlockActivity().setSupportProgressBarIndeterminate(false);
+                    if (newProgress >= 100) {
+                        getSherlockActivity().setSupportProgressBarVisibility(false);
+                        getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
+                    }
+                } catch (NullPointerException nXe) {
+                    Log.d(getString(R.string.app_tag), "ProgressBar NullPointer!\n" + nXe.getStackTrace());
                 }
             }
         });
@@ -84,6 +88,13 @@ public class ImageViewerFragment extends SherlockFragment{
         });
 
         loadme(pickLoadSize());
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        image_frame.destroy();
     }
 
     private boolean isMetered(NetworkInfo net1) {
@@ -122,6 +133,7 @@ public class ImageViewerFragment extends SherlockFragment{
         else
             image_frame.getSettings().setUseWideViewPort(true);
 
+        image_frame.stopLoading();
         image_frame.loadUrl(getImageUrl(size));
     }
 
