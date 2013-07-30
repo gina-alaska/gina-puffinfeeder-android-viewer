@@ -1,6 +1,8 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -77,20 +79,50 @@ public class ImageViewerFragment extends SherlockFragment{
         sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-                loadme();
+                loadme(pickLoadSize());
             }
         });
 
-        loadme();
+        loadme(pickLoadSize());
     }
 
-    private void loadme() {
-        if (sharedPreferences.getString("pref_viewer_image_size", "med").equals("small"))
+    private boolean isMetered(NetworkInfo net1) {
+        int type = net1.getType();
+        switch (type) {
+            case ConnectivityManager.TYPE_MOBILE:
+            case ConnectivityManager.TYPE_MOBILE_DUN:
+            case ConnectivityManager.TYPE_MOBILE_HIPRI:
+            case ConnectivityManager.TYPE_MOBILE_MMS:
+            case ConnectivityManager.TYPE_MOBILE_SUPL:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private String pickLoadSize() {
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
+        NetworkInfo nf = cm.getActiveNetworkInfo();
+
+        if (nf != null) {
+            if (sharedPreferences.getBoolean("pref_smart_sizing_on/off", true) && isMetered(nf))
+                return sharedPreferences.getString("pref_smart_sizing_size", "small");
+            else
+                return sharedPreferences.getString("pref_viewer_image_size", "med");
+        }
+        else {
+            Log.d(getString(R.string.app_tag), "NetworkInfo null!");
+            return sharedPreferences.getString("pref_viewer_image_size", "med");
+        }
+    }
+
+    private void loadme(String size) {
+        if (size.equals("small"))
             image_frame.getSettings().setUseWideViewPort(false);
         else
             image_frame.getSettings().setUseWideViewPort(true);
 
-        image_frame.loadUrl(getImageUrl(sharedPreferences.getString("pref_viewer_image_size", "med")));
+        image_frame.loadUrl(getImageUrl(size));
     }
 
     private String getImageUrl(String sizeString) {
