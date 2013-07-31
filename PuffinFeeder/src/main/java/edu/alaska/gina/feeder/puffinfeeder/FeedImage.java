@@ -11,6 +11,7 @@ public class FeedImage {
     private int id;
     private String title;
     private String updated_at;
+    private String event_at;
     private String thumbnail;
     private String image;
     private FeedImageImages previews;
@@ -39,6 +40,10 @@ public class FeedImage {
         return previews;
     }
 
+    public void setEvent_at(String event_at) {
+        this.event_at = event_at;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -61,5 +66,9 @@ public class FeedImage {
 
     public void setPreviews(FeedImageImages preview) {
         this.previews = preview;
+    }
+
+    public String getEvent_at() {
+        return event_at;
     }
 }
