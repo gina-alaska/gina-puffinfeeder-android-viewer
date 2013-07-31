@@ -19,6 +19,7 @@ dependencies {
     compile files('libs/jackson-annotations-2.2.2.jar')
     compile files('libs/jackson-core-2.2.2.jar')
     compile files('libs/jackson-databind-2.2.2.jar')
+    compile files('libs/joda-time-2.2.jar')
     compile files('libs/picasso-1.1.1.jar')
     compile files('libs/robospice-1.4.4.jar')
     compile files('libs/robospice-cache-1.4.4.jar')
