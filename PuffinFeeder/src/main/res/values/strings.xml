@@ -12,6 +12,10 @@
     <!-- Settings Menu Resources -->
     <string name="action_settings" >Settings</string>
 
+    <!-- General Strings -->
+    <string name="event_at_pattern">yyyy-MM-dd\'T\'HH:mm:ssZ</string>
+    <string name="ISO8601_pattern">yyyy-MM-dd\'T\'HH:mm:ss.SSSZ</string>
+
     <!-- Image Size Selection Data -->
     <string-array name="pref_viewer_image_size_entries">
         <item>Small</item>

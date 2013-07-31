@@ -21,6 +21,10 @@ import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 
 /**
@@ -34,12 +38,12 @@ public class ImageFeedFragment extends SherlockFragment {
     protected Menu aBarMenu;
 
     protected SharedPreferences sharedPreferences;
-    protected int mSizeNum = 1;
 
     protected Feed imageFeed = new Feed();
     protected ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
     protected ArrayList<String> mTitles = new ArrayList<String>();
     protected ArrayList<String[]> mUrls = new ArrayList<String[]>();
+    protected ArrayList<DateTime> mTimes = new ArrayList<DateTime>();
     protected PicassoImageAdapter mImageAdapter;
     private int page = 1;
 
@@ -80,19 +84,14 @@ public class ImageFeedFragment extends SherlockFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent photoView = new Intent(getSherlockActivity(), ImageViewFrameActivty.class);
 
-                Toast.makeText(getActivity(), mTitles.get(position), Toast.LENGTH_LONG).show();
-
-                int sizeNum = getImageSizeNum(sharedPreferences.getString("pref_viewer_image_size", "med"));
-                if (sizeNum != mSizeNum) {
-                    mUrls.clear();
-                    for (FeedImage f : mList) {
-                        mUrls.add(f.getPreviews().getAll());
-                    }
-                }
+                ArrayList<String> times = new ArrayList<String>();
+                for (DateTime d : mTimes)
+                    times.add(d.toString());
 
                 Bundle args = new Bundle();
                 args.putAll(encodeBundle(mUrls, "url", 3));
                 args.putAll(encodeBundle(mTitles, "title"));
+                args.putAll(encodeBundle(times, "time"));
                 args.putString("feed_name", imageFeed.getTitle());
                 args.putInt("position", position);
 
@@ -181,19 +180,6 @@ public class ImageFeedFragment extends SherlockFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private int getImageSizeNum(String sizeString) {
-        int sizeNum = 1;
-
-        if (sizeString.equals("small"))
-            sizeNum = 0;
-        if (sizeString.equals("med"))
-            sizeNum = 1;
-        if (sizeString.equals("large"))
-            sizeNum = 2;
-
-        return sizeNum;
-    }
-
     private class ImageFeedRequestListener implements RequestListener<FeedImage[]> {
 
         @Override
@@ -214,10 +200,6 @@ public class ImageFeedFragment extends SherlockFragment {
                 aBarMenu.findItem(R.id.action_load_first).setIcon(R.drawable.ic_navigation_first);
             }
 
-            int sizeNum = getImageSizeNum(sharedPreferences.getString("pref_viewer_image_size", "med"));
-            if (sizeNum != mSizeNum)
-                mSizeNum = sizeNum;
-
             if (mList.size() > 0 && !feedImages[0].equals(mList.get(0)))
                 mList.clear();
 
@@ -225,11 +207,16 @@ public class ImageFeedFragment extends SherlockFragment {
                 for (FeedImage pii : feedImages)
                     mList.add(pii);
 
+                DateTimeFormatter formatter = DateTimeFormat.forPattern(getString(R.string.event_at_pattern));
+
                 mTitles.clear();
                 mUrls.clear();
+                mTimes.clear();
                 for (FeedImage f : mList) {
                     mTitles.add(f.getTitle());
                     mUrls.add(f.getPreviews().getAll());
+                    mTimes.add(formatter.parseDateTime(f.getEvent_at()));
+                    Log.d(getString(R.string.app_tag), "Stamp: " + mTimes.get(mTimes.size() - 1));
                 }
 
                 getActivity().runOnUiThread(new Runnable() {
