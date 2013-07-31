@@ -12,8 +12,10 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.tz.FixedDateTimeZone;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -70,9 +72,6 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         info.putString("image_url_large", urls.get(newPos)[2]);
         info.putString("bar_title", feed + " - " + titles.get(newPos));
         iFrag.setArguments(info);
-
-        //DateTime t = times.get(newPos);
-        //Toast.makeText(getApplicationContext(), "Taken on " + t.monthOfYear().getAsText(Locale.US)+ " " + t.dayOfMonth().getAsText(Locale.US) + ", " + t.yearOfEra().getAsText(Locale.US), Toast.LENGTH_LONG).show();
 
         getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).replace(R.id.image_content_frame, iFrag).commit();
 
@@ -172,6 +171,19 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
                 return true;
             case R.id.action_open_preferences:
                 this.startActivity(new Intent(this, PreferencesActivity.class));
+                return true;
+            case R.id.action_display_short_description:
+                DateTime t = times.get(position).withZone(DateTimeZone.forID("UTC"));
+                Bundle x = new Bundle();
+
+                x.putString("description", "Date Taken: " + t.monthOfYear().getAsText(Locale.US)+ " " + t.dayOfMonth().getAsText(Locale.US) + ", " + t.yearOfEra().getAsText(Locale.US)
+                    + "\n" + "Time Taken: " + t.hourOfDay().getAsText(Locale.US) + ":" + t.minuteOfHour().getAsText(Locale.US) + " " + t.getZone().toTimeZone().getDisplayName());
+                x.putString("title", titles.get(position));
+
+                ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
+                dFrag.setArguments(x);
+
+                dFrag.show(getFragmentManager(), "description_dialog");
                 return true;
         }
         return super.onOptionsItemSelected(item);
