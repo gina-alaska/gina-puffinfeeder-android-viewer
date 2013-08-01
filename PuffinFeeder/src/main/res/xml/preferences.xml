@@ -4,26 +4,17 @@
 
     <ListPreference
         android:key="pref_viewer_image_size"
-        android:title="Select Image Size"
+        android:title="Image Size on WiFi Networks"
+        android:summary="%s"
         android:dialogTitle="Select Size:"
         android:entries="@array/pref_viewer_image_size_entries"
         android:entryValues="@array/pref_viewer_image_size_entryValues"
         android:defaultValue="@string/pref_viewer_image_size_defaultValue" />
 
-    <SwitchPreference
-        android:key="pref_smart_sizing_on/off"
-        android:title="Smart Sizing"
-        android:summaryOff="Turning on makes the app use different images on 3G and 4G networks."
-        android:summaryOn="Select the size you want to use on 3G and 4G networks below."
-        android:disableDependentsState="false"
-        android:switchTextOff="Off"
-        android:switchTextOn="On"
-        android:defaultValue="true" />
-
     <ListPreference
         android:key="pref_smart_sizing_size"
-        android:dependency="pref_smart_sizing_on/off"
-        android:title="Select 3G/4G Image Size"
+        android:title="Image Size on Mobile Networks"
+        android:summary="%s"
         android:dialogTitle="Select Size:"
         android:entries="@array/pref_smart_sizing_size_entries"
         android:entryValues="@array/pref_smart_sizing_size_entryValues"
