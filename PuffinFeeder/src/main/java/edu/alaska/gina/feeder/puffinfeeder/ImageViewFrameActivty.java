@@ -176,8 +176,7 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
                 DateTime t = times.get(position).withZone(DateTimeZone.forID("UTC"));
                 Bundle x = new Bundle();
 
-                x.putString("description", "Date Taken: " + t.monthOfYear().getAsText(Locale.US)+ " " + t.dayOfMonth().getAsText(Locale.US) + ", " + t.yearOfEra().getAsText(Locale.US)
-                    + "\n" + "Time Taken: " + t.hourOfDay().getAsText(Locale.US) + ":" + t.minuteOfHour().getAsText(Locale.US) + " " + t.getZone().toTimeZone().getDisplayName());
+                x.putString("description", buildDescription(t));
                 x.putString("title", titles.get(position));
 
                 ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
@@ -187,6 +186,37 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public String buildDescription(DateTime timeDate) {
+        StringBuilder sb = new StringBuilder();
+        StringBuilder temp = new StringBuilder();
+
+        sb.append("Date Taken: ");
+        sb.append(timeDate.monthOfYear().getAsText(Locale.getDefault())+ " ");
+        sb.append(timeDate.dayOfMonth().getAsText(Locale.getDefault()) + ", ");
+        sb.append(timeDate.yearOfEra().getAsText(Locale.getDefault()) + "\n");
+
+        sb.append("Time Taken: ");
+        temp.append(timeDate.hourOfDay().getAsText(Locale.getDefault()));
+        if (temp.length() < 2) {
+            while (temp.length() < 2)
+                temp.insert(0, "0");
+        }
+        sb.append(temp);
+        sb.append(":");
+
+        temp = new StringBuilder();
+        temp.append(timeDate.minuteOfHour().getAsText(Locale.getDefault()));
+        if (temp.length() < 2) {
+            while (temp.length() < 2)
+                temp.insert(0, "0");
+        }
+        sb.append(temp + " ");
+
+        sb.append(timeDate.getZone().toTimeZone().getDisplayName());
+
+        return sb.toString();
     }
 
     @Override
