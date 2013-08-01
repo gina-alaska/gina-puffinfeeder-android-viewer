@@ -4,13 +4,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.tz.FixedDateTimeZone;
+
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Activity that displays a full image while allowing navigation via 2 buttons across the bottom.
@@ -19,6 +27,7 @@ import java.util.ArrayList;
 public class ImageViewFrameActivty extends SherlockFragmentActivity implements View.OnClickListener {
     protected ArrayList<String[]> urls = new ArrayList<String[]>();
     protected ArrayList<String> titles = new ArrayList<String>();
+    protected ArrayList<DateTime> times = new ArrayList<DateTime>();
     protected String feed;
     protected int position;
 
@@ -41,6 +50,7 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         Bundle args = getIntent().getExtras();
         urls = build3SizeArrayStructure(decodeUrlBundle(args, "url"));
         titles = decodeBundle(args, "title");
+        times = parseTimeStrings_ISO8601(decodeBundle(args, "time"));
         position = args.getInt("position");
         feed = args.getString("feed_name");
 
@@ -66,6 +76,16 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).replace(R.id.image_content_frame, iFrag).commit();
 
         position = newPos;
+    }
+
+    public ArrayList<DateTime> parseTimeStrings_ISO8601(ArrayList<String> s) {
+        ArrayList<DateTime> d = new ArrayList<DateTime>();
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(getString(R.string.ISO8601_pattern));
+
+        for (String t : s)
+            d.add(formatter.parseDateTime(t));
+
+        return d;
     }
 
     public ArrayList<String> decodeBundle(Bundle encoded, String key) {
@@ -152,8 +172,51 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
             case R.id.action_open_preferences:
                 this.startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
+            case R.id.action_display_short_description:
+                DateTime t = times.get(position).withZone(DateTimeZone.forID("UTC"));
+                Bundle x = new Bundle();
+
+                x.putString("description", buildDescription(t));
+                x.putString("title", titles.get(position));
+
+                ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
+                dFrag.setArguments(x);
+
+                dFrag.show(getFragmentManager(), "description_dialog");
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public String buildDescription(DateTime timeDate) {
+        StringBuilder sb = new StringBuilder();
+        StringBuilder temp = new StringBuilder();
+
+        sb.append("Date Taken: ");
+        sb.append(timeDate.monthOfYear().getAsText(Locale.getDefault())+ " ");
+        sb.append(timeDate.dayOfMonth().getAsText(Locale.getDefault()) + ", ");
+        sb.append(timeDate.yearOfEra().getAsText(Locale.getDefault()) + "\n");
+
+        sb.append("Time Taken: ");
+        temp.append(timeDate.hourOfDay().getAsText(Locale.getDefault()));
+        if (temp.length() < 2) {
+            while (temp.length() < 2)
+                temp.insert(0, "0");
+        }
+        sb.append(temp);
+        sb.append(":");
+
+        temp = new StringBuilder();
+        temp.append(timeDate.minuteOfHour().getAsText(Locale.getDefault()));
+        if (temp.length() < 2) {
+            while (temp.length() < 2)
+                temp.insert(0, "0");
+        }
+        sb.append(temp + " ");
+
+        sb.append(timeDate.getZone().toTimeZone().getDisplayName());
+
+        return sb.toString();
     }
 
     @Override
