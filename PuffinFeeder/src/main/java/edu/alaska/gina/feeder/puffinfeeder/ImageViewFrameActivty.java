@@ -2,6 +2,7 @@ package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -13,9 +14,11 @@ import com.actionbarsherlock.view.Window;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.tz.FixedDateTimeZone;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -32,6 +35,7 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     protected int position;
 
     protected int numSizes = 3;
+    protected Toast toasty;
 
     protected Button newer;
     protected Button older;
@@ -60,6 +64,7 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         newer.setOnClickListener(this);
         older.setOnClickListener(this);
 
+        toasty = Toast.makeText(this, "blargh", Toast.LENGTH_LONG);
         newImage(position);
         endOfLine();
     }
@@ -73,6 +78,9 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         info.putString("bar_title", feed + " - " + titles.get(newPos));
         iFrag.setArguments(info);
 
+        toasty.setText(findTimeDifference(times.get(newPos)));
+        toasty.show();
+        Log.d(getString(R.string.app_tag), findTimeDifference(times.get(newPos)));
         getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).replace(R.id.image_content_frame, iFrag).commit();
 
         position = newPos;
@@ -173,7 +181,11 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
                 this.startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
             case R.id.action_display_short_description:
-                DateTime t = times.get(position).withZone(DateTimeZone.forID("UTC"));
+                DateTime t;
+                if (feed.equals("Barrow Radar") || feed.equals("Barrow Radar") || feed.equals("Barrow Radar"))
+                    t = times.get(position).withZone(DateTimeZone.forID("America/Anchorage"));
+                else
+                    t = times.get(position).withZone(DateTimeZone.forID("UTC"));
                 Bundle x = new Bundle();
 
                 x.putString("description", buildDescription(t));
@@ -219,10 +231,23 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         return sb.toString();
     }
 
+    private String findTimeDifference(DateTime pic) {
+        DateTime now = new DateTime(System.currentTimeMillis());
+        Period diff = new Period(pic, now);
+        PeriodFormatter toastFormatter = new PeriodFormatterBuilder().appendDays().appendSuffix(" day", " days").appendSeparator(" and ").printZeroAlways().appendHours().appendSuffix(" hour", " hours").appendLiteral(" ago.").toFormatter();
+        return toastFormatter.print(diff);
+    }
+
     @Override
     public void onBackPressed() {
         finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        toasty.cancel();
     }
 }
