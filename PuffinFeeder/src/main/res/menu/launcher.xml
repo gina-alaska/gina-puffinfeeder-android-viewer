@@ -25,6 +25,11 @@
           android:showAsAction="never"
           android:icon="@drawable/ic_action_about" />
 
+    <item android:id="@+id/action_show_credits"
+          android:title="Credits"
+          android:showAsAction="never"
+          android:icon="@drawable/ic_action_about" />
+
     <item android:id="@+id/action_open_preferences"
           android:title="Settings"
           android:showAsAction="never"
