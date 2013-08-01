@@ -181,7 +181,11 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
                 this.startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
             case R.id.action_display_short_description:
-                DateTime t = times.get(position).withZone(DateTimeZone.forID("UTC"));
+                DateTime t;
+                if (feed.equals("Barrow Radar") || feed.equals("Barrow Radar") || feed.equals("Barrow Radar"))
+                    t = times.get(position).withZone(DateTimeZone.forID("America/Anchorage"));
+                else
+                    t = times.get(position).withZone(DateTimeZone.forID("UTC"));
                 Bundle x = new Bundle();
 
                 x.putString("description", buildDescription(t));
