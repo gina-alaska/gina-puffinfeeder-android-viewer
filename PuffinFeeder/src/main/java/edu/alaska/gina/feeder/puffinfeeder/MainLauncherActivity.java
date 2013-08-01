@@ -254,6 +254,9 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 dFrag.show(getFragmentManager(), "description_dialog");
 
                 return true;
+            case R.id.action_show_credits:
+                this.startActivity(new Intent(this, WebViewActivity.class));
+                return true;
             case R.id.action_open_preferences:
                 this.startActivity(new Intent(this, PreferencesActivity.class));
                 return true;

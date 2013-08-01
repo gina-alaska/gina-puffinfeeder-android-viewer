@@ -17,7 +17,6 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
         <activity
             android:name="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity"
             android:configChanges="orientation|screenSize"
@@ -28,7 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="edu.alaska.gina.feeder.puffinfeeder.ImageViewFrameActivty"
             android:configChanges="orientation|screenSize" >
@@ -36,19 +34,26 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity" />
         </activity>
-
         <activity
-                android:name="edu.alaska.gina.feeder.puffinfeeder.PreferencesActivity"
-                android:configChanges="orientation|screenSize" >
+            android:name="edu.alaska.gina.feeder.puffinfeeder.PreferencesActivity"
+            android:configChanges="orientation|screenSize" >
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity" />
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity" />
         </activity>
 
         <service
             android:name="edu.alaska.gina.feeder.puffinfeeder.JsonSpiceService"
             android:exported="false" />
 
+        <activity
+            android:name="edu.alaska.gina.feeder.puffinfeeder.WebViewActivity"
+            android:label="@string/title_activity_web_view"
+            android:parentActivityName="MainLauncherActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="MainLauncherActivity" />
+        </activity>
     </application>
 
 </manifest>
