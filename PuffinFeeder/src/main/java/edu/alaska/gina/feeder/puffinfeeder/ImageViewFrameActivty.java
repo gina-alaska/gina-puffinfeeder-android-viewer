@@ -182,7 +182,7 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
                 return true;
             case R.id.action_display_short_description:
                 DateTime t;
-                if (feed.equals("Barrow Radar") || feed.equals("Barrow Radar") || feed.equals("Barrow Radar"))
+                if (feed.equals("Barrow Radar") || feed.equals("Barrow Radar GeoTIF") || feed.equals("Barrow Webcam"))
                     t = times.get(position).withZone(DateTimeZone.forID("America/Anchorage"));
                 else
                     t = times.get(position).withZone(DateTimeZone.forID("UTC"));
