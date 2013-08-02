@@ -194,7 +194,7 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
                 ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
                 dFrag.setArguments(x);
 
-                dFrag.show(getFragmentManager(), "description_dialog");
+                dFrag.show(getSupportFragmentManager(), "description_dialog");
                 return true;
         }
         return super.onOptionsItemSelected(item);

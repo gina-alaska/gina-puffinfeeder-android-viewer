@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.alaska.gina.feeder.puffinfeeder"
     android:versionCode="0"
-    android:versionName="0.10.0" >
+    android:versionName="0.11.0" >
 
     <uses-sdk
         android:minSdkVersion="11"

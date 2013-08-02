@@ -14,6 +14,7 @@ public class Feed {
     private String slug;
     private String description;
     private String where;
+    private String moreinfo;
 
     public boolean getStatus() {
         return status;
@@ -37,6 +38,10 @@ public class Feed {
 
     public String getWhere() {
         return where;
+    }
+
+    public String getMoreinfo() {
+        return moreinfo;
     }
 
     public void setStatus(String status) {
@@ -68,5 +73,9 @@ public class Feed {
 
     public void setWhere(String where) {
         this.where = where;
+    }
+
+    public void setMoreinfo(String moreinfo) {
+        this.moreinfo = moreinfo;
     }
 }
