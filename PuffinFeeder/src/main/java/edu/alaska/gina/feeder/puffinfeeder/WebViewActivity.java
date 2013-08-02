@@ -1,10 +1,6 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
 import android.webkit.WebView;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -16,9 +12,10 @@ public class WebViewActivity extends SherlockActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        Bundle url = getIntent().getExtras();
         WebView screen = (WebView) findViewById(R.id.credits_web_view);
-        this.getSupportActionBar().setTitle("Credits and Licenses");
-        screen.loadUrl("file:///android_res/raw/credits.html");
+        this.getSupportActionBar().setTitle(url.getString("title", "Page not found - GitHub"));
+        screen.loadUrl(url.getString("url", "https://github.com/404"));
     }
 
     @Override

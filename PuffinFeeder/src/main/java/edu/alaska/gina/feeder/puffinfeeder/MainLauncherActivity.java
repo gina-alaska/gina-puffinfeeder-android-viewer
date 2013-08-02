@@ -247,15 +247,16 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 Bundle info = new Bundle();
                 info.putString("description", masterFeedsList[current].getDescription());
                 info.putString("title", masterFeedsList[current].getTitle());
+                info.putString("url", masterFeedsList[current].getMoreinfo());
 
                 ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
                 dFrag.setArguments(info);
 
-                dFrag.show(getFragmentManager(), "description_dialog");
+                dFrag.show(getSupportFragmentManager(), "description_dialog");
 
                 return true;
             case R.id.action_show_credits:
-                this.startActivity(new Intent(this, WebViewActivity.class));
+                this.startActivity(new Intent(this, WebViewActivity.class).putExtra("url", getString(R.string.credits_filepath)).putExtra("title", getString(R.string.credits_title)));
                 return true;
             case R.id.action_open_preferences:
                 this.startActivity(new Intent(this, PreferencesActivity.class));
