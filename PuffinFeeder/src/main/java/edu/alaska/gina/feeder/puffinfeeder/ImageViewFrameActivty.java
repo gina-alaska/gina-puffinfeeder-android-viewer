@@ -204,12 +204,14 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         StringBuilder sb = new StringBuilder();
         StringBuilder temp = new StringBuilder();
 
-        sb.append("Date Taken: ");
-        sb.append(timeDate.monthOfYear().getAsText(Locale.getDefault())+ " ");
+        sb.append("Processed " + findTimeDifference(timeDate) + "\n");
+
+        sb.append("Date Processed: ");
+        sb.append(timeDate.monthOfYear().getAsText(Locale.getDefault()) + " ");
         sb.append(timeDate.dayOfMonth().getAsText(Locale.getDefault()) + ", ");
         sb.append(timeDate.yearOfEra().getAsText(Locale.getDefault()) + "\n");
 
-        sb.append("Time Taken: ");
+        sb.append("Time Processed: ");
         temp.append(timeDate.hourOfDay().getAsText(Locale.getDefault()));
         if (temp.length() < 2) {
             while (temp.length() < 2)
