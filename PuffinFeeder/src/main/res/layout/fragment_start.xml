@@ -10,7 +10,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Welcome to Feeder!"
             android:id="@+id/textViewBig"
-            android:layout_marginTop="77dp"
+            android:layout_marginTop="22dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"/>
 
@@ -27,8 +27,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imageView"
-            android:src="@drawable/gina_puffin"
+            android:src="@drawable/logo_gina_puffin"
             android:layout_below="@+id/textViewSmall"
             android:layout_centerHorizontal="true"
             android:paddingTop="25dp"/>
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView2"
+            android:src="@drawable/logo_gina_powered"
+            android:layout_below="@+id/imageView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="14dp"/>
 </RelativeLayout>

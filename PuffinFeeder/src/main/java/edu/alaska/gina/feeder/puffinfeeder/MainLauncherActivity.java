@@ -114,7 +114,6 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mSpiceManager.start(this.getBaseContext());
 
         if (current < 0)
             refreshFeedsList(DurationInMillis.ONE_DAY);
@@ -140,8 +139,6 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         });
 
         primary.notifyDataSetChanged();
-
-
     }
 
     @Override
@@ -159,17 +156,19 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-
     }
 
     public void refreshFeedsList(long expiration_time) {
+        if (!mSpiceManager.isStarted())
+            mSpiceManager.start(this.getBaseContext());
         mSpiceManager.execute(new FeedsJsonRequest(), JSON_CACHE_KEY, expiration_time, new FeedsRequestListener());
     }
 
     @Override
-    protected void onStop() {
-        mSpiceManager.shouldStop();
-        super.onStop();
+    protected void onPause() {
+        if (mSpiceManager.isStarted())
+            mSpiceManager.shouldStop();
+        super.onPause();
     }
 
     @Override
@@ -296,12 +295,15 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 Toast.makeText(getApplicationContext(), "Feed list reloaded.", Toast.LENGTH_SHORT).show();
             else
                 Toast.makeText(getApplicationContext(), "Feed list reloaded from cache. Please check internet connection.", Toast.LENGTH_LONG).show();
+
+            mSpiceManager.shouldStop();
         }
 
         @Override
         public void onRequestFailure(SpiceException e) {
             Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + e.getStackTrace());
             Toast.makeText(getApplicationContext(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
+            mSpiceManager.shouldStop();
         }
     }
 }
