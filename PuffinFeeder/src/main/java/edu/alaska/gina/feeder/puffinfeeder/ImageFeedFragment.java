@@ -61,7 +61,7 @@ public class ImageFeedFragment extends SherlockFragment {
 
         getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
 
-        mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, 1), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+        refreshThumbs(false, false);
         mImageAdapter = new PicassoImageAdapter(this.getActivity(), mList);
 
         getSherlockActivity().getSupportActionBar().setTitle(imageFeed.getTitle());
@@ -72,7 +72,6 @@ public class ImageFeedFragment extends SherlockFragment {
     @Override
     public void onStart() {
         super.onStart();
-        mSpiceManager.start(this.getActivity());
 
         GridView gridView = (GridView) getActivity().findViewById(R.id.image_grid);
         gridView.setAdapter(mImageAdapter);
@@ -105,13 +104,17 @@ public class ImageFeedFragment extends SherlockFragment {
     }
 
     @Override
-    public void onStop() {
-        mSpiceManager.shouldStop();
-        super.onStop();
+    public void onPause() {
+        if (mSpiceManager.isStarted())
+            mSpiceManager.shouldStop();
+        super.onPause();
     }
 
     public void refreshThumbs(boolean isNew, boolean isNext) {
         getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
+
+        if (!mSpiceManager.isStarted())
+            mSpiceManager.start(getActivity().getBaseContext());
 
         if (isNew) {
             if (isNext)
@@ -187,6 +190,7 @@ public class ImageFeedFragment extends SherlockFragment {
             Log.d(getString(R.string.app_tag), "Image Feed load fail! " + spiceException.getMessage());
             Toast.makeText(getActivity(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
             getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
+            mSpiceManager.shouldStop();
         }
 
         @Override
@@ -226,6 +230,8 @@ public class ImageFeedFragment extends SherlockFragment {
                         getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
                     }
                 });
+
+                mSpiceManager.shouldStop();
             }
         }
     }
