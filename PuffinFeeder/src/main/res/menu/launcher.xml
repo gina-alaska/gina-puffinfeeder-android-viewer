@@ -20,7 +20,7 @@
           android:showAsAction="never"
           android:icon="@drawable/ic_navigation_first" />
 
-    <item android:id="@+id/action_display_short_description"
+    <item android:id="@+id/action_display_short_feed_description"
           android:title="Feed Information"
           android:showAsAction="never"
           android:icon="@drawable/ic_action_about" />

@@ -32,6 +32,8 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     protected ArrayList<String> titles = new ArrayList<String>();
     protected ArrayList<DateTime> times = new ArrayList<DateTime>();
     protected String feed;
+    protected String description;
+    protected String infoUrl;
     protected int position;
 
     protected int numSizes = 3;
@@ -57,6 +59,8 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         times = parseTimeStrings_ISO8601(decodeBundle(args, "time"));
         position = args.getInt("position");
         feed = args.getString("feed_name");
+        description = args.getString("description");
+        infoUrl = args.getString("info");
 
         newer = (Button) findViewById(R.id.navigation_newer);
         older = (Button) findViewById(R.id.navigation_older);
@@ -195,6 +199,18 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
                 dFrag.setArguments(x);
 
                 dFrag.show(getSupportFragmentManager(), "description_dialog");
+                return true;
+            case R.id.action_display_short_feed_description:
+                Bundle info = new Bundle();
+                info.putString("description", description);
+                info.putString("title", feed);
+                info.putString("url", infoUrl);
+
+                ShortDescriptionFragment dFrag2 = new ShortDescriptionFragment();
+                dFrag2.setArguments(info);
+
+                dFrag2.show(getSupportFragmentManager(), "description_dialog");
+
                 return true;
         }
         return super.onOptionsItemSelected(item);
