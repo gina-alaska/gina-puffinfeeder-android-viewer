@@ -7,6 +7,11 @@
           android:showAsAction="ifRoom"
           android:icon="@drawable/ic_action_about" />
 
+    <item android:id="@+id/action_display_short_feed_description"
+          android:title="Feed Info"
+          android:showAsAction="never"
+          android:icon="@drawable/ic_action_about" />
+
     <item android:id="@+id/action_open_preferences"
           android:title="Settings"
           android:showAsAction="never"

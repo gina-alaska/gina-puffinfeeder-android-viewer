@@ -68,6 +68,8 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
             arggh.putString("entries", masterFeedsList[current].getEntries());
             arggh.putString("slug", masterFeedsList[current].getSlug());
             arggh.putBoolean("status", masterFeedsList[current].getStatus());
+            arggh.putString("description", masterFeedsList[current].getDescription());
+            arggh.putString("info", masterFeedsList[current].getMoreinfo());
 
             iFrag.setArguments(arggh);
             getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag).addToBackStack(null).commit();
@@ -130,6 +132,8 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 intel.putString("entries", masterFeedsList[position].getEntries());
                 intel.putString("slug", masterFeedsList[position].getSlug());
                 intel.putBoolean("status", masterFeedsList[position].getStatus());
+                intel.putString("description", masterFeedsList[current].getDescription());
+                intel.putString("info", masterFeedsList[current].getMoreinfo());
 
                 iFrag.setArguments(intel);
                 getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
@@ -189,7 +193,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
             menu.findItem(R.id.action_load_next).setVisible(false);
             menu.findItem(R.id.action_load_prev).setVisible(false);
             menu.findItem(R.id.action_load_first).setVisible(false);
-            menu.findItem(R.id.action_display_short_description).setVisible(false);
+            menu.findItem(R.id.action_display_short_feed_description).setVisible(false);
 
             if (mDrawerLayout.isDrawerOpen(mDrawerList))
                 menu.findItem(R.id.action_refresh).setVisible(true);
@@ -203,14 +207,14 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 menu.findItem(R.id.action_load_next).setVisible(false);
                 menu.findItem(R.id.action_load_prev).setVisible(false);
                 menu.findItem(R.id.action_load_first).setVisible(false);
-                menu.findItem(R.id.action_display_short_description).setVisible(false);
+                menu.findItem(R.id.action_display_short_feed_description).setVisible(false);
             }
             else {
                 menu.findItem(R.id.action_refresh).setVisible(true);
                 menu.findItem(R.id.action_load_next).setVisible(true);
                 menu.findItem(R.id.action_load_prev).setVisible(true);
                 menu.findItem(R.id.action_load_first).setVisible(true);
-                menu.findItem(R.id.action_display_short_description).setVisible(true);
+                menu.findItem(R.id.action_display_short_feed_description).setVisible(true);
             }
         }
 
@@ -242,7 +246,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 }
                 break;
 
-            case R.id.action_display_short_description:
+            case R.id.action_display_short_feed_description:
                 Bundle info = new Bundle();
                 info.putString("description", masterFeedsList[current].getDescription());
                 info.putString("title", masterFeedsList[current].getTitle());
@@ -254,9 +258,11 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 dFrag.show(getSupportFragmentManager(), "description_dialog");
 
                 return true;
+
             case R.id.action_show_credits:
                 this.startActivity(new Intent(this, WebViewActivity.class).putExtra("url", getString(R.string.credits_filepath)).putExtra("title", getString(R.string.credits_title)));
                 return true;
+
             case R.id.action_open_preferences:
                 this.startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
