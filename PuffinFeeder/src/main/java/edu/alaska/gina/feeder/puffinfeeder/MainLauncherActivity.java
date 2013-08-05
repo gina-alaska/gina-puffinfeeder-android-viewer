@@ -123,21 +123,22 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                current = position;
-                ImageFeedFragment iFrag = new ImageFeedFragment();
-                Bundle intel = new Bundle();
+                if (!listItems.get(position).equals("Nothing to see.")) {
+                    current = position;
+                    ImageFeedFragment iFrag = new ImageFeedFragment();
+                    Bundle intel = new Bundle();
 
-                intel.putInt("position", position);
-                intel.putString("title", masterFeedsList[position].getTitle());
-                intel.putString("entries", masterFeedsList[position].getEntries());
-                intel.putString("slug", masterFeedsList[position].getSlug());
-                intel.putBoolean("status", masterFeedsList[position].getStatus());
-                intel.putString("description", masterFeedsList[current].getDescription());
-                intel.putString("info", masterFeedsList[current].getMoreinfo());
+                    intel.putInt("position", position);
+                    intel.putString("title", masterFeedsList[position].getTitle());
+                    intel.putString("entries", masterFeedsList[position].getEntries());
+                    intel.putString("slug", masterFeedsList[position].getSlug());
+                    intel.putBoolean("status", masterFeedsList[position].getStatus());
+                    intel.putString("description", masterFeedsList[current].getDescription());
+                    intel.putString("info", masterFeedsList[current].getMoreinfo());
 
-                iFrag.setArguments(intel);
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
-
+                    iFrag.setArguments(intel);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
+                }
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
