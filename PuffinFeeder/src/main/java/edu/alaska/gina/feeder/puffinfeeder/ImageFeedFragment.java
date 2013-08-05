@@ -57,7 +57,11 @@ public class ImageFeedFragment extends SherlockFragment {
         imageFeed.setStatusBoolean(extras.getBoolean("status"));
         imageFeed.setEntries(extras.getString("entries"));
         imageFeed.setSlug(extras.getString("slug"));
+        imageFeed.setDescription(extras.getString("description"));
+        imageFeed.setMoreinfo(extras.getString("info"));
         JSON_CACHE_KEY = imageFeed.getSlug() + "_json";
+
+        //Log.d(getString(R.string.app_tag), imageFeed.getDescription() + " " + imageFeed.getMoreinfo());
 
         getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
 
@@ -91,6 +95,8 @@ public class ImageFeedFragment extends SherlockFragment {
                 args.putAll(encodeBundle(mUrls, "url", 3));
                 args.putAll(encodeBundle(mTitles, "title"));
                 args.putAll(encodeBundle(times, "time"));
+                args.putString("description", imageFeed.getDescription());
+                args.putString("info", imageFeed.getMoreinfo());
                 args.putString("feed_name", imageFeed.getTitle());
                 args.putInt("position", position);
 
