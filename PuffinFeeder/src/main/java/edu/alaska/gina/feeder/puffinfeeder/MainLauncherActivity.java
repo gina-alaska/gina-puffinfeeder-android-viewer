@@ -48,6 +48,7 @@ public class MainLauncherActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main_activity_launcher);
+        setProgressBarIndeterminateVisibility(false);
 
         if (savedInstanceState != null)
             current = savedInstanceState.getInt("current");
@@ -101,8 +102,7 @@ public class MainLauncherActivity extends Activity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB)
-            getActionBar().setHomeButtonEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
