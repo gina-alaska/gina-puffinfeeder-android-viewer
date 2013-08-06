@@ -18,8 +18,7 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
         super.onCreate(savedInstanceState);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB)
-            getActionBar().setHomeButtonEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
         getActionBar().setTitle("Settings");
 
         addPreferencesFromResource(R.xml.preferences);

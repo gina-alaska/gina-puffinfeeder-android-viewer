@@ -15,15 +15,8 @@ public class WebViewActivity extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         Bundle url = getIntent().getExtras();
         WebView screen = (WebView) findViewById(R.id.info_web_view);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
-            this.getActionBar().setTitle(url.getString("title", "Page not found - GitHub"));
-            screen.loadUrl(url.getString("url", "https://github.com/404"));
-        }
-        else {
-            this.getActionBar().setTitle(url.getString("title"));
-            screen.loadUrl(url.getString("url"));
-        }
-
+        this.getActionBar().setTitle(url.getString("title", "Page not found - GitHub"));
+        screen.loadUrl(url.getString("url", "https://github.com/404"));
     }
 
     @Override

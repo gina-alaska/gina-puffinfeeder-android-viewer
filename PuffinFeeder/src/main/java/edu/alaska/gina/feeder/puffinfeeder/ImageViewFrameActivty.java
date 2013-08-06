@@ -50,8 +50,7 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         setContentView(R.layout.activity_image_view_frame);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB)
-            getActionBar().setHomeButtonEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 
         Bundle args = getIntent().getExtras();
         urls = build3SizeArrayStructure(decodeUrlBundle(args, "url"));
