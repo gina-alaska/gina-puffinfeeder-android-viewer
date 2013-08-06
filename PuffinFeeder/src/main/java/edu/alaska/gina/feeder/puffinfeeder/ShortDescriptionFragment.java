@@ -2,17 +2,16 @@ package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.actionbarsherlock.app.SherlockDialogFragment;
 
 /**
  * Small Dialog that displays the description of the currently selected feed.
  * Created by bobby on 6/25/13.
  */
-public class ShortDescriptionFragment extends SherlockDialogFragment {
+public class ShortDescriptionFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
@@ -30,7 +29,7 @@ public class ShortDescriptionFragment extends SherlockDialogFragment {
                 public void onClick(DialogInterface dialogInterface, int i) {
                     Intent descrip = new Intent(getActivity(), WebViewActivity.class);
                     descrip.putExtra("url", detailedUrl).putExtra("title", title);
-                    getSherlockActivity().startActivity(descrip);
+                    getActivity().startActivity(descrip);
                 }
             }).setNeutralButton("Dismiss", null);
         }

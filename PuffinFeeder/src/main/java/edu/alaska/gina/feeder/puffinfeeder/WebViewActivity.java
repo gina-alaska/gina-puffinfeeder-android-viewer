@@ -1,11 +1,12 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.webkit.WebView;
 
-import com.actionbarsherlock.app.SherlockActivity;
-
-public class WebViewActivity extends SherlockActivity {
+public class WebViewActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -13,13 +14,20 @@ public class WebViewActivity extends SherlockActivity {
         setContentView(R.layout.activity_web_view);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         Bundle url = getIntent().getExtras();
-        WebView screen = (WebView) findViewById(R.id.credits_web_view);
-        this.getSupportActionBar().setTitle(url.getString("title", "Page not found - GitHub"));
-        screen.loadUrl(url.getString("url", "https://github.com/404"));
+        WebView screen = (WebView) findViewById(R.id.info_web_view);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+            this.getActionBar().setTitle(url.getString("title", "Page not found - GitHub"));
+            screen.loadUrl(url.getString("url", "https://github.com/404"));
+        }
+        else {
+            this.getActionBar().setTitle(url.getString("title"));
+            screen.loadUrl(url.getString("url"));
+        }
+
     }
 
     @Override
-    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();

@@ -27,6 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="edu.alaska.gina.feeder.puffinfeeder.ImageViewFrameActivty"
             android:configChanges="orientation|screenSize" >
@@ -34,6 +35,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity" />
         </activity>
+
         <activity
             android:name="edu.alaska.gina.feeder.puffinfeeder.PreferencesActivity"
             android:configChanges="orientation|screenSize" >

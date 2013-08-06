@@ -1,21 +1,21 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
  * Fragment used to display the list of feed images in a GridView.
  * Created by bobby on 6/14/13.
  */
-public class ImageFeedFragment extends SherlockFragment {
+public class ImageFeedFragment extends Fragment {
     private static String JSON_CACHE_KEY;
     protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
@@ -63,12 +63,12 @@ public class ImageFeedFragment extends SherlockFragment {
 
         //Log.d(getString(R.string.app_tag), imageFeed.getDescription() + " " + imageFeed.getMoreinfo());
 
-        getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
+        getActivity().setProgressBarIndeterminateVisibility(true);
 
         refreshThumbs(false, false);
         mImageAdapter = new PicassoImageAdapter(this.getActivity(), mList);
 
-        getSherlockActivity().getSupportActionBar().setTitle(imageFeed.getTitle());
+        getActivity().getActionBar().setTitle(imageFeed.getTitle());
 
         return v;
     }
@@ -85,7 +85,7 @@ public class ImageFeedFragment extends SherlockFragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent photoView = new Intent(getSherlockActivity(), ImageViewFrameActivty.class);
+                Intent photoView = new Intent(getActivity(), ImageViewFrameActivty.class);
 
                 ArrayList<String> times = new ArrayList<String>();
                 for (DateTime d : mTimes)
@@ -102,7 +102,7 @@ public class ImageFeedFragment extends SherlockFragment {
 
                 photoView.putExtras(args);
 
-                getSherlockActivity().startActivity(photoView);
+                getActivity().startActivity(photoView);
             }
         });
 
@@ -117,7 +117,7 @@ public class ImageFeedFragment extends SherlockFragment {
     }
 
     public void refreshThumbs(boolean isNew, boolean isNext) {
-        getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
+        getActivity().setProgressBarIndeterminateVisibility(true);
 
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
@@ -195,7 +195,7 @@ public class ImageFeedFragment extends SherlockFragment {
         public void onRequestFailure(SpiceException spiceException) {
             Log.d(getString(R.string.app_tag), "Image Feed load fail! " + spiceException.getMessage());
             Toast.makeText(getActivity(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
-            getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
+            getActivity().setProgressBarIndeterminateVisibility(false);
             mSpiceManager.shouldStop();
         }
 
@@ -233,7 +233,7 @@ public class ImageFeedFragment extends SherlockFragment {
                     @Override
                     public void run() {
                         mImageAdapter.notifyDataSetChanged();
-                        getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
+                        getActivity().setProgressBarIndeterminateVisibility(false);
                     }
                 });
 
