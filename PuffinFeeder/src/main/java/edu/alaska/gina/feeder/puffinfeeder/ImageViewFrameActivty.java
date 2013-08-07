@@ -1,16 +1,16 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -27,7 +27,7 @@ import java.util.Locale;
  * Activity that displays a full image while allowing navigation via 2 buttons across the bottom.
  * Created by bobby on 7/1/13.
  */
-public class ImageViewFrameActivty extends SherlockFragmentActivity implements View.OnClickListener {
+public class ImageViewFrameActivty extends Activity implements View.OnClickListener {
     protected ArrayList<String[]> urls = new ArrayList<String[]>();
     protected ArrayList<String> titles = new ArrayList<String>();
     protected ArrayList<DateTime> times = new ArrayList<DateTime>();
@@ -42,16 +42,15 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
     protected Button newer;
     protected Button older;
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_PROGRESS);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_image_view_frame);
 
-        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.fade_out);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 
         Bundle args = getIntent().getExtras();
         urls = build3SizeArrayStructure(decodeUrlBundle(args, "url"));
@@ -73,6 +72,80 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         endOfLine();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.viewer, menu);
+        return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.navigation_newer:
+                if (position > 0)
+                    newImage(position - 1);
+                break;
+            case R.id.navigation_older:
+                if (position < urls.size() - 1)
+                    newImage(position + 1);
+                break;
+        }
+        endOfLine();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.action_open_preferences:
+                this.startActivity(new Intent(this, PreferencesActivity.class));
+                return true;
+            case R.id.action_display_short_description:
+                DateTime t;
+                if (feed.equals("Barrow Radar") || feed.equals("Barrow Radar GeoTIF") || feed.equals("Barrow Webcam"))
+                    t = times.get(position).withZone(DateTimeZone.forID("America/Anchorage"));
+                else
+                    t = times.get(position).withZone(DateTimeZone.forID("UTC"));
+                Bundle x = new Bundle();
+
+                x.putString("description", buildDescription(t));
+                x.putString("title", titles.get(position));
+
+                ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
+                dFrag.setArguments(x);
+
+                dFrag.show(getFragmentManager(), "description_dialog");
+                return true;
+            case R.id.action_display_short_feed_description:
+                Bundle info = new Bundle();
+                info.putString("description", description);
+                info.putString("title", feed);
+                info.putString("url", infoUrl);
+
+                ShortDescriptionFragment dFrag2 = new ShortDescriptionFragment();
+                dFrag2.setArguments(info);
+
+                dFrag2.show(getFragmentManager(), "description_dialog");
+
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        toasty.cancel();
+    }
+
     public void newImage(int newPos) {
         ImageViewerFragment iFrag = new ImageViewerFragment();
         Bundle info = new Bundle();
@@ -85,7 +158,7 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         toasty.setText(findTimeDifference(times.get(newPos)));
         toasty.show();
         Log.d(getString(R.string.app_tag), findTimeDifference(times.get(newPos)));
-        getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).replace(R.id.image_content_frame, iFrag).commit();
+        getFragmentManager().beginTransaction().replace(R.id.image_content_frame, iFrag).commit();
 
         position = newPos;
     }
@@ -153,69 +226,6 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.navigation_newer:
-                if (position > 0)
-                    newImage(position - 1);
-                break;
-            case R.id.navigation_older:
-                if (position < urls.size() - 1)
-                    newImage(position + 1);
-                break;
-        }
-        endOfLine();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.viewer, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
-                return true;
-            case R.id.action_open_preferences:
-                this.startActivity(new Intent(this, PreferencesActivity.class));
-                return true;
-            case R.id.action_display_short_description:
-                DateTime t;
-                if (feed.equals("Barrow Radar") || feed.equals("Barrow Radar GeoTIF") || feed.equals("Barrow Webcam"))
-                    t = times.get(position).withZone(DateTimeZone.forID("America/Anchorage"));
-                else
-                    t = times.get(position).withZone(DateTimeZone.forID("UTC"));
-                Bundle x = new Bundle();
-
-                x.putString("description", buildDescription(t));
-                x.putString("title", titles.get(position));
-
-                ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
-                dFrag.setArguments(x);
-
-                dFrag.show(getSupportFragmentManager(), "description_dialog");
-                return true;
-            case R.id.action_display_short_feed_description:
-                Bundle info = new Bundle();
-                info.putString("description", description);
-                info.putString("title", feed);
-                info.putString("url", infoUrl);
-
-                ShortDescriptionFragment dFrag2 = new ShortDescriptionFragment();
-                dFrag2.setArguments(info);
-
-                dFrag2.show(getSupportFragmentManager(), "description_dialog");
-
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     public String buildDescription(DateTime timeDate) {
         StringBuilder sb = new StringBuilder();
         StringBuilder temp = new StringBuilder();
@@ -254,18 +264,5 @@ public class ImageViewFrameActivty extends SherlockFragmentActivity implements V
         Period diff = new Period(pic, now);
         PeriodFormatter toastFormatter = new PeriodFormatterBuilder().appendDays().appendSuffix(" day", " days").appendSeparator(" and ").printZeroAlways().appendHours().appendSuffix(" hour", " hours").appendLiteral(" ago.").toFormatter();
         return toastFormatter.print(diff);
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.slide_out_right);
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        toasty.cancel();
     }
 }

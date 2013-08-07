@@ -1,14 +1,15 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
@@ -16,10 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.*;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.octo.android.robospice.*;
 import com.octo.android.robospice.persistence.*;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -31,7 +28,7 @@ import java.util.ArrayList;
  * Class that handles navigation drawer and startup.
  * created by bobby on 6/14/13.
  */
-public class MainLauncherActivity extends SherlockFragmentActivity {
+public class MainLauncherActivity extends Activity {
     private static final String JSON_CACHE_KEY = "feeds_json_array";
     protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
@@ -51,13 +48,14 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main_activity_launcher);
+        setProgressBarIndeterminateVisibility(false);
 
         if (savedInstanceState != null)
             current = savedInstanceState.getInt("current");
 
         if (current < 0) {
             StartFragment sFrag = new StartFragment();
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
+            getFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
         }
         else {
             ImageFeedFragment iFrag = new ImageFeedFragment();
@@ -72,28 +70,28 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
             arggh.putString("info", masterFeedsList[current].getMoreinfo());
 
             iFrag.setArguments(arggh);
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag).addToBackStack(null).commit();
+            getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag).addToBackStack(null).commit();
         }
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_List);
 
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
+        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
         listItems.add("Nothing to see.");
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
-                if (getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment)
-                    getSupportActionBar().setTitle("GINA Puffin Feeder");
+                if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment)
+                    getActionBar().setTitle("GINA Puffin Feeder");
                 else
-                    getSupportActionBar().setTitle(masterFeedsList[current].getTitle());
+                    getActionBar().setTitle(masterFeedsList[current].getTitle());
                 invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle("Select a Feed");
+                getActionBar().setTitle("Select a Feed");
                 invalidateOptionsMenu();
             }
         };
@@ -103,8 +101,8 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
         mDrawerList.setAdapter(primary);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
@@ -137,7 +135,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                     intel.putString("info", masterFeedsList[current].getMoreinfo());
 
                     iFrag.setArguments(intel);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
+                    getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
                 }
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
@@ -178,19 +176,21 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
-            aBarMenu.findItem(R.id.action_refresh).setVisible(false);
-            aBarMenu.findItem(R.id.action_load_next).setVisible(false);
-            aBarMenu.findItem(R.id.action_load_prev).setVisible(false);
-            aBarMenu.findItem(R.id.action_display_short_description).setVisible(false);
-            getSupportActionBar().setTitle("GINA Puffin Feeder");
-        }
         super.onBackPressed();
+        try {
+            if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
+                aBarMenu.findItem(R.id.action_refresh).setVisible(false);
+                aBarMenu.findItem(R.id.action_load_next).setVisible(false);
+                aBarMenu.findItem(R.id.action_load_prev).setVisible(false);
+                aBarMenu.findItem(R.id.action_display_short_description).setVisible(false);
+                getActionBar().setTitle("GINA Puffin Feeder");
+            }
+        } catch (NullPointerException e) {/*Do Nothing*/}
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
+        if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
             menu.findItem(R.id.action_load_next).setVisible(false);
             menu.findItem(R.id.action_load_prev).setVisible(false);
             menu.findItem(R.id.action_load_first).setVisible(false);
@@ -224,7 +224,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.launcher, menu);
+        getMenuInflater().inflate(R.menu.launcher, menu);
         aBarMenu = menu;
         return true;
     }
@@ -256,7 +256,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
                 dFrag.setArguments(info);
 
-                dFrag.show(getSupportFragmentManager(), "description_dialog");
+                dFrag.show(getFragmentManager(), "description_dialog");
 
                 return true;
 
@@ -293,7 +293,7 @@ public class MainLauncherActivity extends SherlockFragmentActivity {
                 @Override
                 public void run() {
                     primary.notifyDataSetChanged();
-                    if (getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && current < 0)
+                    if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && current < 0)
                         mDrawerLayout.openDrawer(mDrawerList);
                 }
             });

@@ -1,5 +1,6 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,13 +14,11 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
 /**
  * Fragment containing WebView that displays full-sized image.
  * Created by bobby on 7/1/13.
  */
-public class ImageViewerFragment extends SherlockFragment{
+public class ImageViewerFragment extends Fragment {
     protected String image_url_small;
     protected String image_url_med;
     protected String image_url_large;
@@ -49,12 +48,12 @@ public class ImageViewerFragment extends SherlockFragment{
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 try {
-                    getSherlockActivity().setSupportProgress(newProgress * 100);
+                    getActivity().setProgress(newProgress * 100);
                     if (newProgress >= 0)
-                        getSherlockActivity().setSupportProgressBarIndeterminate(false);
+                        getActivity().setProgressBarIndeterminate(false);
                     if (newProgress >= 100) {
-                        getSherlockActivity().setSupportProgressBarVisibility(false);
-                        getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
+                        getActivity().setProgressBarVisibility(false);
+                        getActivity().setProgressBarIndeterminateVisibility(false);
                     }
                 } catch (NullPointerException e) {
                     Log.d(getString(R.string.app_tag), "ProgressBar NullPointer!\n" + e.getStackTrace());
@@ -75,11 +74,11 @@ public class ImageViewerFragment extends SherlockFragment{
             return;
         }
 
-        getSherlockActivity().getSupportActionBar().setTitle(title);
+        getActivity().getActionBar().setTitle(title);
 
-        getSherlockActivity().setSupportProgressBarVisibility(true);
-        getSherlockActivity().setSupportProgressBarIndeterminate(true);
-        getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
+        getActivity().setProgressBarVisibility(true);
+        getActivity().setProgressBarIndeterminate(true);
+        getActivity().setProgressBarIndeterminateVisibility(true);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
