@@ -15,7 +15,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 /**
- * Fragment containing WebView that displays full-sized image.
+ * Fragment containing WebView that displays a full-sized image.
  * Created by bobby on 7/1/13.
  */
 public class ImageViewerFragment extends Fragment {
@@ -26,6 +26,8 @@ public class ImageViewerFragment extends Fragment {
     protected WebView image_frame;
     protected SharedPreferences sharedPreferences;
     protected ConnectivityManager connectivityManager;
+
+    /** Overridden Methods. */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,6 +101,11 @@ public class ImageViewerFragment extends Fragment {
         image_frame.destroy();
     }
 
+    /**
+     * Determines if the network being used is a mobile network.
+     * @param net1 The NetworkInfo object representing the network to be tested.
+     * @return "true" if network is mobile (3/4G). "false" if it is not (wifi).
+     */
     private boolean isMetered(NetworkInfo net1) {
         int type = net1.getType();
         switch (type) {
@@ -113,6 +120,10 @@ public class ImageViewerFragment extends Fragment {
         }
     }
 
+    /**
+     * Determines what sized image to load in the viewer.
+     * @return URL of image to be loaded.
+     */
     private String pickLoadSize() {
         connectivityManager = getConnectivityManager();
         NetworkInfo nf = connectivityManager.getActiveNetworkInfo();
@@ -129,6 +140,10 @@ public class ImageViewerFragment extends Fragment {
         }
     }
 
+    /**
+     * Loads the image.
+     * @param size Size string. Can be "large", "med", or "small".
+     */
     private void loadme(String size) {
         if (size.equals("small"))
             image_frame.getSettings().setUseWideViewPort(false);
@@ -139,6 +154,11 @@ public class ImageViewerFragment extends Fragment {
         image_frame.loadUrl(getImageUrl(size));
     }
 
+    /**
+     * Determines which url to return based on size choice.
+     * @param sizeString Size string. Can be "large", "med", or "small".
+     * @return URL of correct image size.
+     */
     private String getImageUrl(String sizeString) {
         if (sizeString.equals("small"))
             return image_url_small;
@@ -150,6 +170,10 @@ public class ImageViewerFragment extends Fragment {
         return null;
     }
 
+    /**
+     * Grabs the ConnectivityManager object representing the device's networks.
+     * @return ConnectivityManager of the device.
+     */
     private ConnectivityManager getConnectivityManager() {
         if (isAdded())
             return (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
