@@ -1,9 +1,12 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Object representing all links to all sizes of one image.
  * Created by bobby on 7/26/13.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FeedImageImages {
     private String small;
     private String medium;
