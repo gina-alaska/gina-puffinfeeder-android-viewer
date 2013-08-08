@@ -41,6 +41,8 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
     protected Button newer;
     protected Button older;
 
+    /** Overridden Methods */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,6 +147,10 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         toasty.cancel();
     }
 
+    /**
+     * Loads a new image into the main fragment.
+     * @param newPos Index number of image to be loaded.
+     */
     public void newImage(int newPos) {
         ImageViewerFragment iFrag = new ImageViewerFragment();
         Bundle info = new Bundle();
@@ -162,6 +168,12 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         position = newPos;
     }
 
+    /**
+     * Parses an ArrayList of Strings formatted in the ISO 8601 format into an ArrayList
+     * of DateTime objects.
+     * @param s ArrayList of Strings with Date/Time data formatted according to ISO 8601 standards.
+     * @return ArrayList of DateTime objects.
+     */
     public ArrayList<DateTime> parseTimeStrings_ISO8601(ArrayList<String> s) {
         ArrayList<DateTime> d = new ArrayList<DateTime>();
         DateTimeFormatter formatter = DateTimeFormat.forPattern(getString(R.string.ISO8601_pattern));
@@ -172,6 +184,12 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         return d;
     }
 
+    /**
+     * Takes a bundle with Strings in it and spits out an ArrayList of those Strings.
+     * @param encoded Unprocessed bundle.
+     * @param key String used as an identifier during the encoding process.
+     * @return ArrayList of Strings.
+     */
     public ArrayList<String> decodeBundle(Bundle encoded, String key) {
         ArrayList<String> decoded = new ArrayList<String>();
 
@@ -181,6 +199,13 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         return decoded;
     }
 
+    /**
+     * Takes a bundle with Strings in it and spits out an ArrayList of those Strings.
+     * Extra modifications needed to decode the URL size arrays.
+     * @param encoded Unprocessed bundle.
+     * @param key String used as an identifier during the encoding process.
+     * @return ArrayList of Strings.
+     */
     public ArrayList<String> decodeUrlBundle(Bundle encoded, String key) {
         ArrayList<String> decoded = new ArrayList<String>();
         this.numSizes = encoded.getInt("num_image_sizes");
@@ -193,6 +218,12 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         return decoded;
     }
 
+    /**
+     * Takes a regular ArrayList of strings and converts it into an ArrayList<String[]>,
+     * each String[] having a length of 3.
+     * @param unstructured ArrayList of Strings.
+     * @return ArrayList of String[]s with length 3.
+     */
     public ArrayList<String[]> build3SizeArrayStructure(ArrayList<String> unstructured) {
         ArrayList<String[]> export = new ArrayList<String[]>();
 
@@ -202,6 +233,9 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         return export;
     }
 
+    /**
+     * Shows and hides UI buttons when necessary.
+     */
     public void endOfLine() {
         if (position <= 0) {
             newer.setVisibility(View.GONE);
@@ -225,6 +259,11 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         }
     }
 
+    /**
+     * Builds the image description String.
+     * @param timeDate Time and Date stamp from the image.
+     * @return Image description String.
+     */
     public String buildDescription(DateTime timeDate) {
         StringBuilder sb = new StringBuilder();
         StringBuilder temp = new StringBuilder();
@@ -258,6 +297,11 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         return sb.toString();
     }
 
+    /**
+     * Calculates how long it has been since the time stored in the parameters.
+     * @param pic Date and time to compare with.
+     * @return String describing how long it has been since the time described in the parameters.
+     */
     private String findTimeDifference(DateTime pic) {
         DateTime now = new DateTime(System.currentTimeMillis());
         Period diff = new Period(pic, now);
