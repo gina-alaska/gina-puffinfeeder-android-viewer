@@ -303,14 +303,16 @@ public class MainLauncherActivity extends Activity {
             else
                 Toast.makeText(getApplicationContext(), "Feed list reloaded from cache. Please check internet connection.", Toast.LENGTH_LONG).show();
 
-            mSpiceManager.shouldStop();
+            if (mSpiceManager.isStarted())
+                mSpiceManager.shouldStop();
         }
 
         @Override
         public void onRequestFailure(SpiceException e) {
             Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + e.getStackTrace());
             Toast.makeText(getApplicationContext(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
-            mSpiceManager.shouldStop();
+            if (mSpiceManager.isStarted())
+                mSpiceManager.shouldStop();
         }
     }
 }
