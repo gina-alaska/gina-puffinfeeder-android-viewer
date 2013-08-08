@@ -4,11 +4,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/image_grid"
-        android:columnWidth="200dp"
-        android:minHeight="200dp"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="2dp"
-        android:stretchMode="spacingWidthUniform"
-        android:gravity="fill_horizontal"
         android:background="#ffbfbfbf"
+        android:adjustViewBounds="true"
         android:clickable="true"/>

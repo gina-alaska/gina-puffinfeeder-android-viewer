@@ -3,9 +3,13 @@ package edu.alaska.gina.feeder.puffinfeeder;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.hardware.display.DisplayManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -79,6 +83,7 @@ public class ImageFeedFragment extends Fragment {
 
         GridView gridView = (GridView) getActivity().findViewById(R.id.image_grid);
         gridView.setAdapter(mImageAdapter);
+        adaptGridViewSize(gridView);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
 
@@ -155,6 +160,45 @@ public class ImageFeedFragment extends Fragment {
         return encoded;
     }
 
+    public void adaptGridViewSize(GridView gv) {
+        int thumbMax = 250;
+        int spacing = 2;
+
+        DisplayMetrics d = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(d);
+
+        float trueMaxThumbWidth = maxTW(2, spacing, d);
+        if (trueMaxThumbWidth <= thumbMax) {
+            gv.setNumColumns(2);
+            gv.setColumnWidth((int) trueMaxThumbWidth);
+            gv.setHorizontalSpacing(spacing);
+            return;
+        }
+
+        int numCols;
+        float maxCols = numCols(thumbMax, spacing, d);
+        if (maxCols - ((int) maxCols) >= 0.5)
+            numCols = ((int) maxCols) + 1;
+        else
+            numCols = ((int) maxCols);
+
+        gv.setHorizontalSpacing(spacing);
+        gv.setVerticalSpacing(spacing);
+
+        int tWidth = (int) maxTW(numCols, spacing, d);
+        gv.setColumnWidth(tWidth);
+
+        gv.setNumColumns(numCols);
+    }
+
+    public float maxTW(float numCols, float spacing, DisplayMetrics d) {
+        return (d.widthPixels - ((numCols + 1) * spacing)) / numCols;
+    }
+
+    public float numCols(float thumbWidth, float spacing, DisplayMetrics d) {
+        return (d.widthPixels - spacing) / (spacing + thumbWidth);
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         aBarMenu = menu;
@@ -187,6 +231,12 @@ public class ImageFeedFragment extends Fragment {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        adaptGridViewSize((GridView) getActivity().findViewById(R.id.image_grid));
     }
 
     private class ImageFeedRequestListener implements RequestListener<FeedImage[]> {
