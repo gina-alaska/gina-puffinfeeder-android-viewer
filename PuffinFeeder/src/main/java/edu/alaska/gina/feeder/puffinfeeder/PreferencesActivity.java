@@ -1,7 +1,6 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;

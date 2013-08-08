@@ -4,12 +4,10 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.hardware.display.DisplayManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -64,8 +62,6 @@ public class ImageFeedFragment extends Fragment {
         imageFeed.setDescription(extras.getString("description"));
         imageFeed.setMoreinfo(extras.getString("info"));
         JSON_CACHE_KEY = imageFeed.getSlug() + "_json";
-
-        //Log.d(getString(R.string.app_tag), imageFeed.getDescription() + " " + imageFeed.getMoreinfo());
 
         getActivity().setProgressBarIndeterminateVisibility(true);
 
@@ -187,7 +183,6 @@ public class ImageFeedFragment extends Fragment {
 
         int tWidth = (int) maxTW(numCols, spacing, d);
         gv.setColumnWidth(tWidth);
-        Toast.makeText(getActivity(), "TWidth: " + tWidth, Toast.LENGTH_LONG).show();
 
         gv.setNumColumns(numCols);
     }
