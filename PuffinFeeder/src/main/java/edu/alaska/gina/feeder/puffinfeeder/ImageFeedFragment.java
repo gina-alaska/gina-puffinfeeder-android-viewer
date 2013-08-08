@@ -177,7 +177,7 @@ public class ImageFeedFragment extends Fragment {
 
         int numCols;
         float maxCols = numCols(thumbMax, spacing, d);
-        if (maxCols - ((int) maxCols) >= 0.5)
+        if (maxCols - ((int) maxCols) > 0.5)
             numCols = ((int) maxCols) + 1;
         else
             numCols = ((int) maxCols);
@@ -187,6 +187,7 @@ public class ImageFeedFragment extends Fragment {
 
         int tWidth = (int) maxTW(numCols, spacing, d);
         gv.setColumnWidth(tWidth);
+        Toast.makeText(getActivity(), "TWidth: " + tWidth, Toast.LENGTH_LONG).show();
 
         gv.setNumColumns(numCols);
     }

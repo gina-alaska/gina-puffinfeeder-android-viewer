@@ -49,6 +49,7 @@ public class PicassoImageAdapter extends BaseAdapter {
         if (view == null)
             view = new ImageView(mContext);
 
+        view.setAdjustViewBounds(true);
         view.setPadding(0,0,0,0);
 
         Picasso.with(mContext).load(R.drawable.blank_feed_item).resize(250, 250).into(view);
