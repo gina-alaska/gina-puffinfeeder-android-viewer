@@ -167,6 +167,7 @@ public class MainLauncherActivity extends Activity {
 
     @Override
     protected void onPause() {
+        setProgressBarIndeterminateVisibility(false);
         if (mSpiceManager.isStarted())
             mSpiceManager.shouldStop();
         super.onPause();
@@ -174,6 +175,7 @@ public class MainLauncherActivity extends Activity {
 
     @Override
     protected void onStop() {
+        setProgressBarIndeterminateVisibility(false);
         if (mSpiceManager.isStarted())
             mSpiceManager.shouldStop();
         super.onStop();
@@ -181,6 +183,7 @@ public class MainLauncherActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        setProgressBarIndeterminateVisibility(false);
         if (mSpiceManager.isStarted())
             mSpiceManager.shouldStop();
         super.onDestroy();
@@ -189,6 +192,7 @@ public class MainLauncherActivity extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        setProgressBarIndeterminateVisibility(false);
         try {
             if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
                 aBarMenu.findItem(R.id.action_refresh).setVisible(false);
@@ -287,6 +291,7 @@ public class MainLauncherActivity extends Activity {
     private class FeedsRequestListener implements RequestListener<Feed[]> {
         @Override
         public void onRequestSuccess(Feed[] feed) {
+            setProgressBarIndeterminateVisibility(false);
             masterFeedsList = feed;
 
             listItems.clear();
@@ -314,6 +319,7 @@ public class MainLauncherActivity extends Activity {
 
         @Override
         public void onRequestFailure(SpiceException e) {
+            setProgressBarIndeterminateVisibility(false);
             Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + e.getStackTrace());
             Toast.makeText(getApplicationContext(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
             if (mSpiceManager.isStarted())
@@ -326,6 +332,7 @@ public class MainLauncherActivity extends Activity {
      * @param expiration_time Time if its been at least this long since last update, do it.
      */
     public void refreshFeedsList(long expiration_time) {
+        setProgressBarIndeterminateVisibility(true);
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(this.getBaseContext());
         mSpiceManager.execute(new FeedsJsonRequest(), JSON_CACHE_KEY, expiration_time, new FeedsRequestListener());
