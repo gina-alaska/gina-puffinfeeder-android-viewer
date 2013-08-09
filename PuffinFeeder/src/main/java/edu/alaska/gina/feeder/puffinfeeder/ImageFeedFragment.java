@@ -197,7 +197,6 @@ public class ImageFeedFragment extends Fragment {
                     mTitles.add(f.getTitle());
                     mUrls.add(f.getPreviews().getAll());
                     mTimes.add(formatter.parseDateTime(f.getEvent_at()));
-                    Log.d(getString(R.string.app_tag), "Stamp: " + mTimes.get(mTimes.size() - 1));
                 }
 
                 getActivity().runOnUiThread(new Runnable() {

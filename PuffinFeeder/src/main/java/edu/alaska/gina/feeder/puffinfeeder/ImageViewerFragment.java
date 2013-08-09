@@ -74,7 +74,6 @@ public class ImageViewerFragment extends Fragment {
         }
         else {
             Log.d(getString(R.string.app_tag), "No Image URL. Please Fix that...");
-            Toast.makeText(getActivity(), "No Image URL. Please fix that...", Toast.LENGTH_SHORT).show();
             return;
         }
 
