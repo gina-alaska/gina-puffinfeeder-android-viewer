@@ -167,7 +167,6 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
 
         toasty.setText(findTimeDifference(times.get(newPos)));
         toasty.show();
-        Log.d(getString(R.string.app_tag), findTimeDifference(times.get(newPos)));
         getFragmentManager().beginTransaction().replace(R.id.image_content_frame, iFrag).commit();
 
         position = newPos;
