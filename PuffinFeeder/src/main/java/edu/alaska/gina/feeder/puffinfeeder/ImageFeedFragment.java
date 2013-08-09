@@ -120,6 +120,20 @@ public class ImageFeedFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        if (mSpiceManager.isStarted())
+            mSpiceManager.shouldStop();
+        super.onStop();
+    }
+
+    @Override
+    public void onDetach() {
+        if (mSpiceManager.isStarted())
+            mSpiceManager.shouldStop();
+        super.onDetach();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         aBarMenu = menu;
 

@@ -1,10 +1,13 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Notification;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -170,6 +173,20 @@ public class MainLauncherActivity extends Activity {
     }
 
     @Override
+    protected void onStop() {
+        if (mSpiceManager.isStarted())
+            mSpiceManager.shouldStop();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mSpiceManager.isStarted())
+            mSpiceManager.shouldStop();
+        super.onDestroy();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         try {
@@ -314,6 +331,10 @@ public class MainLauncherActivity extends Activity {
         mSpiceManager.execute(new FeedsJsonRequest(), JSON_CACHE_KEY, expiration_time, new FeedsRequestListener());
     }
 
+    /**
+     * Returns whether the device is actively connected to a network.
+     * @return "true" if yes, "false" otherwise.
+     */
     public boolean isOnline() {
         ConnectivityManager cm10_1 = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
         NetworkInfo nFo = cm10_1.getActiveNetworkInfo();
