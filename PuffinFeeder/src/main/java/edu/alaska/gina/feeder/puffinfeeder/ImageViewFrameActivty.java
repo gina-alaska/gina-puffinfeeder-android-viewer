@@ -158,6 +158,11 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         info.putString("image_url_med", urls.get(newPos)[1]);
         info.putString("image_url_large", urls.get(newPos)[2]);
         info.putString("bar_title", feed + " - " + titles.get(newPos));
+        if (feed.equals("Barrow Webcam"))
+            info.putString("bg_color", "#FFFFFF");
+        else
+            info.putString("bg_color", "#000000");
+
         iFrag.setArguments(info);
 
         toasty.setText(findTimeDifference(times.get(newPos)));
