@@ -1,12 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/action_load_prev"
-          android:title="Load Prev. Page"
+          android:title="Prev. Page"
           android:showAsAction="ifRoom"
           android:icon="@drawable/ic_navigation_back" />
 
     <item android:id="@+id/action_load_next"
-          android:title="Load Next Page"
+          android:title="Next Page"
           android:showAsAction="ifRoom"
           android:icon="@drawable/ic_navigation_forward" />
 
