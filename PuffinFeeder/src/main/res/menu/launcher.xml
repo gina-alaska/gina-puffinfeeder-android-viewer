@@ -16,12 +16,12 @@
           android:icon="@drawable/ic_menu_refresh" />
 
     <item android:id="@+id/action_load_first"
-          android:title="Most Recent Page"
+          android:title="Latest Page"
           android:showAsAction="never"
           android:icon="@drawable/ic_navigation_first" />
 
     <item android:id="@+id/action_display_short_feed_description"
-          android:title="Feed Information"
+          android:title="Feed Info"
           android:showAsAction="never"
           android:icon="@drawable/ic_action_about" />
 
