@@ -1,6 +1,8 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Notification;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
@@ -42,6 +44,8 @@ public class MainLauncherActivity extends Activity {
     protected DrawerLayout mDrawerLayout; //Contains the entire activity.
     protected ListView mDrawerList; //ListView of Nav Drawer.
     protected ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
+
+    /** Overridden Methods */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,22 +165,34 @@ public class MainLauncherActivity extends Activity {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
-    public void refreshFeedsList(long expiration_time) {
-        if (!mSpiceManager.isStarted())
-            mSpiceManager.start(this.getBaseContext());
-        mSpiceManager.execute(new FeedsJsonRequest(), JSON_CACHE_KEY, expiration_time, new FeedsRequestListener());
-    }
-
     @Override
     protected void onPause() {
+        setProgressBarIndeterminateVisibility(false);
         if (mSpiceManager.isStarted())
             mSpiceManager.shouldStop();
         super.onPause();
     }
 
     @Override
+    protected void onStop() {
+        setProgressBarIndeterminateVisibility(false);
+        if (mSpiceManager.isStarted())
+            mSpiceManager.shouldStop();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        setProgressBarIndeterminateVisibility(false);
+        if (mSpiceManager.isStarted())
+            mSpiceManager.shouldStop();
+        super.onDestroy();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
+        setProgressBarIndeterminateVisibility(false);
         try {
             if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
                 aBarMenu.findItem(R.id.action_refresh).setVisible(false);
@@ -271,17 +287,11 @@ public class MainLauncherActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public boolean isOnline() {
-        ConnectivityManager cm10_1 = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
-        NetworkInfo nFo = cm10_1.getActiveNetworkInfo();
-        if (nFo != null && nFo.isConnectedOrConnecting())
-            return true;
-        return false;
-    }
-
+    /** Class to run after RoboSpice task completion. */
     private class FeedsRequestListener implements RequestListener<Feed[]> {
         @Override
         public void onRequestSuccess(Feed[] feed) {
+            setProgressBarIndeterminateVisibility(false);
             masterFeedsList = feed;
 
             listItems.clear();
@@ -303,14 +313,40 @@ public class MainLauncherActivity extends Activity {
             else
                 Toast.makeText(getApplicationContext(), "Feed list reloaded from cache. Please check internet connection.", Toast.LENGTH_LONG).show();
 
-            mSpiceManager.shouldStop();
+            if (mSpiceManager.isStarted())
+                mSpiceManager.shouldStop();
         }
 
         @Override
         public void onRequestFailure(SpiceException e) {
+            setProgressBarIndeterminateVisibility(false);
             Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + e.getStackTrace());
             Toast.makeText(getApplicationContext(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
-            mSpiceManager.shouldStop();
+            if (mSpiceManager.isStarted())
+                mSpiceManager.shouldStop();
         }
+    }
+
+    /**
+     * Reloads the list of the feeds.
+     * @param expiration_time Time if its been at least this long since last update, do it.
+     */
+    public void refreshFeedsList(long expiration_time) {
+        setProgressBarIndeterminateVisibility(true);
+        if (!mSpiceManager.isStarted())
+            mSpiceManager.start(this.getBaseContext());
+        mSpiceManager.execute(new FeedsJsonRequest(), JSON_CACHE_KEY, expiration_time, new FeedsRequestListener());
+    }
+
+    /**
+     * Returns whether the device is actively connected to a network.
+     * @return "true" if yes, "false" otherwise.
+     */
+    public boolean isOnline() {
+        ConnectivityManager cm10_1 = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        NetworkInfo nFo = cm10_1.getActiveNetworkInfo();
+        if (nFo != null && nFo.isConnectedOrConnecting())
+            return true;
+        return false;
     }
 }

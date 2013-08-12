@@ -3,8 +3,10 @@ package edu.alaska.gina.feeder.puffinfeeder;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,6 +49,8 @@ public class ImageFeedFragment extends Fragment {
     protected PicassoImageAdapter mImageAdapter;
     private int page = 1;
 
+    /** Overridden Methods. */
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_image_feed, container, false);
@@ -60,8 +64,6 @@ public class ImageFeedFragment extends Fragment {
         imageFeed.setDescription(extras.getString("description"));
         imageFeed.setMoreinfo(extras.getString("info"));
         JSON_CACHE_KEY = imageFeed.getSlug() + "_json";
-
-        //Log.d(getString(R.string.app_tag), imageFeed.getDescription() + " " + imageFeed.getMoreinfo());
 
         getActivity().setProgressBarIndeterminateVisibility(true);
 
@@ -79,6 +81,7 @@ public class ImageFeedFragment extends Fragment {
 
         GridView gridView = (GridView) getActivity().findViewById(R.id.image_grid);
         gridView.setAdapter(mImageAdapter);
+        adaptGridViewSize(gridView);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
 
@@ -116,43 +119,18 @@ public class ImageFeedFragment extends Fragment {
         super.onPause();
     }
 
-    public void refreshThumbs(boolean isNew, boolean isNext) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
-
-        if (!mSpiceManager.isStarted())
-            mSpiceManager.start(getActivity().getBaseContext());
-
-        if (isNew) {
-            if (isNext)
-                page++;
-            else
-                page--;
-        }
-        else
-            if (!isNext)
-                page = 1;
-
-        mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+    @Override
+    public void onStop() {
+        if (mSpiceManager.isStarted())
+            mSpiceManager.shouldStop();
+        super.onStop();
     }
 
-    public Bundle encodeBundle(ArrayList<String> notEncoded, String key) {
-        Bundle encoded = new Bundle();
-
-        for (int i = 0; i < notEncoded.size(); i++)
-            encoded.putString("image_" + key + "_" + i, notEncoded.get(i));
-
-        return encoded;
-    }
-
-    public Bundle encodeBundle(ArrayList<String[]> notEncoded, String key, int numSizes) {
-        Bundle encoded = new Bundle();
-        encoded.putInt("num_image_sizes", numSizes);
-
-        for (int i = 0; i < notEncoded.size(); i++)
-            for (int j = 0; j < numSizes; j++)
-                encoded.putString("image_" + key + "_" + i + "_" + j, notEncoded.get(i)[j]);
-
-        return encoded;
+    @Override
+    public void onDetach() {
+        if (mSpiceManager.isStarted())
+            mSpiceManager.shouldStop();
+        super.onDetach();
     }
 
     @Override
@@ -189,6 +167,13 @@ public class ImageFeedFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        adaptGridViewSize((GridView) getActivity().findViewById(R.id.image_grid));
+    }
+
+    /** Class to run after RoboSpice task completion. */
     private class ImageFeedRequestListener implements RequestListener<FeedImage[]> {
 
         @Override
@@ -226,7 +211,6 @@ public class ImageFeedFragment extends Fragment {
                     mTitles.add(f.getTitle());
                     mUrls.add(f.getPreviews().getAll());
                     mTimes.add(formatter.parseDateTime(f.getEvent_at()));
-                    Log.d(getString(R.string.app_tag), "Stamp: " + mTimes.get(mTimes.size() - 1));
                 }
 
                 getActivity().runOnUiThread(new Runnable() {
@@ -240,5 +224,127 @@ public class ImageFeedFragment extends Fragment {
                 mSpiceManager.shouldStop();
             }
         }
+    }
+
+    /**
+     * Method run to start to refresh the list of FeedImages on page reload or new page load.
+     * (true, true) loads next page.
+     * (true, false) loads the previous page.
+     * (false, false) loads first page of results.
+     * (false, true) reloads the same page.
+     * @param isNew "true" if loading a new page. "false" otherwise.
+     * @param isNext "true" is loading the next page. "false" otherwise.
+     */
+    public void refreshThumbs(boolean isNew, boolean isNext) {
+        getActivity().setProgressBarIndeterminateVisibility(true);
+
+        if (!mSpiceManager.isStarted())
+            mSpiceManager.start(getActivity().getBaseContext());
+
+        if (isNew) {
+            if (isNext)
+                page++;
+            else
+                page--;
+        }
+        else if (!isNext)
+            page = 1;
+
+        mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+    }
+
+    /**
+     * Takes an ArrayList of Strings and puts them in a bundle.
+     * Key Format: image_[key]_[num]
+     * @param notEncoded ArrayList of Strings to be bundled.
+     * @param key String used as part of the identifier in the bundle.
+     * @return Bundle containing all Strings from initial ArrayList.
+     */
+    public Bundle encodeBundle(ArrayList<String> notEncoded, String key) {
+        Bundle encoded = new Bundle();
+
+        for (int i = 0; i < notEncoded.size(); i++)
+            encoded.putString("image_" + key + "_" + i, notEncoded.get(i));
+
+        return encoded;
+    }
+
+    /**
+     * Takes an ArrayList of String Arrays and puts them in a bundle.
+     * Key Format: image_[key]_[image num]_[size num]
+     * @param notEncoded ArrayList of String Arrays to be bundled.
+     * @param key String used as part of the identifier in the bundle.
+     * @param numSizes Number of items in each String Array.
+     * @return Bundle containing all Strings from initial ArrayList.
+     */
+    public Bundle encodeBundle(ArrayList<String[]> notEncoded, String key, int numSizes) {
+        Bundle encoded = new Bundle();
+        encoded.putInt("num_image_sizes", numSizes);
+
+        for (int i = 0; i < notEncoded.size(); i++)
+            for (int j = 0; j < numSizes; j++)
+                encoded.putString("image_" + key + "_" + i + "_" + j, notEncoded.get(i)[j]);
+
+        return encoded;
+    }
+
+    /** Methods used to dynamically adapt GridView thumbnail sizing. */
+
+    /**
+     * Method containing the logic behind dynamic resizing.
+     * @param gv GridView to be adjusted.
+     */
+    public void adaptGridViewSize(GridView gv) {
+        int thumbMax = 250;
+        int spacing = 2;
+
+        DisplayMetrics d = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(d);
+
+        float trueMaxThumbWidth = maxTW(2, spacing, d);
+        if (trueMaxThumbWidth <= thumbMax) {
+            gv.setNumColumns(2);
+            gv.setColumnWidth((int) trueMaxThumbWidth);
+            gv.setHorizontalSpacing(spacing);
+            return;
+        }
+
+        int numCols;
+        float maxCols = numCols(thumbMax, spacing, d);
+        if (maxCols - ((int) maxCols) > 0.5)
+            numCols = ((int) maxCols) + 1;
+        else
+            numCols = ((int) maxCols);
+
+        gv.setHorizontalSpacing(spacing);
+        gv.setVerticalSpacing(spacing);
+
+        int tWidth = (int) maxTW(numCols, spacing, d);
+        gv.setColumnWidth(tWidth);
+
+        gv.setNumColumns(numCols);
+    }
+
+    /**
+     * Calculates the maximum thumbnail width given number of columns, spacing, and display size.
+     * @param numCols Number of columns to calculate for.
+     * @param spacing Space between images in regular pixels (px).
+     * @param d Screen information (in DisplayMetrics object).
+     * @return Maximum width of thumbnails (px) given parameters.
+     */
+    public float maxTW(float numCols, float spacing, DisplayMetrics d) {
+        return (d.widthPixels - ((numCols + 1) * spacing)) / numCols;
+    }
+
+    /**
+     * Calculates the number of columns possible given thumbnail width (px), spacing (px),
+     * and screen dimensions.
+     * @param thumbWidth Width of the thumbnails (px).
+     * @param spacing Space between images (px).
+     * @param d Screen information (in DisplayMetrics object).
+     * @return Maximum number of columns given parameters.
+     */
+    public float numCols(float thumbWidth, float spacing, DisplayMetrics d) {
+        return (d.widthPixels - spacing) / (spacing + thumbWidth);
     }
 }
