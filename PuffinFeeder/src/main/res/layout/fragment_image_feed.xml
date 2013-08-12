@@ -2,13 +2,12 @@
 
 <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/image_grid"
-        android:columnWidth="200dp"
-        android:minHeight="200dp"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="2dp"
-        android:stretchMode="spacingWidthUniform"
-        android:gravity="fill_horizontal"
-        android:background="#ffbfbfbf"
-        android:clickable="true"/>
+        android:stretchMode="none"
+        android:layout_gravity="center_horizontal"
+        android:clickable="true"
+        android:paddingEnd="2px"
+        android:paddingStart="2px"
+        android:paddingLeft="2px"
+        android:paddingRight="2px"/>
