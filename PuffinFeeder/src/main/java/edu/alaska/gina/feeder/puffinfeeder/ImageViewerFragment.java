@@ -1,9 +1,7 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -16,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 /**
  * Fragment containing WebView that displays a full-sized image.
@@ -195,8 +192,6 @@ public class ImageViewerFragment extends Fragment {
         float hIn = d.heightPixels / d.ydpi;
         float wIn = d.widthPixels / d.xdpi;
         double diag = Math.sqrt((wIn * wIn) + (hIn * hIn));
-
-        Log.d(getString(R.string.app_tag), "Screen Diagonal: " + diag);
 
         if (diag >= 7)
             return true;

@@ -8,19 +8,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FeedImage {
-    private int id;
     private String title;
     private String event_at;
     private String thumbnail;
     private FeedImageImages previews;
-
-    /**
-     * Returns the ID number.
-     * @return ID number.
-     */
-    public int getId() {
-        return this.id;
-    }
 
     /**
      * Returns the image title.
@@ -52,14 +43,6 @@ public class FeedImage {
      */
     public String getEvent_at() {
         return event_at;
-    }
-
-    /**
-     * Sets the ID number.
-     * @param id New ID number.
-     */
-    public void setId(int id) {
-        this.id = id;
     }
 
     /**

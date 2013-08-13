@@ -1,6 +1,5 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
-import android.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -18,7 +17,7 @@ public class PreferencesActivity extends Activity {
         getActionBar().setHomeButtonEnabled(true);
         getActionBar().setTitle("Settings");
 
-        getFragmentManager().beginTransaction().replace(R.id.content, new SettingsFragment()).commit();
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
     }
 
     @Override
