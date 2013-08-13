@@ -1,12 +1,15 @@
 package edu.alaska.gina.feeder.puffinfeeder;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -146,7 +149,7 @@ public class ImageViewerFragment extends Fragment {
      * @param size Size string. Can be "large", "med", or "small".
      */
     private void loadme(String size) {
-        if (size.equals("small"))
+        if (size.equals("small") && isTablet())
             image_frame.getSettings().setUseWideViewPort(false);
         else
             image_frame.getSettings().setUseWideViewPort(true);
@@ -179,5 +182,24 @@ public class ImageViewerFragment extends Fragment {
         if (isAdded())
             return (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
         return this.connectivityManager;
+    }
+
+    /**
+     * Determines if device is a tablet.
+     * @return "true" if active device screen is greater than 7" in diagonal.
+     */
+    public boolean isTablet() {
+        DisplayMetrics d = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(d);
+
+        float hIn = d.heightPixels / d.ydpi;
+        float wIn = d.widthPixels / d.xdpi;
+        double diag = Math.sqrt((wIn * wIn) + (hIn * hIn));
+
+        Log.d(getString(R.string.app_tag), "Screen Diagonal: " + diag);
+
+        if (diag >= 7)
+            return true;
+        return false;
     }
 }
