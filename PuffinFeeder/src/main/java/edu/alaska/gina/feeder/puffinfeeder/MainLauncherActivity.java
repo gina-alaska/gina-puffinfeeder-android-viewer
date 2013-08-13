@@ -78,7 +78,7 @@ public class MainLauncherActivity extends Activity {
         mDrawerList = (ListView) findViewById(R.id.drawer_List);
 
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
-        listItems.add("Nothing to see.");
+        listItems.add("No Feeds Loaded.");
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -122,7 +122,7 @@ public class MainLauncherActivity extends Activity {
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (!listItems.get(position).equals("Nothing to see.")) {
+                if (!listItems.get(position).equals("No Feeds Loaded.")) {
                     current = position;
                     ImageFeedFragment iFrag = new ImageFeedFragment();
                     Bundle intel = new Bundle();
