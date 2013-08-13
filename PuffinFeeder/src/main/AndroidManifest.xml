@@ -44,18 +44,19 @@
                 android:value="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity" />
         </activity>
 
-        <service
-            android:name="edu.alaska.gina.feeder.puffinfeeder.JsonSpiceService"
-            android:exported="false" />
-
         <activity
             android:name="edu.alaska.gina.feeder.puffinfeeder.WebViewActivity"
             android:label="@string/title_activity_web_view"
+            android:configChanges="orientation|screenSize"
             android:parentActivityName="MainLauncherActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainLauncherActivity" />
         </activity>
+
+        <service
+                android:name="edu.alaska.gina.feeder.puffinfeeder.JsonSpiceService"
+                android:exported="false" />
     </application>
 
 </manifest>
