@@ -13,7 +13,6 @@ public class Feed {
     private String entries;
     private String slug;
     private String description;
-    private String where;
     private String moreinfo;
 
     /**
@@ -54,14 +53,6 @@ public class Feed {
      */
     public String getDescription() {
         return description;
-    }
-
-    /**
-     * Returns location information as a string (format unknown).
-     * @return Location information (format unknown).
-     */
-    public String getWhere() {
-        return where;
     }
 
     /**
@@ -121,14 +112,6 @@ public class Feed {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * Sets the location information String (format unknown).
-     * @param where New location information (format unknown).
-     */
-    public void setWhere(String where) {
-        this.where = where;
     }
 
     /**
