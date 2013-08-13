@@ -72,7 +72,7 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         newer.setOnClickListener(this);
         older.setOnClickListener(this);
 
-        toasty = Toast.makeText(this, "blargh", Toast.LENGTH_LONG);
+        toasty = Toast.makeText(this, "blargh", Toast.LENGTH_SHORT);
         newImage(position);
         endOfLine();
     }
