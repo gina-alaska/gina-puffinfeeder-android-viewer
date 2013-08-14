@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -323,7 +324,14 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
     private String findTimeDifference(DateTime pic) {
         DateTime now = new DateTime(System.currentTimeMillis());
         Period diff = new Period(pic, now);
-        PeriodFormatter toastFormatter = new PeriodFormatterBuilder().appendDays().appendSuffix(" day", " days").appendSeparator(" and ").printZeroAlways().appendHours().appendSuffix(" hour", " hours").appendLiteral(" ago.").toFormatter();
+        PeriodFormatter toastFormatter = new PeriodFormatterBuilder().
+                appendYears().appendSuffix(" year, ", " years, ").
+                appendMonths().appendSuffix(" month, ", " months, ").
+                appendWeeks().appendSuffix(" week, ", " weeks, ").
+                appendDays().appendSuffix(" day,", " days,").
+                appendSeparator(" and ").printZeroAlways().
+                appendHours().appendSuffix(" hour", " hours").appendLiteral(" ago.").toFormatter();
+
         return toastFormatter.print(diff);
     }
 
