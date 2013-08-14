@@ -13,11 +13,15 @@ public class WebViewActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_PROGRESS);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        Bundle url = getIntent().getExtras();
+        String pageUrl = url.getString("url", "https://github.com/404");
+        if (!pageUrl.substring(0, 5).equals("file:")) {
+            requestWindowFeature(Window.FEATURE_PROGRESS);
+            requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        }
         setContentView(R.layout.activity_web_view);
 
-        Bundle url = getIntent().getExtras();
+
         WebView screen = (WebView) findViewById(R.id.info_web_view);
         screen.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -36,13 +40,16 @@ public class WebViewActivity extends Activity {
             }
         });
 
-        setProgressBarVisibility(true);
-        setProgressBarIndeterminate(true);
-        setProgressBarIndeterminateVisibility(true);
+
+
+            setProgressBarVisibility(true);
+            setProgressBarIndeterminate(true);
+            setProgressBarIndeterminateVisibility(true);
+
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle(url.getString("title", "Page not found - GitHub"));
-        screen.loadUrl(url.getString("url", "https://github.com/404"));
+        screen.loadUrl(pageUrl);
     }
 
     @Override
