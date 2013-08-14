@@ -44,7 +44,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_toLeftOf="@id/ViewColorPickerHelper"
                 android:background="?android:attr/selectableItemBackground"
-                android:text="Newer Image"
+                android:text="Newer"
                 android:drawableLeft="@drawable/ic_navigation_newer_image"
                 android:layout_alignParentBottom="true"/>
         <Button
@@ -54,7 +54,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
                 android:background="?android:attr/selectableItemBackground"
-                android:text="Older Image"
+                android:text="Older"
                 android:layout_alignParentBottom="true"
                 android:drawableRight="@drawable/ic_navigation_older_image"
                 android:layout_toRightOf="@id/ViewColorPickerHelper"/>
