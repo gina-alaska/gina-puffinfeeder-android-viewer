@@ -6,7 +6,7 @@ Instructions for setting up the build environment can be found on [the website](
 
 Initially developed by [Bobby Signor](https://github.com/BobbySig) and [Jeff Hamlin](https://github.com/jhamlin).
 
-Initially published August 15, 2013.
+Initially published August 2013.
 
 To sign an APK to update the Play Store App, please use the key store and information found [here](https://github.com/BobbySig/gina-puffinfeeder-android-viewer/tree/gh-pages/App%20Key%20Store).
 
