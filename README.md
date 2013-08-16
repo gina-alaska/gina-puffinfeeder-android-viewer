@@ -2,13 +2,13 @@ GINA Puffin Feeder Viewer
 ===============================
 An android interface for [GINA](http://gina.alaska.edu)'s [Puffin Feeder](http://feeder.gina.alaska.edu) browser application.
 ![Image](https://raw.github.com/bobbysig/gina-puffinfeeder-android-viewer/gh-pages/images/screenshots/tablet-shot-3-framed.png)
-Instructions for setting up the build environment can be found on [the website](http://bobbysig.github.io/gina-puffinfeeder-android-viewer) or [the wiki](https://github.com/BobbySig/gina-puffinfeeder-android-viewer/wiki).
+Instructions for setting up the build environment can be found on [the website](http://gina-alaska.github.io/gina-puffinfeeder-android-viewer/) or [the wiki](https://github.com/gina-alaska/gina-puffinfeeder-android-viewer/wiki).
 
 Initially developed by [Bobby Signor](https://github.com/BobbySig) and [Jeff Hamlin](https://github.com/jhamlin).
 
 Initially published August 2013.
 
-To sign an APK to update the Play Store App, please use the key store and information found [here](https://github.com/BobbySig/gina-puffinfeeder-android-viewer/tree/gh-pages/App%20Key%20Store).
+To sign an APK to update the Play Store App, please use the key store and information found [here](https://github.com/gina-alaska/gina-puffinfeeder-android-viewer/tree/gh-pages/App%20Key%20Store).
 
 License
 --------
