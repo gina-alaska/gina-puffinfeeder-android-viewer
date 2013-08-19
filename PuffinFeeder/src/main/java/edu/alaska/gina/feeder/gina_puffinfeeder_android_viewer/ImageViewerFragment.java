@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import edu.alaska.gina.feeder.puffinfeeder.R;
+
 /**
  * Fragment containing WebView that displays a full-sized image.
  * Created by bobby on 7/1/13.
