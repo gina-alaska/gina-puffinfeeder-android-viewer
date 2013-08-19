@@ -1,4 +1,4 @@
-package edu.alaska.gina.feeder.puffinfeeder;
+package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.Days;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;

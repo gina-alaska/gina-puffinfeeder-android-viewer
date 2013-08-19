@@ -1,4 +1,4 @@
-package edu.alaska.gina.feeder.puffinfeeder;
+package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Fragment;
 import android.content.SharedPreferences;

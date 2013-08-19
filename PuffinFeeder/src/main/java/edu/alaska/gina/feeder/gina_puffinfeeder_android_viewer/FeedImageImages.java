@@ -1,4 +1,4 @@
-package edu.alaska.gina.feeder.puffinfeeder;
+package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
