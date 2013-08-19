@@ -6,6 +6,8 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
+import edu.alaska.gina.feeder.puffinfeeder.R;
+
 /**
  * Fragment that allows changes to be made to the app's global settings.
  * Created by bobby on 8/9/13.
