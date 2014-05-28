@@ -33,3 +33,6 @@ build
 *.ipr
 *~
 *.swp
+*.iml
+*.iml
+PuffinFeeder/PuffinFeeder.iml
