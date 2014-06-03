@@ -29,7 +29,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
-import edu.alaska.gina.feeder.puffinfeeder.R;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 
 /**
  * Fragment used to display the list of feed images in a GridView.
@@ -90,7 +90,8 @@ public class ImageFeedFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent photoView = new Intent(getActivity(), ImageViewFrameActivty.class);
+                //Intent photoView = new Intent(getActivity(), ImageViewFrameActivty.class);
+                Intent photoView = new Intent(getActivity(), FullscreenImageViewerActivity.class);
 
                 ArrayList<String> times = new ArrayList<String>();
                 for (DateTime d : mTimes)

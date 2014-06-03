@@ -10,7 +10,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import edu.alaska.gina.feeder.puffinfeeder.R;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 
 /**
  * Adapter that places thumbnails off the feed into the primary GridView.

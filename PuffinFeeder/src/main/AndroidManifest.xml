@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.alaska.gina.feeder.puffinfeeder"
-    android:versionCode="1"
-    android:versionName="1.0.4" >
-
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="17" />
+    package="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer" >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -27,7 +21,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.ImageViewFrameActivty"
             android:configChanges="orientation|screenSize" >
@@ -35,7 +28,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity" />
         </activity>
-
         <activity
             android:name="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.PreferencesActivity"
             android:configChanges="orientation|screenSize" >
@@ -43,20 +35,29 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.alaska.gina.feeder.puffinfeeder.MainLauncherActivity" />
         </activity>
-
         <activity
             android:name="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.WebViewActivity"
-            android:label="@string/title_activity_web_view"
             android:configChanges="orientation|screenSize"
-            android:parentActivityName="MainLauncherActivity" >
+            android:label="@string/title_activity_web_view"
+            android:parentActivityName="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.MainLauncherActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainLauncherActivity" />
         </activity>
 
         <service
-                android:name="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.JsonSpiceService"
-                android:exported="false" />
+            android:name="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.JsonSpiceService"
+            android:exported="false" />
+
+        <activity
+            android:name="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.FullscreenImageViewerActivity"
+            android:label="@string/title_activity_fullscreen_image_viewer"
+            android:parentActivityName="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.MainLauncherActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.MainLauncherActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -26,7 +26,7 @@ import org.joda.time.format.PeriodFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import edu.alaska.gina.feeder.puffinfeeder.R;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 
 /**
  * Activity that displays a full image while allowing navigation via 2 buttons across the bottom.

@@ -3,6 +3,7 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 import android.app.Application;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.SpringAndroidSpiceService;
 import com.octo.android.robospice.persistence.CacheManager;
 import com.octo.android.robospice.persistence.binary.InFileInputStreamObjectPersister;

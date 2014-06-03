@@ -23,7 +23,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.util.ArrayList;
 
-import edu.alaska.gina.feeder.puffinfeeder.R;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 
 /**
  * Class that handles navigation drawer and startup.
@@ -282,6 +282,9 @@ public class MainLauncherActivity extends Activity {
             case R.id.action_open_preferences:
                 this.startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
+
+            case R.id.action_open_test_activity:
+                this.startActivity(new Intent(this, FullscreenImageViewerActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
