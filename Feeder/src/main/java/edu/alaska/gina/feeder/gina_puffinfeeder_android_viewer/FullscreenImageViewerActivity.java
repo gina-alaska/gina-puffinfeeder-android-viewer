@@ -2,10 +2,14 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.v4.app.NavUtils;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -55,7 +59,7 @@ public class FullscreenImageViewerActivity extends Activity {
             fragmentManager.beginTransaction().add(retained, "data").commit();
 
             Bundle b = getIntent().getExtras();
-            url = b.getString("image_url_" + b.getInt("position") + "_2");
+            url = b.getString("image_url_" + b.getInt("position") + "_" + pickLoadSize(PreferenceManager.getDefaultSharedPreferences(this)));
             networkRequest();
         } else {
             image = retained.image;
@@ -98,8 +102,53 @@ public class FullscreenImageViewerActivity extends Activity {
         manager.execute(br, new BitmapRequestListener());
     }
 
-    protected void navUp() {
-        NavUtils.navigateUpFromSameTask(this);
+    /** Methods to choose size. */
+
+    /**
+     * Determines what sized image to load in the viewer.
+     * @return URL of image to be loaded.
+     */
+    private String pickLoadSize(SharedPreferences sharedPreferences) {
+        ConnectivityManager connectivityManager = getConnectivityManager();
+        NetworkInfo nf = connectivityManager.getActiveNetworkInfo();
+
+        if (nf != null) {
+            if (isMetered(nf))
+                return sharedPreferences.getString("pref_smart_sizing_size", "0");
+            else
+                return sharedPreferences.getString("pref_viewer_image_size", "1");
+        }
+        else {
+            Log.d(getString(R.string.app_tag), "NetworkInfo null!");
+            return sharedPreferences.getString("pref_viewer_image_size", "1");
+        }
+    }
+
+    /**
+     * Grabs the ConnectivityManager object representing the device's networks.
+     * @return ConnectivityManager of the device.
+     */
+    private ConnectivityManager getConnectivityManager() {
+        return (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+    }
+
+    /**
+     * Determines if the network being used is a mobile network.
+     * @param net1 The NetworkInfo object representing the network to be tested.
+     * @return "true" if network is mobile (3/4G). "false" if it is not (wifi).
+     */
+    private boolean isMetered(NetworkInfo net1) {
+        int type = net1.getType();
+        switch (type) {
+            case ConnectivityManager.TYPE_MOBILE:
+            case ConnectivityManager.TYPE_MOBILE_DUN:
+            case ConnectivityManager.TYPE_MOBILE_HIPRI:
+            case ConnectivityManager.TYPE_MOBILE_MMS:
+            case ConnectivityManager.TYPE_MOBILE_SUPL:
+                return true;
+            default:
+                return false;
+        }
     }
 
     private class PhotoTapListener implements PhotoViewAttacher.OnPhotoTapListener {
