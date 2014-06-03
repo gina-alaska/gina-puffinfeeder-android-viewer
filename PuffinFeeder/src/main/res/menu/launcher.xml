@@ -35,8 +35,4 @@
           android:showAsAction="never"
           android:icon="@drawable/ic_action_preferences" />
 
-    <item android:id="@+id/action_open_test_activity"
-          android:title="Open Test"
-          android:showAsAction="never" />
-
 </menu>

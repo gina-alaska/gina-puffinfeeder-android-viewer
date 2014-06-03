@@ -282,9 +282,6 @@ public class MainLauncherActivity extends Activity {
             case R.id.action_open_preferences:
                 this.startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
-
-            case R.id.action_open_test_activity:
-                this.startActivity(new Intent(this, FullscreenImageViewerActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
