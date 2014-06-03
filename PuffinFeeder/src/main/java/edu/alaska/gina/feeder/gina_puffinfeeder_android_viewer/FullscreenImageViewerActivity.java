@@ -45,15 +45,19 @@ public class FullscreenImageViewerActivity extends Activity {
     }
 
     @Override
+    protected void onPause() {
+        manager.shouldStop();
+        super.onPause();
+    }
+
+    @Override
     protected void onStop() {
         manager.shouldStop();
         super.onStop();
     }
 
     private void networkRequest() {
-        //String temp = "http://feeder.gina.alaska.edu/media/W1siZiIsIjIwMTQvMDYvMDIvMTNfMDlfNDZfMzUyX1NJUl8yMDE0MDYwMl8xMjUxX21hc2tlZC5qcGciXSxbInAiLCJ0aHVtYiIsIjIwMDB4MjAwMCJdXQ/SIR_20140602_1251_masked.jpg";
         BitmapRequest br = new BitmapRequest(url, new File(getCacheDir().getAbsolutePath() + "file.jpg"));
-
         manager.execute(br, new BitmapRequestListener());
     }
 
