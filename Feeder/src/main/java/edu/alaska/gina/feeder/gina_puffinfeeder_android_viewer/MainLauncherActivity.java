@@ -23,8 +23,6 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import java.util.ArrayList;
 
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
-
 /**
  * Class that handles navigation drawer and startup.
  * created by bobby on 6/14/13.

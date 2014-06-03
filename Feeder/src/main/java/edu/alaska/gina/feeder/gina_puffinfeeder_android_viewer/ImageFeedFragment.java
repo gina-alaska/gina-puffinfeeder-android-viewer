@@ -29,8 +29,6 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
-
 /**
  * Fragment used to display the list of feed images in a GridView.
  * Created by bobby on 6/14/13.

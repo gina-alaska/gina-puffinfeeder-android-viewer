@@ -8,8 +8,6 @@ import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
-
 public class WebViewActivity extends Activity {
 
     @Override
