@@ -71,8 +71,8 @@ dependencies {
 
     compile 'com.github.chrisbanes.photoview:library:1.2.3'
 
-    compile 'com.octo.android.robospice:robospice-parent:1.4.4'
-    compile ('com.octo.android.robospice:robospice-spring-android:1.4.4') {
+    compile 'com.octo.android.robospice:robospice-parent:1.4.12'
+    compile ('com.octo.android.robospice:robospice-spring-android:1.4.12') {
         exclude module: 'support-v4'
     }
 

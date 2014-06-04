@@ -309,9 +309,9 @@ public class MainLauncherActivity extends Activity {
                 Toast.makeText(getApplicationContext(), "Feed list reloaded.", Toast.LENGTH_SHORT).show();
             else
                 Toast.makeText(getApplicationContext(), "Feed list reloaded from cache. Please check internet connection.", Toast.LENGTH_LONG).show();
-
+/*
             if (mSpiceManager.isStarted())
-                mSpiceManager.shouldStop();
+                mSpiceManager.shouldStop(); */
         }
 
         @Override
@@ -319,8 +319,10 @@ public class MainLauncherActivity extends Activity {
             setProgressBarIndeterminateVisibility(false);
             Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + e.getStackTrace());
             Toast.makeText(getApplicationContext(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
+            /*
             if (mSpiceManager.isStarted())
                 mSpiceManager.shouldStop();
+                */
         }
     }
 

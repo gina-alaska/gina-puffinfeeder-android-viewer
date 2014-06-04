@@ -29,6 +29,7 @@ public class FullscreenImageViewerActivity extends Activity {
     private DataFragment retained;
     private FragmentManager fragmentManager;
     private ImageView fullscreenImage;
+    private BitmapRequest request;
     private Bitmap image;
 
     @Override
@@ -71,11 +72,13 @@ public class FullscreenImageViewerActivity extends Activity {
     }
 
     @Override
+    protected void onRestart() {
+        networkRequest();
+        super.onRestart();
+    }
+
+    @Override
     protected void onPause() {
-        if (manager.isStarted()) {
-            manager.cancelAllRequests();
-            manager.shouldStop();
-        }
         super.onPause();
     }
 
@@ -97,9 +100,11 @@ public class FullscreenImageViewerActivity extends Activity {
     }
 
     private void networkRequest() {
-        manager.start(this);
-        BitmapRequest br = new BitmapRequest(url, new File(getCacheDir().getAbsolutePath() + "images.cache"));
-        manager.execute(br, new BitmapRequestListener());
+        if (!manager.isStarted())
+            manager.start(this);
+
+        request = new BitmapRequest(url, new File(getCacheDir().getAbsolutePath() + "images.cache"));
+        manager.execute(request, new BitmapRequestListener());
     }
 
     /** Methods to choose size. */
@@ -162,7 +167,7 @@ public class FullscreenImageViewerActivity extends Activity {
         @Override
         public void onRequestFailure(SpiceException e) {
             Toast.makeText(getBaseContext(), "Image Request Fail!", Toast.LENGTH_LONG).show();
-            manager.shouldStop();
+            //manager.shouldStop();
         }
 
         @Override
@@ -170,9 +175,9 @@ public class FullscreenImageViewerActivity extends Activity {
             image = retained.image = bitmap;
             fullscreenImage.setImageBitmap(bitmap);
             photoAttacher.update();
-
+/*
             if (manager.isStarted())
-                manager.shouldStop();
+                manager.shouldStop();*/
         }
     }
 

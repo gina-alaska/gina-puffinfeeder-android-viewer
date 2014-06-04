@@ -37,7 +37,7 @@ public class JsonSpiceService extends SpringAndroidSpiceService {
 
     @Override
     public int getThreadCount() {
-        return 3;
+        return 1;
     }
 
     @Override
