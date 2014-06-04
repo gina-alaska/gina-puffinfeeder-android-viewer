@@ -35,4 +35,8 @@
           android:showAsAction="never"
           android:icon="@drawable/ic_action_preferences" />
 
+    <item android:id="@+id/action_change_base_url"
+          android:title="Change Base URL"
+          android:showAsAction="never" />
+
 </menu>

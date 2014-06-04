@@ -1,6 +1,10 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
@@ -11,15 +15,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.octo.android.robospice.*;
 import com.octo.android.robospice.persistence.*;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
 
 import java.util.ArrayList;
 
@@ -30,11 +33,13 @@ import java.util.ArrayList;
 public class MainLauncherActivity extends Activity {
     private static final String JSON_CACHE_KEY = "feeds_json_array";
     protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
+    private FeedsJsonRequest mSpiceRequest = new FeedsJsonRequest();
 
     protected ArrayList<String> listItems = new ArrayList<String>();
     protected ArrayAdapter<String> primary;
     protected Feed[] masterFeedsList;
     protected int current = -2;
+    private String baseURL = "http://feeder.gina.alaska.edu/feeds.json";
 
     protected Menu aBarMenu;
 
@@ -232,6 +237,11 @@ public class MainLauncherActivity extends Activity {
             }
         }
 
+        if (getResources().getString(R.string.alpha_test_build).equals("yes"))
+            menu.findItem(R.id.action_change_base_url).setVisible(true);
+        else
+            menu.findItem(R.id.action_change_base_url).setVisible(false);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -280,6 +290,10 @@ public class MainLauncherActivity extends Activity {
             case R.id.action_open_preferences:
                 this.startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
+
+            case R.id.action_change_base_url:
+                new URLChanger().show(getFragmentManager(), "change_url");
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -326,6 +340,29 @@ public class MainLauncherActivity extends Activity {
         }
     }
 
+    private class URLChanger extends DialogFragment {
+        View v;
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            v = getLayoutInflater().inflate(R.layout.dialog_change_url, null);
+            AlertDialog.Builder b = new AlertDialog.Builder(this.getActivity());
+            b.setView(v).setTitle("Enter Base URL").setNeutralButton("Dismiss", null).setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String s = ((EditText) v.findViewById(R.id.newBaseURL)).getText().toString();
+                    if (!s.equals(""))
+                        mSpiceRequest.baseURL = s;
+                    mSpiceManager.removeAllDataFromCache();
+                    listItems.clear();
+                    refreshFeedsList(DurationInMillis.ALWAYS_EXPIRED);
+                }
+            });
+
+            return b.create();
+        }
+    }
+
     /**
      * Reloads the list of the feeds.
      * @param expiration_time Time if its been at least this long since last update, do it.
@@ -334,7 +371,7 @@ public class MainLauncherActivity extends Activity {
         setProgressBarIndeterminateVisibility(true);
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(this.getBaseContext());
-        mSpiceManager.execute(new FeedsJsonRequest(), JSON_CACHE_KEY, expiration_time, new FeedsRequestListener());
+        mSpiceManager.execute(mSpiceRequest, JSON_CACHE_KEY, expiration_time, new FeedsRequestListener());
     }
 
     /**

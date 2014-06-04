@@ -9,13 +9,15 @@ import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceReques
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FeedsJsonRequest extends SpringAndroidSpiceRequest {
+    public String baseURL;
 
     public FeedsJsonRequest() {
         super(Feed[].class);
+        baseURL = "http://feeder.gina.alaska.edu/feeds.json";
     }
 
     @Override
     public Feed[] loadDataFromNetwork() throws Exception {
-        return getRestTemplate().getForObject("http://feeder.gina.alaska.edu/feeds.json", Feed[].class);
+        return getRestTemplate().getForObject(baseURL, Feed[].class);
     }
 }
