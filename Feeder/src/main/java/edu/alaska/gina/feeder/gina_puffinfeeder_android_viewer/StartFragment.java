@@ -12,11 +12,12 @@ import android.widget.Toast;
  * Fragment displayed on startup.
  * Created by bobby on 6/21/13.
  */
-public class StartFragment extends Fragment {
+class StartFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_start, container, false);
-        getActivity().getActionBar().setTitle("GINA Puffin Feeder");
+        if (getActivity().getActionBar() != null)
+            getActivity().getActionBar().setTitle("GINA Puffin Feeder");
 
         return v;
     }

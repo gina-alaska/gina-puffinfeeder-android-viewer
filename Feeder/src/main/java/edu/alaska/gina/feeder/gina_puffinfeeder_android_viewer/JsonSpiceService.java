@@ -45,7 +45,7 @@ public class JsonSpiceService extends SpringAndroidSpiceService {
         CacheManager cacheManager = new CacheManager();
 
         // init
-        InFileStringObjectPersister inFileStringObjectPersister = null;
+        InFileStringObjectPersister inFileStringObjectPersister;
         InFileInputStreamObjectPersister inFileInputStreamObjectPersister;
         Jackson2ObjectPersisterFactory inJSonFileObjectPersisterFactory;
         try {

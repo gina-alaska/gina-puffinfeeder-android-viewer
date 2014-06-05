@@ -68,10 +68,7 @@ public class Feed {
      * @param status Value of status ("online" or "offline" usually).
      */
     public void setStatus(String status) {
-        if (status.equals("online"))
-            this.status = true;
-        else
-            this.status = false;
+        this.status = status.equals("online");
     }
 
     /**

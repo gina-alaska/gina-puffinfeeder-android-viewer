@@ -23,13 +23,12 @@ import java.io.File;
 
 public class FullscreenImageViewerActivity extends Activity {
     private static final int UI_HIDE_OPTIONS = View.SYSTEM_UI_FLAG_LOW_PROFILE;
-    SpiceManager manager = new SpiceManager(JsonSpiceService.class);
-    PhotoViewAttacher photoAttacher;
+    private final SpiceManager manager = new SpiceManager(JsonSpiceService.class);
+    private PhotoViewAttacher photoAttacher;
     private String url;
     private DataFragment retained;
     private FragmentManager fragmentManager;
     private ImageView fullscreenImage;
-    private BitmapRequest request;
     private Bitmap image;
 
     @Override
@@ -78,11 +77,6 @@ public class FullscreenImageViewerActivity extends Activity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
     protected void onStop() {
         if (manager.isStarted()) {
             manager.cancelAllRequests();
@@ -103,8 +97,7 @@ public class FullscreenImageViewerActivity extends Activity {
         if (!manager.isStarted())
             manager.start(this);
 
-        request = new BitmapRequest(url, new File(getCacheDir().getAbsolutePath() + "images.cache"));
-        manager.execute(request, new BitmapRequestListener());
+        manager.execute(new BitmapRequest(url, new File(getCacheDir().getAbsolutePath() + "images.cache")), new BitmapRequestListener());
     }
 
     /** Methods to choose size. */

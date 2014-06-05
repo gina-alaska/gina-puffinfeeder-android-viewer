@@ -8,7 +8,7 @@ import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceReques
  * Created by bobby on 6/14/13.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FeedsJsonRequest extends SpringAndroidSpiceRequest {
+class FeedsJsonRequest extends SpringAndroidSpiceRequest {
     public String baseURL;
 
     public FeedsJsonRequest() {

@@ -8,6 +8,8 @@ import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import java.util.Arrays;
+
 public class WebViewActivity extends Activity {
 
     @Override
@@ -37,7 +39,7 @@ public class WebViewActivity extends Activity {
                         setProgressBarIndeterminateVisibility(false);
                     }
                 } catch (NullPointerException e) {
-                    Log.d(getString(R.string.app_tag), "ProgressBar NullPointer!\n" + e.getStackTrace());
+                    Log.d(getString(R.string.app_tag), "ProgressBar NullPointer!\n" + Arrays.toString(e.getStackTrace()));
                 }
             }
         });
@@ -46,8 +48,10 @@ public class WebViewActivity extends Activity {
         setProgressBarIndeterminate(true);
         setProgressBarIndeterminateVisibility(true);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setTitle(url.getString("title", "Page not found - GitHub"));
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setTitle(url.getString("title", "Page not found - GitHub"));
+        }
         screen.loadUrl(pageUrl);
     }
 

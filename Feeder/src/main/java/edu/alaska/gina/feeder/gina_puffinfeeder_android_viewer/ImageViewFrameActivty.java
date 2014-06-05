@@ -31,19 +31,16 @@ import java.util.Locale;
  * Created by bobby on 7/1/13.
  */
 public class ImageViewFrameActivty extends Activity implements View.OnClickListener {
-    protected ArrayList<String[]> urls = new ArrayList<String[]>();
-    protected ArrayList<String> titles = new ArrayList<String>();
-    protected ArrayList<DateTime> times = new ArrayList<DateTime>();
-    protected String feed;
-    protected String description;
-    protected String infoUrl;
-    protected int position;
+    private ArrayList<String[]> urls = new ArrayList<String[]>();
+    private ArrayList<String> titles = new ArrayList<String>();
+    private ArrayList<DateTime> times = new ArrayList<DateTime>();
+    private String feed;
+    private String description;
+    private String infoUrl;
+    private int position;
 
-    protected int numSizes = 3;
-    protected Toast toasty;
-
-    protected Button newer;
-    protected Button older;
+    private Button newer;
+    private Button older;
 
     /** Overridden Methods */
 
@@ -54,8 +51,10 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_image_view_frame);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
 
         Bundle args = getIntent().getExtras();
         urls = build3SizeArrayStructure(decodeUrlBundle(args, "url"));
@@ -72,7 +71,6 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         newer.setOnClickListener(this);
         older.setOnClickListener(this);
 
-        toasty = Toast.makeText(this, "blargh", Toast.LENGTH_SHORT);
         newImage(position);
         endOfLine();
     }
@@ -145,17 +143,11 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         super.onBackPressed();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        toasty.cancel();
-    }
-
     /**
      * Loads a new image into the main fragment.
      * @param newPos Index number of image to be loaded.
      */
-    public void newImage(int newPos) {
+    void newImage(int newPos) {
         ImageViewerFragment iFrag = new ImageViewerFragment();
         Bundle info = new Bundle();
         info.putString("image_url_small", urls.get(newPos)[0]);
@@ -169,8 +161,10 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
 
         iFrag.setArguments(info);
 
-        toasty.setText(findTimeDifference(times.get(newPos)));
-        toasty.show();
+        Toast t = new Toast(this);
+        t.setText(findTimeDifference(times.get(newPos)));
+        t.show();
+
         getFragmentManager().beginTransaction().replace(R.id.image_content_frame, iFrag).commit();
 
         position = newPos;
@@ -182,7 +176,7 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
      * @param s ArrayList of Strings with Date/Time data formatted according to ISO 8601 standards.
      * @return ArrayList of DateTime objects.
      */
-    public ArrayList<DateTime> parseTimeStrings_ISO8601(ArrayList<String> s) {
+    ArrayList<DateTime> parseTimeStrings_ISO8601(ArrayList<String> s) {
         ArrayList<DateTime> d = new ArrayList<DateTime>();
         DateTimeFormatter formatter = DateTimeFormat.forPattern(getString(R.string.ISO8601_pattern));
 
@@ -198,7 +192,7 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
      * @param key String used as an identifier during the encoding process.
      * @return ArrayList of Strings.
      */
-    public ArrayList<String> decodeBundle(Bundle encoded, String key) {
+    ArrayList<String> decodeBundle(Bundle encoded, String key) {
         ArrayList<String> decoded = new ArrayList<String>();
 
         for (int i = 0; encoded.getString("image_" + key + "_" + i) != null; i++)
@@ -214,9 +208,9 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
      * @param key String used as an identifier during the encoding process.
      * @return ArrayList of Strings.
      */
-    public ArrayList<String> decodeUrlBundle(Bundle encoded, String key) {
+    ArrayList<String> decodeUrlBundle(Bundle encoded, String key) {
         ArrayList<String> decoded = new ArrayList<String>();
-        this.numSizes = encoded.getInt("num_image_sizes");
+        int numSizes = encoded.getInt("num_image_sizes");
 
         for (int i = 0; encoded.getString("image_" + key + "_" + i + "_0") != null; i++) {
             for (int j = 0; j < numSizes; j++)
@@ -232,7 +226,7 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
      * @param unstructured ArrayList of Strings.
      * @return ArrayList of String[]s with length 3.
      */
-    public ArrayList<String[]> build3SizeArrayStructure(ArrayList<String> unstructured) {
+    ArrayList<String[]> build3SizeArrayStructure(ArrayList<String> unstructured) {
         ArrayList<String[]> export = new ArrayList<String[]>();
 
         for (int i = 0; i < unstructured.size(); i += 3)
@@ -244,7 +238,7 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
     /**
      * Shows and hides UI buttons when necessary.
      */
-    public void endOfLine() {
+    void endOfLine() {
         if (position <= 0) {
             newer.setVisibility(View.GONE);
             newer.setClickable(false);
@@ -272,12 +266,12 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
      * @param timeDate Time and Date stamp from the image.
      * @return Image description String.
      */
-    public String buildDescription(DateTime timeDate) {
+    String buildDescription(DateTime timeDate) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         StringBuilder sb = new StringBuilder();
         StringBuilder temp = new StringBuilder();
 
-        sb.append("Processed " + findTimeDifference(timeDate) + "\n\n");
+        sb.append("Processed ").append(findTimeDifference(timeDate)).append("\n\n");
 
         sb.append("Size: ");
         String size = pickLoadSize(preferences);
@@ -289,9 +283,9 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
             sb.append("Large (2000 x 2000). \n");
 
         sb.append("Date: ");
-        sb.append(timeDate.monthOfYear().getAsText(Locale.getDefault()) + " ");
-        sb.append(timeDate.dayOfMonth().getAsText(Locale.getDefault()) + ", ");
-        sb.append(timeDate.yearOfEra().getAsText(Locale.getDefault()) + "\n");
+        sb.append(timeDate.monthOfYear().getAsText(Locale.getDefault())).append(" ");
+        sb.append(timeDate.dayOfMonth().getAsText(Locale.getDefault())).append(", ");
+        sb.append(timeDate.yearOfEra().getAsText(Locale.getDefault())).append("\n");
 
         sb.append("Time: ");
         temp.append(timeDate.hourOfDay().getAsText(Locale.getDefault()));
@@ -308,7 +302,7 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
             while (temp.length() < 2)
                 temp.insert(0, "0");
         }
-        sb.append(temp + " ");
+        sb.append(temp).append(" ");
 
         sb.append(timeDate.getZone().toTimeZone().getDisplayName());
 

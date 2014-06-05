@@ -14,9 +14,9 @@ import java.util.ArrayList;
  * Adapter that places thumbnails off the feed into the primary GridView.
  * Created by bobby on 6/19/13.
  */
-public class PicassoImageAdapter extends BaseAdapter {
-    private Context mContext;
-    private ArrayList<FeedImage> mFeedImages;
+class PicassoImageAdapter extends BaseAdapter {
+    private final Context mContext;
+    private final ArrayList<FeedImage> mFeedImages;
     private int maxPosition = 10;
 
     public PicassoImageAdapter(Context c, ArrayList<FeedImage> feedImages) {

@@ -11,7 +11,7 @@ import android.os.Bundle;
  * Small Dialog that displays the description of the currently selected feed.
  * Created by bobby on 6/25/13.
  */
-public class ShortDescriptionFragment extends DialogFragment {
+class ShortDescriptionFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();

@@ -1,9 +1,7 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
+import android.app.*;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -12,19 +10,17 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.octo.android.robospice.*;
 import com.octo.android.robospice.persistence.*;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
-import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Class that handles navigation drawer and startup.
@@ -32,20 +28,19 @@ import java.util.ArrayList;
  */
 public class MainLauncherActivity extends Activity {
     private static final String JSON_CACHE_KEY = "feeds_json_array";
-    protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
-    private FeedsJsonRequest mSpiceRequest = new FeedsJsonRequest();
+    private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
+    private final FeedsJsonRequest mSpiceRequest = new FeedsJsonRequest();
 
-    protected ArrayList<String> listItems = new ArrayList<String>();
-    protected ArrayAdapter<String> primary;
-    protected Feed[] masterFeedsList;
-    protected int current = -2;
-    private String baseURL = "http://feeder.gina.alaska.edu/feeds.json";
+    private final ArrayList<String> listItems = new ArrayList<String>();
+    private ArrayAdapter<String> primary;
+    private Feed[] masterFeedsList;
+    private int current = -2;
 
-    protected Menu aBarMenu;
+    private Menu aBarMenu;
 
-    protected DrawerLayout mDrawerLayout; //Contains the entire activity.
-    protected ListView mDrawerList; //ListView of Nav Drawer.
-    protected ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
+    private DrawerLayout mDrawerLayout; //Contains the entire activity.
+    private ListView mDrawerList; //ListView of Nav Drawer.
+    private ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
 
     /** Overridden Methods */
 
@@ -82,7 +77,8 @@ public class MainLauncherActivity extends Activity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_List);
 
-        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
+        if (getActionBar() != null)
+            getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
         listItems.add("No Feeds Loaded.");
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
@@ -163,11 +159,6 @@ public class MainLauncherActivity extends Activity {
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
     protected void onPause() {
         setProgressBarIndeterminateVisibility(false);
         if (mSpiceManager.isStarted())
@@ -201,7 +192,8 @@ public class MainLauncherActivity extends Activity {
                 aBarMenu.findItem(R.id.action_load_next).setVisible(false);
                 aBarMenu.findItem(R.id.action_load_prev).setVisible(false);
                 aBarMenu.findItem(R.id.action_display_short_description).setVisible(false);
-                getActionBar().setTitle("GINA Puffin Feeder");
+                if (getActionBar() != null)
+                    getActionBar().setTitle("GINA Puffin Feeder");
             }
         } catch (NullPointerException e) {/*Do Nothing*/}
     }
@@ -331,12 +323,8 @@ public class MainLauncherActivity extends Activity {
         @Override
         public void onRequestFailure(SpiceException e) {
             setProgressBarIndeterminateVisibility(false);
-            Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + e.getStackTrace());
+            Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             Toast.makeText(getApplicationContext(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
-            /*
-            if (mSpiceManager.isStarted())
-                mSpiceManager.shouldStop();
-                */
         }
     }
 
@@ -367,7 +355,7 @@ public class MainLauncherActivity extends Activity {
      * Reloads the list of the feeds.
      * @param expiration_time Time if its been at least this long since last update, do it.
      */
-    public void refreshFeedsList(long expiration_time) {
+    void refreshFeedsList(long expiration_time) {
         setProgressBarIndeterminateVisibility(true);
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(this.getBaseContext());
@@ -378,11 +366,9 @@ public class MainLauncherActivity extends Activity {
      * Returns whether the device is actively connected to a network.
      * @return "true" if yes, "false" otherwise.
      */
-    public boolean isOnline() {
-        ConnectivityManager cm10_1 = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
-        NetworkInfo nFo = cm10_1.getActiveNetworkInfo();
-        if (nFo != null && nFo.isConnectedOrConnecting())
-            return true;
-        return false;
+    boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo nFo = cm.getActiveNetworkInfo();
+        return (nFo != null && nFo.isConnectedOrConnecting());
     }
 }

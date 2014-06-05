@@ -38,3 +38,4 @@ build
 PuffinFeeder/PuffinFeeder.iml
 PuffinFeeder/PuffinFeeder.iml
 gina-puffinfeeder-android-viewer.iml
+*.jks

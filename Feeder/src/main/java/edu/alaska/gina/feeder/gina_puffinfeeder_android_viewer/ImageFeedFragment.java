@@ -2,10 +2,8 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,25 +26,24 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Fragment used to display the list of feed images in a GridView.
  * Created by bobby on 6/14/13.
  */
-public class ImageFeedFragment extends Fragment {
+class ImageFeedFragment extends Fragment {
     private static String JSON_CACHE_KEY;
-    protected SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
+    private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
-    protected Menu aBarMenu;
+    private Menu aBarMenu;
 
-    protected SharedPreferences sharedPreferences;
-
-    protected Feed imageFeed = new Feed();
-    protected ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
-    protected ArrayList<String> mTitles = new ArrayList<String>();
-    protected ArrayList<String[]> mUrls = new ArrayList<String[]>();
-    protected ArrayList<DateTime> mTimes = new ArrayList<DateTime>();
-    protected PicassoImageAdapter mImageAdapter;
+    private final Feed imageFeed = new Feed();
+    private final ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
+    private final ArrayList<String> mTitles = new ArrayList<String>();
+    private final ArrayList<String[]> mUrls = new ArrayList<String[]>();
+    private final ArrayList<DateTime> mTimes = new ArrayList<DateTime>();
+    private PicassoImageAdapter mImageAdapter;
     private int page = 1;
 
     /** Overridden Methods. */
@@ -70,7 +67,8 @@ public class ImageFeedFragment extends Fragment {
         refreshThumbs(false, false);
         mImageAdapter = new PicassoImageAdapter(this.getActivity(), mList);
 
-        getActivity().getActionBar().setTitle(imageFeed.getTitle());
+        if (getActivity().getActionBar() != null)
+            getActivity().getActionBar().setTitle(imageFeed.getTitle());
 
         return v;
     }
@@ -83,12 +81,9 @@ public class ImageFeedFragment extends Fragment {
         gridView.setAdapter(mImageAdapter);
         adaptGridViewSize(gridView);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
-
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Intent photoView = new Intent(getActivity(), ImageViewFrameActivty.class);
                 Intent photoView = new Intent(getActivity(), FullscreenImageViewerActivity.class);
 
                 ArrayList<String> times = new ArrayList<String>();
@@ -200,8 +195,7 @@ public class ImageFeedFragment extends Fragment {
                 mList.clear();
 
             if (mList.size() <= 0) {
-                for (FeedImage pii : feedImages)
-                    mList.add(pii);
+                Collections.addAll(mList, feedImages);
 
                 DateTimeFormatter formatter = DateTimeFormat.forPattern(getString(R.string.event_at_pattern));
 
@@ -221,8 +215,6 @@ public class ImageFeedFragment extends Fragment {
                         getActivity().setProgressBarIndeterminateVisibility(false);
                     }
                 });
-
-                //mSpiceManager.shouldStop();
             }
         }
     }
@@ -236,7 +228,7 @@ public class ImageFeedFragment extends Fragment {
      * @param isNew "true" if loading a new page. "false" otherwise.
      * @param isNext "true" is loading the next page. "false" otherwise.
      */
-    public void refreshThumbs(boolean isNew, boolean isNext) {
+    void refreshThumbs(boolean isNew, boolean isNext) {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
         if (!mSpiceManager.isStarted())
@@ -261,7 +253,7 @@ public class ImageFeedFragment extends Fragment {
      * @param key String used as part of the identifier in the bundle.
      * @return Bundle containing all Strings from initial ArrayList.
      */
-    public Bundle encodeBundle(ArrayList<String> notEncoded, String key) {
+    Bundle encodeBundle(ArrayList<String> notEncoded, String key) {
         Bundle encoded = new Bundle();
 
         for (int i = 0; i < notEncoded.size(); i++)
@@ -278,7 +270,7 @@ public class ImageFeedFragment extends Fragment {
      * @param numSizes Number of items in each String Array.
      * @return Bundle containing all Strings from initial ArrayList.
      */
-    public Bundle encodeBundle(ArrayList<String[]> notEncoded, String key, int numSizes) {
+    Bundle encodeBundle(ArrayList<String[]> notEncoded, String key, int numSizes) {
         Bundle encoded = new Bundle();
         encoded.putInt("num_image_sizes", numSizes);
 
@@ -295,7 +287,7 @@ public class ImageFeedFragment extends Fragment {
      * Method containing the logic behind dynamic resizing.
      * @param gv GridView to be adjusted.
      */
-    public void adaptGridViewSize(GridView gv) {
+    void adaptGridViewSize(GridView gv) {
         int thumbMax = 250;
         int spacing = 2;
 
@@ -333,7 +325,7 @@ public class ImageFeedFragment extends Fragment {
      * @param d Screen information (in DisplayMetrics object).
      * @return Maximum width of thumbnails (px) given parameters.
      */
-    public float maxTW(float numCols, float spacing, DisplayMetrics d) {
+    float maxTW(float numCols, float spacing, DisplayMetrics d) {
         return (d.widthPixels - ((numCols + 1) * spacing)) / numCols;
     }
 
@@ -345,7 +337,7 @@ public class ImageFeedFragment extends Fragment {
      * @param d Screen information (in DisplayMetrics object).
      * @return Maximum number of columns given parameters.
      */
-    public float numCols(float thumbWidth, float spacing, DisplayMetrics d) {
+    float numCols(float thumbWidth, float spacing, DisplayMetrics d) {
         return (d.widthPixels - spacing) / (spacing + thumbWidth);
     }
 }

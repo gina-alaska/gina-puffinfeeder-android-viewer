@@ -1,6 +1,7 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -15,18 +16,19 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import java.util.Arrays;
+
 /**
  * Fragment containing WebView that displays a full-sized image.
  * Created by bobby on 7/1/13.
  */
-public class ImageViewerFragment extends Fragment {
-    protected String image_url_small;
-    protected String image_url_med;
-    protected String image_url_large;
-    protected String title;
-    protected WebView image_frame;
-    protected SharedPreferences sharedPreferences;
-    protected ConnectivityManager connectivityManager;
+class ImageViewerFragment extends Fragment {
+    private String image_url_small;
+    private String image_url_med;
+    private String image_url_large;
+    private WebView image_frame;
+    private SharedPreferences sharedPreferences;
+    private ConnectivityManager connectivityManager;
 
     /** Overridden Methods. */
 
@@ -61,23 +63,18 @@ public class ImageViewerFragment extends Fragment {
                         getActivity().setProgressBarIndeterminateVisibility(false);
                     }
                 } catch (NullPointerException e) {
-                    Log.d(getString(R.string.app_tag), "ProgressBar NullPointer!\n" + e.getStackTrace());
+                    Log.d(getString(R.string.app_tag), "ProgressBar NullPointer!\n" + Arrays.toString(e.getStackTrace()));
                 }
             }
         });
 
-        if (extra != null) {
-            image_url_small = extra.getString("image_url_small");
-            image_url_med = extra.getString("image_url_med");
-            image_url_large = extra.getString("image_url_large");
-            title = extra.getString("bar_title");
-        }
-        else {
-            Log.d(getString(R.string.app_tag), "No Image URL. Please Fix that...");
-            return;
-        }
+        image_url_small = extra.getString("image_url_small");
+        image_url_med = extra.getString("image_url_med");
+        image_url_large = extra.getString("image_url_large");
+        String title = extra.getString("bar_title");
 
-        getActivity().getActionBar().setTitle(title);
+        if (getActivity().getActionBar() != null)
+            getActivity().getActionBar().setTitle(title);
 
         getActivity().setProgressBarVisibility(true);
         getActivity().setProgressBarIndeterminate(true);
@@ -177,7 +174,7 @@ public class ImageViewerFragment extends Fragment {
      */
     private ConnectivityManager getConnectivityManager() {
         if (isAdded())
-            return (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
+            return (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         return this.connectivityManager;
     }
 
@@ -185,7 +182,7 @@ public class ImageViewerFragment extends Fragment {
      * Determines if device is a tablet.
      * @return "true" if active device screen is greater than 7" in diagonal.
      */
-    public boolean isTablet() {
+    boolean isTablet() {
         DisplayMetrics d = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(d);
 
@@ -193,8 +190,6 @@ public class ImageViewerFragment extends Fragment {
         float wIn = d.widthPixels / d.xdpi;
         double diag = Math.sqrt((wIn * wIn) + (hIn * hIn));
 
-        if (diag >= 7)
-            return true;
-        return false;
+        return (diag >= 7);
     }
 }

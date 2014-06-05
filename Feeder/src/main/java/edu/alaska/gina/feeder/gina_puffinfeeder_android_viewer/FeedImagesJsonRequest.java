@@ -8,9 +8,9 @@ import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceReques
  * Created by bobby on 6/19/13.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FeedImagesJsonRequest extends SpringAndroidSpiceRequest<FeedImage[]> {
-    Feed feed;
-    int page;
+class FeedImagesJsonRequest extends SpringAndroidSpiceRequest<FeedImage[]> {
+    private final Feed feed;
+    private final int page;
 
     public FeedImagesJsonRequest(Feed feed, int page) {
         super(FeedImage[].class);
