@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
@@ -11,6 +12,7 @@ import android.widget.VideoView;
  * Created by Bobby on 6/6/2014.
  */
 public class FullscreenVideoPlayerActivity extends Activity {
+    private static final int UI_HIDE_OPTIONS = View.SYSTEM_UI_FLAG_LOW_PROFILE;
     private MediaController MC;
     private VideoView movie;
 
@@ -42,6 +44,26 @@ public class FullscreenVideoPlayerActivity extends Activity {
 
         movie.setMediaController(MC);
         movie.start();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        MC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.setSystemUiVisibility(UI_HIDE_OPTIONS);
+            }
+        });
+
+        movie.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.setSystemUiVisibility(UI_HIDE_OPTIONS);
+            }
+        });
+
+        this.getWindow().getDecorView().setSystemUiVisibility(UI_HIDE_OPTIONS);
     }
 
     @Override
