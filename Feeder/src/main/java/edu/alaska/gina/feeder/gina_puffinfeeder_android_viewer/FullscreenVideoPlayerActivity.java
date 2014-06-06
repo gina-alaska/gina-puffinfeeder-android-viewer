@@ -3,13 +3,13 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
 /**
- * Created by Bobby on 6/6/2014.
+ * Activity for playing videos in full screen.
+ * Created by Bobby Signor on 6/6/2014.
  */
 public class FullscreenVideoPlayerActivity extends Activity {
     private static final int UI_HIDE_OPTIONS = View.SYSTEM_UI_FLAG_LOW_PROFILE;
