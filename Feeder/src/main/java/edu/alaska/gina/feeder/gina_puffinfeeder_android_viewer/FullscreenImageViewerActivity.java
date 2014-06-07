@@ -17,10 +17,15 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.octo.android.robospice.request.simple.BitmapRequest;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import java.io.File;
 
+/**
+ * Activity for viewing a full sized image in full screen.
+ * Created by Bobby Signor on 5/30/2014.
+ */
 public class FullscreenImageViewerActivity extends Activity {
     private static final int UI_HIDE_OPTIONS = View.SYSTEM_UI_FLAG_LOW_PROFILE;
     private final SpiceManager manager = new SpiceManager(JsonSpiceService.class);

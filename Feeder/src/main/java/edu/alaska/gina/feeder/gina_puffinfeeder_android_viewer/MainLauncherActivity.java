@@ -18,6 +18,7 @@ import com.octo.android.robospice.*;
 import com.octo.android.robospice.persistence.*;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
 import java.util.ArrayList;
 import java.util.Arrays;

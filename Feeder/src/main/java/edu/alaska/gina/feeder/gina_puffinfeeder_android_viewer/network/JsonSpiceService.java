@@ -1,4 +1,4 @@
-package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
+package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network;
 
 import android.app.Application;
 

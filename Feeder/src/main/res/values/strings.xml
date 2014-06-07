@@ -43,6 +43,9 @@
         <item>2</item>
     </string-array>
 
+    <string name="url_feeds_endpoint">http://feeder.gina.alaska.edu/feeds.json</string>
+    <string name="url_movies_endpoint">http://feeder.gina.alaska.edu/movies.json</string>
+
     <string name="pref_smart_sizing_size_defaultValue">small</string>
     <string name="title_activity_web_view">WebViewActivity</string>
     <string name="hello_world">Hello world!</string>
