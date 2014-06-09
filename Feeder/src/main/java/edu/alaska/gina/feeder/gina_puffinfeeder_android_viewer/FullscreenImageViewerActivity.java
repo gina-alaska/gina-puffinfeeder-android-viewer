@@ -64,7 +64,7 @@ public class FullscreenImageViewerActivity extends Activity {
             fragmentManager.beginTransaction().add(retained, "data").commit();
 
             Bundle b = getIntent().getExtras();
-            url = b.getString("image_url_" + b.getInt("position") + "_" + pickLoadSize(PreferenceManager.getDefaultSharedPreferences(this)));
+            url = b.getString("url");
             networkRequest();
         } else {
             image = retained.image;
@@ -106,26 +106,6 @@ public class FullscreenImageViewerActivity extends Activity {
     }
 
     /** Methods to choose size. */
-
-    /**
-     * Determines what sized image to load in the viewer.
-     * @return URL of image to be loaded.
-     */
-    private String pickLoadSize(SharedPreferences sharedPreferences) {
-        ConnectivityManager connectivityManager = getConnectivityManager();
-        NetworkInfo nf = connectivityManager.getActiveNetworkInfo();
-
-        if (nf != null) {
-            if (isMetered(nf))
-                return sharedPreferences.getString("pref_smart_sizing_size", "0");
-            else
-                return sharedPreferences.getString("pref_viewer_image_size", "1");
-        }
-        else {
-            Log.d(getString(R.string.app_tag), "NetworkInfo null!");
-            return sharedPreferences.getString("pref_viewer_image_size", "1");
-        }
-    }
 
     /**
      * Grabs the ConnectivityManager object representing the device's networks.
@@ -173,9 +153,6 @@ public class FullscreenImageViewerActivity extends Activity {
             image = retained.image = bitmap;
             fullscreenImage.setImageBitmap(bitmap);
             photoAttacher.update();
-/*
-            if (manager.isStarted())
-                manager.shouldStop();*/
         }
     }
 

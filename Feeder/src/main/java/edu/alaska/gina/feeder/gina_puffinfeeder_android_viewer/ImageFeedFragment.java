@@ -87,18 +87,8 @@ class ImageFeedFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent photoView = new Intent(getActivity(), FullscreenImageViewerActivity.class);
 
-                ArrayList<String> times = new ArrayList<String>();
-                for (DateTime d : mTimes)
-                    times.add(d.toString());
-
                 Bundle args = new Bundle();
-                args.putAll(encodeBundle(mUrls, "url", 3));
-                args.putAll(encodeBundle(mTitles, "title"));
-                args.putAll(encodeBundle(times, "time"));
-                args.putString("description", imageFeed.getDescription());
-                args.putString("info", imageFeed.getMoreinfo());
-                args.putString("feed_name", imageFeed.getTitle());
-                args.putInt("position", position);
+                args.putString("url", mUrls.get(position)[2]);
 
                 photoView.putExtras(args);
 
@@ -172,7 +162,6 @@ class ImageFeedFragment extends Fragment {
 
     /** Class to run after RoboSpice task completion. */
     private class ImageFeedRequestListener implements RequestListener<FeedImage[]> {
-
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Log.d(getString(R.string.app_tag), "Image Feed load fail! " + spiceException.getMessage());
@@ -209,13 +198,8 @@ class ImageFeedFragment extends Fragment {
                     mTimes.add(formatter.parseDateTime(f.getEvent_at()));
                 }
 
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mImageAdapter.notifyDataSetChanged();
-                        getActivity().setProgressBarIndeterminateVisibility(false);
-                    }
-                });
+                mImageAdapter.notifyDataSetChanged();
+                getActivity().setProgressBarIndeterminateVisibility(false);
             }
         }
     }
@@ -245,41 +229,6 @@ class ImageFeedFragment extends Fragment {
             page = 1;
 
         mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
-    }
-
-    /**
-     * Takes an ArrayList of Strings and puts them in a bundle.
-     * Key Format: image_[key]_[num]
-     * @param notEncoded ArrayList of Strings to be bundled.
-     * @param key String used as part of the identifier in the bundle.
-     * @return Bundle containing all Strings from initial ArrayList.
-     */
-    Bundle encodeBundle(ArrayList<String> notEncoded, String key) {
-        Bundle encoded = new Bundle();
-
-        for (int i = 0; i < notEncoded.size(); i++)
-            encoded.putString("image_" + key + "_" + i, notEncoded.get(i));
-
-        return encoded;
-    }
-
-    /**
-     * Takes an ArrayList of String Arrays and puts them in a bundle.
-     * Key Format: image_[key]_[image num]_[size num]
-     * @param notEncoded ArrayList of String Arrays to be bundled.
-     * @param key String used as part of the identifier in the bundle.
-     * @param numSizes Number of items in each String Array.
-     * @return Bundle containing all Strings from initial ArrayList.
-     */
-    Bundle encodeBundle(ArrayList<String[]> notEncoded, String key, int numSizes) {
-        Bundle encoded = new Bundle();
-        encoded.putInt("num_image_sizes", numSizes);
-
-        for (int i = 0; i < notEncoded.size(); i++)
-            for (int j = 0; j < numSizes; j++)
-                encoded.putString("image_" + key + "_" + i + "_" + j, notEncoded.get(i)[j]);
-
-        return encoded;
     }
 
     /** Methods used to dynamically adapt GridView thumbnail sizing. */
