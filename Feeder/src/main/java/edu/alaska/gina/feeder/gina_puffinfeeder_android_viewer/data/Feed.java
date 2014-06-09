@@ -16,4 +16,9 @@ public class Feed {
     public String updated_at;
     public boolean online;
     public String preview_url;
+
+    @Override
+    public String toString() {
+        return feed_name;
+    }
 }
