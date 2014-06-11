@@ -34,8 +34,10 @@ public class FullscreenVideoPlayerActivity extends Activity {
                 mp.setLooping(true);
             }
         });
-        if (getIntent().getExtras() != null)
-            movie.setVideoPath(getIntent().getExtras().getString("url"));
+
+        Bundle e = getIntent().getExtras();
+        if (e != null)
+            movie.setVideoPath(e.getString("url"));
         else
             movie.setVideoPath("http://feeder.gina.alaska.edu/feeds/radar-uaf-barrow-seaice-images/movies/3464_radar-uaf-barrow-seaice-images_2014-6-5_1-day-animation.webm");
 

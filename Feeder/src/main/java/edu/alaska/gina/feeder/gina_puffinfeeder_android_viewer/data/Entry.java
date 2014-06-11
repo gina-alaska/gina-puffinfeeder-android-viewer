@@ -9,11 +9,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 //TODO Update this class to actual JSON field names
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Entry {
-    public String new_date;
+    public String date;
     public String source_url;
     public String data_url;
-    public String title_new;
+    public String title;
     public String preview;
     public boolean starred;
-    public String id_new;
+    public String id;
 }

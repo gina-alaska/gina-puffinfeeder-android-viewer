@@ -16,7 +16,7 @@
     <ListView
             android:id="@+id/drawer_List"
             android:layout_height="match_parent"
-            android:layout_width="300dp"
+            android:layout_width="240dp"
             android:layout_gravity="start"
             android:choiceMode="singleChoice"
             android:dividerHeight="0.5dp"
