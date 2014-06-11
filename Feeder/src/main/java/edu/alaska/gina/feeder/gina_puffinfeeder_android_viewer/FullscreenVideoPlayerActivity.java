@@ -7,6 +7,9 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Activity for playing videos in full screen.
  * Created by Bobby Signor on 6/6/2014.
@@ -28,6 +31,7 @@ public class FullscreenVideoPlayerActivity extends Activity {
         setContentView(R.layout.activity_fullscreen_video_player);
 
         movie = (VideoView) findViewById(R.id.fullscreen_content);
+        movie.setOnSystemUiVisibilityChangeListener(new SysUiVisibilityListener());
         movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -70,5 +74,25 @@ public class FullscreenVideoPlayerActivity extends Activity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt("seek_pos", movie.getCurrentPosition());
         super.onSaveInstanceState(outState);
+    }
+
+    private class SysUiVisibilityListener implements View.OnSystemUiVisibilityChangeListener {
+        private int delay = Integer.parseInt(getResources().getString(R.string.hide_system_ui_delay));
+
+        @Override
+        public void onSystemUiVisibilityChange(int visibility) {
+            Timer t = new Timer();
+            t.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            movie.setSystemUiVisibility(UI_HIDE_OPTIONS);
+                        }
+                    });
+                }
+            }, delay);
+        }
     }
 }
