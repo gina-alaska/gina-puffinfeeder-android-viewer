@@ -14,7 +14,7 @@
             android:background="@android:color/background_light" />
 
     <ListView
-            android:id="@+id/drawer_List"
+            android:id="@+id/drawer_left_nav"
             android:layout_height="match_parent"
             android:layout_width="300dp"
             android:layout_gravity="start"
@@ -23,5 +23,23 @@
             android:textColor="@android:color/primary_text_light"
             android:divider="@android:color/darker_gray"
             android:background="@android:color/background_light" />
+
+    <LinearLayout
+            android:id="@+id/drawer_right_info"
+            android:layout_gravity="end"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="2dp"
+            android:background="@android:color/background_light">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/description_placeholder"
+                android:id="@+id/description" />
+
+    </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

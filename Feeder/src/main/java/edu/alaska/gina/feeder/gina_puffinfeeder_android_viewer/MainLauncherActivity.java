@@ -40,7 +40,8 @@ public class MainLauncherActivity extends Activity {
     private Menu aBarMenu;
 
     private DrawerLayout mDrawerLayout; //Contains the entire activity.
-    private ListView mDrawerList; //ListView of Nav Drawer.
+    private ListView navDrawerList; //ListView of Nav Drawer.
+    private LinearLayout infoDrawerLayout; //Layout for the Info Drawer.
     private ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
 
     /** Overridden Methods */
@@ -60,23 +61,12 @@ public class MainLauncherActivity extends Activity {
             getFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
         }
         else {
-            ImageFeedFragment iFrag = new ImageFeedFragment();
-            Bundle arggh = new Bundle();
-
-            arggh.putInt("position", current);
-            arggh.putString("title", masterFeedsList[current].getTitle());
-            arggh.putString("entries", masterFeedsList[current].getEntries());
-            arggh.putString("slug", masterFeedsList[current].getSlug());
-            arggh.putBoolean("status", masterFeedsList[current].getStatus());
-            arggh.putString("description", masterFeedsList[current].getDescription());
-            arggh.putString("info", masterFeedsList[current].getMoreinfo());
-
-            iFrag.setArguments(arggh);
-            getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag).addToBackStack(null).commit();
+            openPreviewFragment(current);
         }
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.drawer_List);
+        navDrawerList = (ListView) findViewById(R.id.drawer_left_nav);
+        infoDrawerLayout = (LinearLayout) findViewById(R.id.drawer_right_info);
 
         if (getActionBar() != null)
             getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -101,7 +91,7 @@ public class MainLauncherActivity extends Activity {
 
         primary = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
 
-        mDrawerList.setAdapter(primary);
+        navDrawerList.setAdapter(primary);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -121,26 +111,13 @@ public class MainLauncherActivity extends Activity {
         if (current < 0)
             refreshFeedsList(DurationInMillis.ONE_DAY);
 
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        navDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (!listItems.get(position).equals("No Feeds Loaded.")) {
-                    current = position;
-                    ImageFeedFragment iFrag = new ImageFeedFragment();
-                    Bundle intel = new Bundle();
-
-                    intel.putInt("position", position);
-                    intel.putString("title", masterFeedsList[position].getTitle());
-                    intel.putString("entries", masterFeedsList[position].getEntries());
-                    intel.putString("slug", masterFeedsList[position].getSlug());
-                    intel.putBoolean("status", masterFeedsList[position].getStatus());
-                    intel.putString("description", masterFeedsList[current].getDescription());
-                    intel.putString("info", masterFeedsList[current].getMoreinfo());
-
-                    iFrag.setArguments(intel);
-                    getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
+                    openPreviewFragment(position);
                 }
-                mDrawerLayout.closeDrawer(mDrawerList);
+                mDrawerLayout.closeDrawer(navDrawerList);
             }
         });
 
@@ -189,10 +166,13 @@ public class MainLauncherActivity extends Activity {
         setProgressBarIndeterminateVisibility(false);
         try {
             if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
+                ((TextView) findViewById(R.id.description)).setText(getResources().getString(R.string.description_placeholder));
+
                 aBarMenu.findItem(R.id.action_refresh).setVisible(false);
                 aBarMenu.findItem(R.id.action_load_next).setVisible(false);
                 aBarMenu.findItem(R.id.action_load_prev).setVisible(false);
                 aBarMenu.findItem(R.id.action_display_short_description).setVisible(false);
+
                 if (getActionBar() != null)
                     getActionBar().setTitle("GINA Puffin Feeder");
             }
@@ -207,14 +187,14 @@ public class MainLauncherActivity extends Activity {
             menu.findItem(R.id.action_load_first).setVisible(false);
             menu.findItem(R.id.action_display_short_feed_description).setVisible(false);
 
-            if (mDrawerLayout.isDrawerOpen(mDrawerList))
+            if (mDrawerLayout.isDrawerOpen(navDrawerList))
                 menu.findItem(R.id.action_refresh).setVisible(true);
             else
                 menu.findItem(R.id.action_refresh).setVisible(false);
         }
 
         else {
-            if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+            if (mDrawerLayout.isDrawerOpen(navDrawerList)) {
                 menu.findItem(R.id.action_refresh).setVisible(true);
                 menu.findItem(R.id.action_load_next).setVisible(false);
                 menu.findItem(R.id.action_load_prev).setVisible(false);
@@ -249,14 +229,15 @@ public class MainLauncherActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (mDrawerLayout.isDrawerOpen(mDrawerList))
-                    mDrawerLayout.closeDrawer(mDrawerList);
+                mDrawerLayout.closeDrawer(infoDrawerLayout);
+                if (mDrawerLayout.isDrawerOpen(navDrawerList))
+                    mDrawerLayout.closeDrawer(navDrawerList);
                 else
-                    mDrawerLayout.openDrawer(mDrawerList);
+                    mDrawerLayout.openDrawer(navDrawerList);
                 return true;
 
             case R.id.action_refresh:
-                if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+                if (mDrawerLayout.isDrawerOpen(navDrawerList)) {
                     refreshFeedsList(DurationInMillis.ALWAYS_EXPIRED);
                     primary.notifyDataSetChanged();
                     return true;
@@ -308,7 +289,7 @@ public class MainLauncherActivity extends Activity {
                 public void run() {
                     primary.notifyDataSetChanged();
                     if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && current < 0)
-                        mDrawerLayout.openDrawer(mDrawerList);
+                        mDrawerLayout.openDrawer(navDrawerList);
                 }
             });
 
@@ -350,6 +331,29 @@ public class MainLauncherActivity extends Activity {
 
             return b.create();
         }
+    }
+
+    /**
+     * Method that loads a feed into a fragment.
+     * @param position Index of feed to be loaded.
+     */
+    private void openPreviewFragment(int position) {
+        current = position;
+        ImageFeedFragment iFrag = new ImageFeedFragment();
+        Bundle intel = new Bundle();
+
+        intel.putInt("position", position);
+        intel.putString("title", masterFeedsList[position].getTitle());
+        intel.putString("entries", masterFeedsList[position].getEntries());
+        intel.putString("slug", masterFeedsList[position].getSlug());
+        intel.putBoolean("status", masterFeedsList[position].getStatus());
+        intel.putString("description", masterFeedsList[current].getDescription());
+        intel.putString("info", masterFeedsList[current].getMoreinfo());
+
+        iFrag.setArguments(intel);
+        getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
+
+        ((TextView) findViewById(R.id.description)).setText(masterFeedsList[current].getDescription());
     }
 
     /**
