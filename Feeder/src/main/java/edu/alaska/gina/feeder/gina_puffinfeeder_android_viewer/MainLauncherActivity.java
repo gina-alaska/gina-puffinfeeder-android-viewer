@@ -272,7 +272,7 @@ public class MainLauncherActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /** Class to run after RoboSpice task completion. */
+    /** Object to listen for RoboSpice task completion. */
     private class FeedsRequestListener implements RequestListener<Feed[]> {
         @Override
         public void onRequestSuccess(Feed[] feed) {
@@ -283,15 +283,11 @@ public class MainLauncherActivity extends Activity {
             for (Feed f : feed)
                 listItems.add(f.getTitle());
 
-            Activity a = new Activity();
-            a.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    primary.notifyDataSetChanged();
-                    if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && current < 0)
-                        mDrawerLayout.openDrawer(navDrawerList);
-                }
-            });
+            primary.notifyDataSetChanged();
+            if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && current < 0) {
+                mDrawerLayout.closeDrawer(infoDrawerLayout);
+                mDrawerLayout.openDrawer(navDrawerList);
+            }
 
             if (isOnline())
                 Toast.makeText(getApplicationContext(), "Feed list reloaded.", Toast.LENGTH_SHORT).show();
