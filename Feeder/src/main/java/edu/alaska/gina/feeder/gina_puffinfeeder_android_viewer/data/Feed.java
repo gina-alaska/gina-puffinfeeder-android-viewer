@@ -8,6 +8,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Feed {
+    public int id;
+    public String title;
+    public String slug;
+    public String description;
+    public String type;
+    public String updated_at;
+    public boolean online;
+    public String preview_url;
+    public String entries_url;
+    public String more_info_url;
+    public boolean mobile_compatible;
+    public boolean browser_compatible;
+
+    /*
     public String feed_type;
     public String data_api_url;
     public String feed_name;
@@ -16,9 +30,9 @@ public class Feed {
     public String updated_at;
     public boolean online;
     public String preview_url;
-
+    */
     @Override
     public String toString() {
-        return feed_name;
+        return this.title;
     }
 }

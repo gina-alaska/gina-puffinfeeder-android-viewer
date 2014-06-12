@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.FeedsList;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Category;
 
 import java.util.ArrayList;
 
@@ -16,21 +16,21 @@ import java.util.ArrayList;
  */
 public class FeedsListAdapter extends BaseExpandableListAdapter {
     private Context context;
-    private ArrayList<FeedsList> feedsLists;
+    private ArrayList<Category> categories;
 
-    public FeedsListAdapter(Context context, ArrayList<FeedsList> feedsLists) {
+    public FeedsListAdapter(Context context, ArrayList<Category> categories) {
         this.context = context;
-        this.feedsLists = feedsLists;
+        this.categories = categories;
     }
 
     @Override
     public int getGroupCount() {
-        return feedsLists.size();
+        return categories.size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return feedsLists.get(groupPosition).size();
+        return categories.get(groupPosition).size();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class FeedsListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return feedsLists.get(groupPosition).get(childPosition);
+        return categories.get(groupPosition).get(childPosition);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class FeedsListAdapter extends BaseExpandableListAdapter {
             convertView.setPadding(30,0,0,0);
         }
         TextView name = (TextView) convertView.findViewById(android.R.id.text1);
-        name.setText(feedsLists.get(groupPosition).name);
+        name.setText(categories.get(groupPosition).name);
 
         return convertView;
     }
@@ -80,7 +80,7 @@ public class FeedsListAdapter extends BaseExpandableListAdapter {
             convertView.setBackgroundColor(Color.parseColor("#DDDDDD"));
         }
         TextView name = (TextView) convertView.findViewById(android.R.id.text1);
-        name.setText(feedsLists.get(groupPosition).get(childPosition).feed_name);
+        name.setText(categories.get(groupPosition).get(childPosition).title);
 
         return convertView;
     }

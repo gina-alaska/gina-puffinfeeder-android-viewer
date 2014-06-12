@@ -1,22 +1,21 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network;
 
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Feed;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.FeedsList;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Category;
 
 /**
  * Created by Bobby on 6/6/2014.
  */
-public class FeedsListRequest extends SpringAndroidSpiceRequest<FeedsList> {
+public class FeedsListRequest extends SpringAndroidSpiceRequest<Category> {
     private final String endpoint;
 
     public FeedsListRequest(String endpoint) {
-        super(FeedsList.class);
+        super(Category.class);
         this.endpoint = endpoint;
     }
 
     @Override
-    public FeedsList loadDataFromNetwork() throws Exception {
-        return getRestTemplate().getForObject(endpoint, FeedsList.class);
+    public Category loadDataFromNetwork() throws Exception {
+        return getRestTemplate().getForObject(endpoint, Category.class);
     }
 }
