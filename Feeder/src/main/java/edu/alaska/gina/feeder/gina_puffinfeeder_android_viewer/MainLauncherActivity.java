@@ -366,6 +366,9 @@ public class MainLauncherActivity extends Activity {
         intel.putString("description", masterFeedsList[current].getDescription());
         intel.putString("info", masterFeedsList[current].getMoreinfo());
 
+        if (getActionBar() != null)
+            getActionBar().setTitle(masterFeedsList[position].getTitle());
+
         iFrag.setArguments(intel);
         getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
 

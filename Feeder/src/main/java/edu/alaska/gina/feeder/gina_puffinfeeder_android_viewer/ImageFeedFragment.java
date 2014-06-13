@@ -55,7 +55,6 @@ class ImageFeedFragment extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle extras = getArguments();
-        imageFeed.setTitle(extras.getString("title"));
         imageFeed.setStatusBoolean(extras.getBoolean("status"));
         imageFeed.setEntries(extras.getString("entries"));
         imageFeed.setSlug(extras.getString("slug"));
