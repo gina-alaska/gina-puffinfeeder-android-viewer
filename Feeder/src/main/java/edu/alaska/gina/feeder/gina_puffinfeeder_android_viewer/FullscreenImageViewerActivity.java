@@ -21,6 +21,8 @@ import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpice
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Activity for viewing a full sized image in full screen.
@@ -56,6 +58,7 @@ public class FullscreenImageViewerActivity extends Activity {
         });
 
         fullscreenImage = (ImageView)findViewById(R.id.fullscreen_content);
+        fullscreenImage.setOnSystemUiVisibilityChangeListener(new SysUiVisibilityListener());
         photoAttacher = new PhotoViewAttacher(fullscreenImage);
         photoAttacher.setOnPhotoTapListener(new PhotoTapListener());
 
@@ -131,6 +134,26 @@ public class FullscreenImageViewerActivity extends Activity {
                 return true;
             default:
                 return false;
+        }
+    }
+
+    private class SysUiVisibilityListener implements View.OnSystemUiVisibilityChangeListener {
+        private int delay = Integer.parseInt(getResources().getString(R.string.hide_system_ui_delay));
+
+        @Override
+        public void onSystemUiVisibilityChange(int visibility) {
+            Timer t = new Timer();
+            t.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            fullscreenImage.setSystemUiVisibility(UI_HIDE_OPTIONS);
+                        }
+                    });
+                }
+            }, delay);
         }
     }
 

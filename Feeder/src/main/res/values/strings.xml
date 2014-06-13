@@ -4,7 +4,7 @@
     <string name="app_name">GINA Puffin Feeder</string>
     <string name="app_tag">Feeder_App</string>
 
-    <!-- Accessibility Strings -->
+    <!-- Drawer Accessibility Strings -->
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
@@ -43,13 +43,23 @@
         <item>2</item>
     </string-array>
 
+    <!-- Endpoint URI's -->
     <string name="url_feeds_endpoint">http://feeder.gina.alaska.edu/feeds.json</string>
     <string name="url_movies_endpoint">http://feeder.gina.alaska.edu/movies.json</string>
 
+    <!-- UI Constants, Placeholders, & Magic -->
+    <string name="hide_system_ui_delay">1500</string>
+    <string name="description_placeholder">No Feed Selected</string>
+    <string name="description_header">Description</string>
+    <string name="more_info_button_text">More Info</string>
+
+    <!-- Misc -->
     <string name="pref_smart_sizing_size_defaultValue">small</string>
     <string name="title_activity_web_view">WebViewActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_fullscreen_image_viewer">FullscreenImageViewerActivity</string>
+
+    <!-- Alpha Build Indicator (Either "yes" or "no") -->
     <string name="alpha_test_build">yes</string>
 
 </resources>
