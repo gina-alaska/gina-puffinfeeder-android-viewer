@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -41,7 +42,7 @@ public class MainLauncherActivity extends Activity {
 
     private DrawerLayout mDrawerLayout; //Contains the entire activity.
     private ListView navDrawerList; //ListView of Nav Drawer.
-    private LinearLayout infoDrawerLayout; //Layout for the Info Drawer.
+    private RelativeLayout infoDrawerLayout; //Layout for the Info Drawer.
     private ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
 
     /** Overridden Methods */
@@ -59,6 +60,7 @@ public class MainLauncherActivity extends Activity {
         if (current < 0) {
             StartFragment sFrag = new StartFragment();
             getFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
+            findViewById(R.id.more_info_button).setVisibility(View.GONE);
         }
         else {
             openPreviewFragment(current);
@@ -66,7 +68,7 @@ public class MainLauncherActivity extends Activity {
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navDrawerList = (ListView) findViewById(R.id.drawer_left_nav);
-        infoDrawerLayout = (LinearLayout) findViewById(R.id.drawer_right_info);
+        infoDrawerLayout = (RelativeLayout) findViewById(R.id.drawer_right_info);
 
         if (getActionBar() != null)
             getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -84,8 +86,10 @@ public class MainLauncherActivity extends Activity {
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle("Select a Feed");
-                invalidateOptionsMenu();
+                if (mDrawerLayout.isDrawerOpen(navDrawerList)) {
+                    getActionBar().setTitle("Select a Feed");
+                    invalidateOptionsMenu();
+                }
             }
         };
 
@@ -93,6 +97,15 @@ public class MainLauncherActivity extends Activity {
 
         navDrawerList.setAdapter(primary);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, infoDrawerLayout);
+
+        findViewById(R.id.more_info_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(masterFeedsList[current].getMoreinfo()));
+                startActivity(browserIntent);
+            }
+        });
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
@@ -166,7 +179,7 @@ public class MainLauncherActivity extends Activity {
         setProgressBarIndeterminateVisibility(false);
         try {
             if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
-                ((TextView) findViewById(R.id.description)).setText(getResources().getString(R.string.description_placeholder));
+                ((TextView) findViewById(R.id.description_body)).setText(getResources().getString(R.string.description_placeholder));
 
                 aBarMenu.findItem(R.id.action_refresh).setVisible(false);
                 aBarMenu.findItem(R.id.action_load_next).setVisible(false);
@@ -245,16 +258,7 @@ public class MainLauncherActivity extends Activity {
                 break;
 
             case R.id.action_display_short_feed_description:
-                Bundle info = new Bundle();
-                info.putString("description", masterFeedsList[current].getDescription());
-                info.putString("title", masterFeedsList[current].getTitle());
-                info.putString("url", masterFeedsList[current].getMoreinfo());
-
-                ShortDescriptionFragment dFrag = new ShortDescriptionFragment();
-                dFrag.setArguments(info);
-
-                dFrag.show(getFragmentManager(), "description_dialog");
-
+                mDrawerLayout.openDrawer(infoDrawerLayout);
                 return true;
 
             case R.id.action_show_credits:
@@ -349,7 +353,11 @@ public class MainLauncherActivity extends Activity {
         iFrag.setArguments(intel);
         getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
 
-        ((TextView) findViewById(R.id.description)).setText(masterFeedsList[current].getDescription());
+        ((TextView) findViewById(R.id.description_body)).setText(masterFeedsList[current].getDescription());
+        if (masterFeedsList[current].getMoreinfo() == null)
+            findViewById(R.id.more_info_button).setVisibility(View.GONE);
+        else
+            findViewById(R.id.more_info_button).setVisibility(View.VISIBLE);
     }
 
     /**

@@ -47,9 +47,11 @@
     <string name="url_feeds_endpoint">http://feeder.gina.alaska.edu/feeds.json</string>
     <string name="url_movies_endpoint">http://feeder.gina.alaska.edu/movies.json</string>
 
-    <!-- UI Magic & Placeholders -->
+    <!-- UI Constants, Placeholders, & Magic -->
     <string name="hide_system_ui_delay">1500</string>
     <string name="description_placeholder">No Feed Selected</string>
+    <string name="description_header">Description</string>
+    <string name="more_info_button_text">More Info</string>
 
     <!-- Misc -->
     <string name="pref_smart_sizing_size_defaultValue">small</string>
