@@ -98,6 +98,16 @@ public class MainLauncherActivity extends Activity {
         navDrawerList.setAdapter(primary);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, infoDrawerLayout);
+        mDrawerLayout.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && mDrawerLayout.isDrawerOpen(infoDrawerLayout)) {
+                    mDrawerLayout.closeDrawer(infoDrawerLayout);
+                    return true;
+                }
+                return false;
+            }
+        });
 
         findViewById(R.id.more_info_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,6 +187,12 @@ public class MainLauncherActivity extends Activity {
     public void onBackPressed() {
         super.onBackPressed();
         setProgressBarIndeterminateVisibility(false);
+
+        if (mDrawerLayout.isDrawerOpen(infoDrawerLayout)) {
+            mDrawerLayout.closeDrawer(infoDrawerLayout);
+            return;
+        }
+
         try {
             if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
                 ((TextView) findViewById(R.id.description_body)).setText(getResources().getString(R.string.description_placeholder));
