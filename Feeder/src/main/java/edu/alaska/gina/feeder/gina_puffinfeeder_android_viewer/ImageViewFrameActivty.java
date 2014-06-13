@@ -95,7 +95,7 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         }
         endOfLine();
     }
-
+/*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -136,7 +136,7 @@ public class ImageViewFrameActivty extends Activity implements View.OnClickListe
         }
         return super.onOptionsItemSelected(item);
     }
-
+*/
     @Override
     public void onBackPressed() {
         finish();
