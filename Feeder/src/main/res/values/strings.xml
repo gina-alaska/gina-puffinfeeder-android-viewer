@@ -11,9 +11,11 @@
     <!-- Settings Menu Resources -->
     <string name="action_settings">Settings</string>
 
-    <!-- General Strings -->
+    <!-- Date Parsing Style Strings -->
     <string name="event_at_pattern">yyyy-MM-dd\'T\'HH:mm:ssZ</string>
     <string name="ISO8601_pattern">yyyy-MM-dd\'T\'HH:mm:ss.SSSZ</string>
+
+    <!-- Credits -->
     <string name="credits_filepath">file:///android_res/raw/credits.html</string>
     <string name="credits_title">Credits and Licenses</string>
 
@@ -42,6 +44,12 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+
+    <!-- Cache Names & Keys -->
+    <string name="image_cache">images.cache</string>
+    <string name="categories_cache">categories</string>
+    <string name="feeds_cache">feeds</string>
+    <string name="entries_cache">entries</string>
 
     <!-- Endpoint URI's -->
     <string name="url_feeds_endpoint">http://feeder.gina.alaska.edu/feeds.json</string>

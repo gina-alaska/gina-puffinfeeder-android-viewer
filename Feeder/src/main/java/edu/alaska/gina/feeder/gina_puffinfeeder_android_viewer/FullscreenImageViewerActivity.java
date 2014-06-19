@@ -2,14 +2,11 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -105,7 +102,7 @@ public class FullscreenImageViewerActivity extends Activity {
         if (!manager.isStarted())
             manager.start(this);
 
-        manager.execute(new BitmapRequest(url, new File(getCacheDir().getAbsolutePath() + "images.cache")), new BitmapRequestListener());
+        manager.execute(new BitmapRequest(url, new File(getCacheDir().getAbsolutePath() + getResources().getString(R.string.image_cache))), new BitmapRequestListener());
     }
 
     /** Methods to choose size. */
