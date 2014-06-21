@@ -1,6 +1,7 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,12 +13,12 @@ import java.util.Comparator;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Entry implements Comparable<Entry>, Comparator<Entry> {
     public int id;
-    public String name;
     public String slug;
+    public DateTime event_at;
     public String url;
+    public String source_url;
     public String data_url;
     public String preview_url;
-    public String feed_url;
     public boolean starred;
 
     @Override
@@ -38,21 +39,10 @@ public class Entry implements Comparable<Entry>, Comparator<Entry> {
         return 0;
     }
 
-    public static class List {
-        private static final long serialVersionUID = 6836514467436078182L;
-
-        private ArrayList<Entry> entries;
-
-        public ArrayList<Entry> getEntries() {
-            return entries;
-        }
-
-        public void setEntries(ArrayList<Entry> users) {
-            this.entries = users;
-        }
-
-        public static long getSerialversionuid() {
-            return serialVersionUID;
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Entry)
+            return this.id == ((Entry) o).id;
+        return false;
     }
 }

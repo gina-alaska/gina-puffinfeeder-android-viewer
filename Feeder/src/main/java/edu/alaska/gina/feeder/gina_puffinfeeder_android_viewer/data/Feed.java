@@ -1,6 +1,7 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.joda.time.DateTime;
 
 import java.util.Comparator;
 
@@ -14,14 +15,14 @@ public class Feed implements Comparator<Feed>, Comparable<Feed> {
     public String title;
     public String slug;
     public String description;
-    public String type;
-    public String updated_at;
+    public DateTime updated_at;
+    public String mobile_compatible;
+    public String url;
     public boolean online;
+    public String category;
     public String preview_url;
     public String entries_url;
     public String more_info_url;
-    public boolean mobile_compatible;
-    public boolean browser_compatible;
 
     @Override
     public String toString() {

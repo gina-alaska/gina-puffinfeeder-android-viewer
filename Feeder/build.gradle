@@ -56,7 +56,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 19
         versionCode 3
-        versionName "1.3.2a"
+        versionName "2.0.1a"
     }
 
     lintOptions {
@@ -88,10 +88,12 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.2'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.2.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.2.2'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.0'
 
     compile 'joda-time:joda-time:2.2'
+    compile 'org.joda:joda-convert:1.6'
 
-    compile 'com.squareup.picasso:picasso:1.1.1'
+    compile 'com.squareup.picasso:picasso:2.3.2'
 
     compile 'com.github.chrisbanes.photoview:library:1.2.3'
 

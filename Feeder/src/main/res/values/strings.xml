@@ -48,12 +48,16 @@
     <!-- Cache Names & Keys -->
     <string name="image_cache">images.cache</string>
     <string name="categories_cache">categories</string>
-    <string name="feeds_cache">feeds</string>
     <string name="entries_cache">entries</string>
 
-    <!-- Endpoint URI's -->
-    <string name="url_feeds_endpoint">http://feeder.gina.alaska.edu/feeds.json</string>
-    <string name="url_movies_endpoint">http://feeder.gina.alaska.edu/movies.json</string>
+    <!-- Base URL Strings -->
+    <string name="base_url">http://feeder-web-dev.x.gina.alaska.edu/</string>
+    <string name="JSON_extension">.json</string>
+
+    <!-- Endpoint Strings -->
+    <string name="categories_endpoint">categories</string>
+    <string name="feeds_endpoint">feeds</string>
+    <string name="movies_endpoint">movies</string>
 
     <!-- UI Constants, Placeholders, & Magic -->
     <string name="hide_system_ui_delay">1500</string>

@@ -1,17 +1,16 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Fragment;
+
 import android.content.Intent;
 import android.content.res.Configuration;
+
 import android.os.Bundle;
+
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -20,11 +19,12 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import com.octo.android.robospice.spicelist.simple.BitmapSpiceManager;
 
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.EntriesRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.PicassoImageAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,16 +34,12 @@ import java.util.Collections;
  * Created by bobby on 6/14/13.
  */
 class ImageFeedFragment extends Fragment {
-    private static String JSON_CACHE_KEY;
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
     private Menu aBarMenu;
 
-    private final Feed imageFeed = new Feed();
-    private final ArrayList<FeedImage> mList = new ArrayList<FeedImage>();
-    private final ArrayList<String> mTitles = new ArrayList<String>();
-    private final ArrayList<String[]> mUrls = new ArrayList<String[]>();
-    private final ArrayList<DateTime> mTimes = new ArrayList<DateTime>();
+    private final ArrayList<Entry> entriesList = new ArrayList<Entry>();
+    private String entries;
     private PicassoImageAdapter mImageAdapter;
     private int page = 1;
 
@@ -55,20 +51,12 @@ class ImageFeedFragment extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle extras = getArguments();
-        imageFeed.setStatusBoolean(extras.getBoolean("status"));
-        imageFeed.setEntries(extras.getString("entries"));
-        imageFeed.setSlug(extras.getString("slug"));
-        imageFeed.setDescription(extras.getString("description"));
-        imageFeed.setMoreinfo(extras.getString("info"));
-        JSON_CACHE_KEY = imageFeed.getSlug() + "_json";
+        entries = extras.getString("entries") + getString(R.string.JSON_extension);
 
         getActivity().setProgressBarIndeterminateVisibility(true);
 
         refreshThumbs(false, false);
-        mImageAdapter = new PicassoImageAdapter(this.getActivity(), mList);
-
-        if (getActivity().getActionBar() != null)
-            getActivity().getActionBar().setTitle(imageFeed.getTitle());
+        mImageAdapter = new PicassoImageAdapter(this.getActivity(), entriesList);
 
         return v;
     }
@@ -87,8 +75,7 @@ class ImageFeedFragment extends Fragment {
                 Intent photoView = new Intent(getActivity(), FullscreenImageViewerActivity.class);
 
                 Bundle args = new Bundle();
-                args.putString("url", mUrls.get(position)[2]);
-
+                args.putString("url", entriesList.get(position).data_url);
                 photoView.putExtras(args);
 
                 getActivity().startActivity(photoView);
@@ -160,45 +147,32 @@ class ImageFeedFragment extends Fragment {
     }
 
     /** Class to run after RoboSpice task completion. */
-    private class ImageFeedRequestListener implements RequestListener<FeedImage[]> {
+    private class ImageFeedRequestListener implements RequestListener<Entry[]> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Log.d(getString(R.string.app_tag), "Image Feed load fail! " + spiceException.getMessage());
             Toast.makeText(getActivity(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
             getActivity().setProgressBarIndeterminateVisibility(false);
-            //mSpiceManager.shouldStop();
         }
 
         @Override
-        public void onRequestSuccess(FeedImage[] feedImages) {
+        public void onRequestSuccess(Entry[] entries) {
             if (page <= 1) {
                 aBarMenu.findItem(R.id.action_load_prev).setIcon(R.drawable.ic_navigation_back_dud);
                 aBarMenu.findItem(R.id.action_load_first).setIcon(R.drawable.ic_navigation_first_dud);
-            }
-            else {
+            } else {
                 aBarMenu.findItem(R.id.action_load_prev).setIcon(R.drawable.ic_navigation_back);
                 aBarMenu.findItem(R.id.action_load_first).setIcon(R.drawable.ic_navigation_first);
             }
 
-            if (mList.size() > 0 && !feedImages[0].equals(mList.get(0)))
-                mList.clear();
+            if (entriesList.size() > 0 && !entries[0].equals(entriesList.get(0)))
+                entriesList.clear();
 
-            if (mList.size() <= 0) {
-                Collections.addAll(mList, feedImages);
+            if (entriesList.size() <= 0) {
+                Collections.addAll(entriesList, entries);
 
-                DateTimeFormatter formatter = DateTimeFormat.forPattern(getString(R.string.event_at_pattern));
-
-                mTitles.clear();
-                mUrls.clear();
-                mTimes.clear();
-                for (FeedImage f : mList) {
-                    mTitles.add(f.getTitle());
-                    mUrls.add(f.getPreviews().getAll());
-                    mTimes.add(formatter.parseDateTime(f.getEvent_at()));
-                }
-
-                mImageAdapter.notifyDataSetChanged();
-                getActivity().setProgressBarIndeterminateVisibility(false);
+            mImageAdapter.notifyDataSetChanged();
+            getActivity().setProgressBarIndeterminateVisibility(false);
             }
         }
     }
@@ -227,7 +201,7 @@ class ImageFeedFragment extends Fragment {
         else if (!isNext)
             page = 1;
 
-        mSpiceManager.execute(new FeedImagesJsonRequest(imageFeed, page), JSON_CACHE_KEY, DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+        mSpiceManager.execute(new EntriesRequest(entries), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
     /** Methods used to dynamically adapt GridView thumbnail sizing. */

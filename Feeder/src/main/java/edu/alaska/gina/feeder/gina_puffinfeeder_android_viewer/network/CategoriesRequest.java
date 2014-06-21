@@ -6,16 +6,19 @@ import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Category;
 /**
  * Created by Bobby on 6/6/2014.
  */
-public class CategoriesRequest extends SpringAndroidSpiceRequest<Category> {
-    private final String endpoint;
+public class CategoriesRequest extends SpringAndroidSpiceRequest<Category[]> {
+    private String url;
 
-    public CategoriesRequest(String endpoint) {
-        super(Category.class);
-        this.endpoint = endpoint;
+    public CategoriesRequest() {
+        super(Category[].class);
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Override
-    public Category loadDataFromNetwork() throws Exception {
-        return getRestTemplate().getForObject(endpoint, Category.class);
+    public Category[] loadDataFromNetwork() throws Exception {
+        return getRestTemplate().getForObject(url, Category[].class);
     }
 }

@@ -30,7 +30,7 @@ public class CategoriesAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return categories.get(groupPosition).size();
+        return categories.get(groupPosition).feeds.size();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class CategoriesAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return categories.get(groupPosition).get(childPosition);
+        return categories.get(groupPosition).feeds.get(childPosition);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class CategoriesAdapter extends BaseExpandableListAdapter {
             convertView.setBackgroundColor(Color.parseColor("#DDDDDD"));
         }
         TextView name = (TextView) convertView.findViewById(android.R.id.text1);
-        name.setText(categories.get(groupPosition).get(childPosition).title);
+        name.setText(categories.get(groupPosition).feeds.get(childPosition).title);
 
         return convertView;
     }

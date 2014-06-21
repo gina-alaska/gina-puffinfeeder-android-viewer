@@ -3,6 +3,7 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network;
 import android.app.Application;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.octo.android.robospice.SpringAndroidSpiceService;
 import com.octo.android.robospice.persistence.CacheManager;
 import com.octo.android.robospice.persistence.binary.InFileInputStreamObjectPersister;
@@ -99,6 +100,7 @@ public class JsonSpiceService extends SpringAndroidSpiceService {
 
         // web services support json responses
         MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+        jsonConverter.getObjectMapper().registerModule(new JodaModule());
         FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
         StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter();
         final List< HttpMessageConverter< ? >> listHttpMessageConverters = restTemplate.getMessageConverters();

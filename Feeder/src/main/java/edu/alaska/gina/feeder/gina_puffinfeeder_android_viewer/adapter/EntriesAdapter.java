@@ -11,6 +11,7 @@ import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * ArrayAdapter for API v2 thumbnail view.
@@ -18,8 +19,8 @@ import java.io.File;
  * Created by Bobby on 6/16/2014.
  */
 public class EntriesAdapter extends SpiceArrayAdapter<Entry> {
-    public EntriesAdapter(Context context, BitmapSpiceManager spiceManagerBinary, Entry.List entries) {
-        super(context, spiceManagerBinary, entries.getEntries());
+    public EntriesAdapter(Context context, BitmapSpiceManager spiceManagerBinary, ArrayList<Entry> entries) {
+        super(context, spiceManagerBinary, entries);
     }
 
     //TODO Make new thumbnail layout
