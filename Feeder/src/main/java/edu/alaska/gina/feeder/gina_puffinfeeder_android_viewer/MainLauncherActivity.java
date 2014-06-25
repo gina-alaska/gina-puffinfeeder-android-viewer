@@ -167,6 +167,8 @@ public class MainLauncherActivity extends Activity {
     @Override
     protected void onPause() {
         setProgressBarIndeterminateVisibility(false);
+        retained.saveList = this.masterFeedsList;
+        retained.current = this.current;
         if (mSpiceManager.isStarted())
             mSpiceManager.shouldStop();
         super.onPause();
@@ -183,8 +185,6 @@ public class MainLauncherActivity extends Activity {
     @Override
     protected void onDestroy() {
         setProgressBarIndeterminateVisibility(false);
-        retained.saveList = this.masterFeedsList;
-        retained.current = this.current;
         if (mSpiceManager.isStarted())
             mSpiceManager.shouldStop();
         super.onDestroy();
