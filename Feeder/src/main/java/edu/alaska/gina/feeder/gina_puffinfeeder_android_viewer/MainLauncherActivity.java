@@ -33,7 +33,6 @@ import java.util.Collections;
  * created by bobby on 6/14/13.
  */
 public class MainLauncherActivity extends Activity {
-    //private static final String JSON_CACHE_KEY = "feeds_json_array";
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
     private CategoriesRequest mSpiceRequest = new CategoriesRequest();
 
@@ -43,6 +42,7 @@ public class MainLauncherActivity extends Activity {
     private int current = -2;
 
     private Menu aBarMenu;
+    private DataFragment retained;
 
     private DrawerLayout mDrawerLayout; //Contains the entire activity.
     private ListView navDrawerList; //ListView of Nav Drawer.
@@ -57,20 +57,10 @@ public class MainLauncherActivity extends Activity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main_activity_launcher);
         setProgressBarIndeterminateVisibility(false);
-        mSpiceRequest.setUrl(getString(R.string.base_url) + getString(R.string.categories_endpoint) + getString(R.string.JSON_extension));
+        mSpiceRequest.setUrl(getString(R.string.base_url) + getString(R.string.categories_endpoint));
         masterFeedsList = new ArrayList<Category>();
 
-        if (savedInstanceState != null)
-            current = savedInstanceState.getInt("current");
-
-        if (current < 0) {
-            StartFragment sFrag = new StartFragment();
-            getFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
-            findViewById(R.id.more_info_button).setVisibility(View.GONE);
-        }
-        else {
-            openPreviewFragment(current);
-        }
+        retained = (DataFragment) getFragmentManager().findFragmentByTag("data");
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navDrawerList = (ListView) findViewById(R.id.drawer_left_nav);
@@ -137,8 +127,25 @@ public class MainLauncherActivity extends Activity {
     protected void onStart() {
         super.onStart();
 
-        if (current < 0)
+        primary.notifyDataSetChanged();
+
+        if (retained == null) {
+            retained = new DataFragment();
+            getFragmentManager().beginTransaction().add(retained, "data").commit();
             refreshFeedsList(DurationInMillis.ALWAYS_EXPIRED);
+        } else {
+            masterFeedsList = retained.saveList;
+            current = retained.current;
+            updateDrawer(masterFeedsList);
+        }
+
+        if (current < 0) {
+            StartFragment sFrag = new StartFragment();
+            getFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
+            findViewById(R.id.more_info_button).setVisibility(View.GONE);
+        } else {
+            openPreviewFragment(current);
+        }
 
         navDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -149,20 +156,12 @@ public class MainLauncherActivity extends Activity {
                 mDrawerLayout.closeDrawer(navDrawerList);
             }
         });
-
-        primary.notifyDataSetChanged();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("current", current);
     }
 
     @Override
@@ -184,6 +183,8 @@ public class MainLauncherActivity extends Activity {
     @Override
     protected void onDestroy() {
         setProgressBarIndeterminateVisibility(false);
+        retained.saveList = this.masterFeedsList;
+        retained.current = this.current;
         if (mSpiceManager.isStarted())
             mSpiceManager.shouldStop();
         super.onDestroy();
@@ -303,11 +304,10 @@ public class MainLauncherActivity extends Activity {
         @Override
         public void onRequestSuccess(Category[] categories) {
             setProgressBarIndeterminateVisibility(false);
+            masterFeedsList.clear();
             Collections.addAll(masterFeedsList, categories);
 
-            listItems.clear();
-            for (Feed c : categories[0].feeds)
-                listItems.add(c.title);
+            updateDrawer(masterFeedsList);
 
             primary.notifyDataSetChanged();
             if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && current < 0) {
@@ -354,6 +354,24 @@ public class MainLauncherActivity extends Activity {
         }
     }
 
+    private class DataFragment extends Fragment {
+        public ArrayList<Category> saveList;
+        public int current;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setRetainInstance(true);
+        }
+    }
+
+    private void updateDrawer(ArrayList<Category> categories) {
+        listItems.clear();
+        for (Feed c : categories.get(0).feeds)
+            listItems.add(c.title);
+        primary.notifyDataSetChanged();
+    }
+
     /**
      * Method that loads a feed into a fragment.
      * @param position Index of feed to be loaded.
@@ -362,8 +380,10 @@ public class MainLauncherActivity extends Activity {
         current = position;
         ImageFeedFragment iFrag = new ImageFeedFragment();
 
-        if (getActionBar() != null)
-            getActionBar().setTitle(masterFeedsList.get(0).feeds.get(position).title);
+        if (getActionBar() != null) {
+            Category c = masterFeedsList.get(0);
+            getActionBar().setTitle(c.feeds.get(position).title);
+        }
 
         Bundle b = new Bundle();
         b.putString("entries", masterFeedsList.get(0).feeds.get(position).entries_url);

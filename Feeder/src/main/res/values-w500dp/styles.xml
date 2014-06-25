@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ThumbsMargin">
+        <item name="android:layout_width">500dp</item>
+        <item name="android:stretchMode">none</item>
+        <item name="android:columnWidth">500dp</item>
+        <item name="android:numColumns">1</item>
+    </style>
+</resources>

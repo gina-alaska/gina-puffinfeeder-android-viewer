@@ -52,7 +52,6 @@
 
     <!-- Base URL Strings -->
     <string name="base_url">http://feeder-web-dev.x.gina.alaska.edu/</string>
-    <string name="JSON_extension">.json</string>
 
     <!-- Endpoint Strings -->
     <string name="categories_endpoint">categories</string>

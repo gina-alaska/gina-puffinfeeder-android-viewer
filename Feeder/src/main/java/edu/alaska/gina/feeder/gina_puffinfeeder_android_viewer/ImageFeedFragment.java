@@ -33,7 +33,7 @@ import java.util.Collections;
  * Fragment used to display the list of feed images in a GridView.
  * Created by bobby on 6/14/13.
  */
-class ImageFeedFragment extends Fragment {
+public class ImageFeedFragment extends Fragment {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
     private Menu aBarMenu;
@@ -51,7 +51,7 @@ class ImageFeedFragment extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle extras = getArguments();
-        entries = extras.getString("entries") + getString(R.string.JSON_extension);
+        entries = extras.getString("entries");
 
         getActivity().setProgressBarIndeterminateVisibility(true);
 
@@ -67,7 +67,7 @@ class ImageFeedFragment extends Fragment {
 
         GridView gridView = (GridView) getActivity().findViewById(R.id.image_grid);
         gridView.setAdapter(mImageAdapter);
-        adaptGridViewSize(gridView);
+        gridView.setGravity(Gravity.CENTER_HORIZONTAL);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -143,7 +143,7 @@ class ImageFeedFragment extends Fragment {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        adaptGridViewSize((GridView) getActivity().findViewById(R.id.image_grid));
+        //adaptGridViewSize((GridView) getActivity().findViewById(R.id.image_grid));
     }
 
     /** Class to run after RoboSpice task completion. */
