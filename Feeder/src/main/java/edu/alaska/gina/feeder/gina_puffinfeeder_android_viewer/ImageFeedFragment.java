@@ -19,12 +19,11 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
-import com.octo.android.robospice.spicelist.simple.BitmapSpiceManager;
 
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapter.EntriesAdapter;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.EntriesRequest;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.PicassoImageAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +39,7 @@ public class ImageFeedFragment extends Fragment {
 
     private final ArrayList<Entry> entriesList = new ArrayList<Entry>();
     private String entries;
-    private PicassoImageAdapter mImageAdapter;
+    private EntriesAdapter mImageAdapter;
     private int page = 1;
 
     /** Overridden Methods. */
@@ -56,7 +55,7 @@ public class ImageFeedFragment extends Fragment {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
         refreshThumbs(false, false);
-        mImageAdapter = new PicassoImageAdapter(this.getActivity(), entriesList);
+        mImageAdapter = new EntriesAdapter(this.getActivity(), entriesList);
 
         return v;
     }
@@ -201,7 +200,7 @@ public class ImageFeedFragment extends Fragment {
         else if (!isNext)
             page = 1;
 
-        mSpiceManager.execute(new EntriesRequest(entries), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, entries), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
     /** Methods used to dynamically adapt GridView thumbnail sizing. */

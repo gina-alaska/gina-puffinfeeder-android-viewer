@@ -19,9 +19,8 @@ import com.octo.android.robospice.*;
 import com.octo.android.robospice.persistence.*;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.*;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Feed;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.CategoriesRequest;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
 import java.util.ArrayList;
@@ -34,11 +33,11 @@ import java.util.Collections;
  */
 public class MainLauncherActivity extends Activity {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
-    private CategoriesRequest mSpiceRequest = new CategoriesRequest();
+    private String baseURL;
 
     private final ArrayList<String> listItems = new ArrayList<String>();
     private ArrayAdapter<String> primary;
-    private ArrayList<Category> masterFeedsList;
+    private ArrayList<Feed> masterFeedsList;
     private int current = -2;
 
     private Menu aBarMenu;
@@ -57,8 +56,8 @@ public class MainLauncherActivity extends Activity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main_activity_launcher);
         setProgressBarIndeterminateVisibility(false);
-        mSpiceRequest.setUrl(getString(R.string.base_url) + getString(R.string.categories_endpoint));
-        masterFeedsList = new ArrayList<Category>();
+        baseURL = getString(R.string.base_url);
+        masterFeedsList = new ArrayList<Feed>();
 
         retained = (DataFragment) getFragmentManager().findFragmentByTag("data");
 
@@ -76,7 +75,7 @@ public class MainLauncherActivity extends Activity {
                 if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment)
                     getActionBar().setTitle("GINA Puffin Feeder");
                 else
-                    getActionBar().setTitle(masterFeedsList.get(0).feeds.get(current).title);
+                    getActionBar().setTitle(masterFeedsList.get(current).title);
                 invalidateOptionsMenu();
             }
 
@@ -108,7 +107,7 @@ public class MainLauncherActivity extends Activity {
         findViewById(R.id.more_info_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(masterFeedsList.get(0).feeds.get(current).more_info_url));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(masterFeedsList.get(current).more_info_url));
                 startActivity(browserIntent);
             }
         });
@@ -132,7 +131,7 @@ public class MainLauncherActivity extends Activity {
         if (retained == null) {
             retained = new DataFragment();
             getFragmentManager().beginTransaction().add(retained, "data").commit();
-            refreshFeedsList(DurationInMillis.ALWAYS_EXPIRED);
+            refreshFeedsList();
         } else {
             masterFeedsList = retained.saveList;
             current = retained.current;
@@ -274,7 +273,7 @@ public class MainLauncherActivity extends Activity {
 
             case R.id.action_refresh:
                 if (mDrawerLayout.isDrawerOpen(navDrawerList)) {
-                    refreshFeedsList(DurationInMillis.ALWAYS_EXPIRED);
+                    refreshFeedsList();
                     primary.notifyDataSetChanged();
                     return true;
                 }
@@ -300,12 +299,12 @@ public class MainLauncherActivity extends Activity {
     }
 
     /** Object to listen for RoboSpice task completion. */
-    private class FeedsRequestListener implements RequestListener<Category[]> {
+    private class FeedsRequestListener implements RequestListener<Feed[]> {
         @Override
-        public void onRequestSuccess(Category[] categories) {
+        public void onRequestSuccess(Feed[] feeds) {
             setProgressBarIndeterminateVisibility(false);
             masterFeedsList.clear();
-            Collections.addAll(masterFeedsList, categories);
+            Collections.addAll(masterFeedsList, feeds);
 
             updateDrawer(masterFeedsList);
 
@@ -341,12 +340,11 @@ public class MainLauncherActivity extends Activity {
                 public void onClick(DialogInterface dialog, int which) {
                     String s = ((EditText) v.findViewById(R.id.newBaseURL)).getText().toString();
                     if (!s.equals("")) {
-                        mSpiceRequest = new CategoriesRequest();
-                        mSpiceRequest.setUrl(s);
+                        baseURL = s;
                     }
                     mSpiceManager.removeAllDataFromCache();
                     listItems.clear();
-                    refreshFeedsList(DurationInMillis.ALWAYS_EXPIRED);
+                    refreshFeedsList();
                 }
             });
 
@@ -355,7 +353,7 @@ public class MainLauncherActivity extends Activity {
     }
 
     private class DataFragment extends Fragment {
-        public ArrayList<Category> saveList;
+        public ArrayList<Feed> saveList;
         public int current;
 
         @Override
@@ -365,9 +363,9 @@ public class MainLauncherActivity extends Activity {
         }
     }
 
-    private void updateDrawer(ArrayList<Category> categories) {
+    private void updateDrawer(ArrayList<Feed> feeds) {
         listItems.clear();
-        for (Feed c : categories.get(0).feeds)
+        for (Feed c : feeds)
             listItems.add(c.title);
         primary.notifyDataSetChanged();
     }
@@ -381,17 +379,16 @@ public class MainLauncherActivity extends Activity {
         ImageFeedFragment iFrag = new ImageFeedFragment();
 
         if (getActionBar() != null) {
-            Category c = masterFeedsList.get(0);
-            getActionBar().setTitle(c.feeds.get(position).title);
+            getActionBar().setTitle(masterFeedsList.get(position).title);
         }
 
         Bundle b = new Bundle();
-        b.putString("entries", masterFeedsList.get(0).feeds.get(position).entries_url);
+        b.putString("entries", masterFeedsList.get(position).entries_url);
         iFrag.setArguments(b);
         getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
 
-        ((TextView) findViewById(R.id.description_body)).setText(masterFeedsList.get(0).feeds.get(current).description);
-        if (masterFeedsList.get(0).feeds.get(current).more_info_url == null)
+        ((TextView) findViewById(R.id.description_body)).setText(masterFeedsList.get(current).description);
+        if (masterFeedsList.get(current).more_info_url == null)
             findViewById(R.id.more_info_button).setVisibility(View.GONE);
         else
             findViewById(R.id.more_info_button).setVisibility(View.VISIBLE);
@@ -399,13 +396,12 @@ public class MainLauncherActivity extends Activity {
 
     /**
      * Reloads the list of the feeds.
-     * @param expiration_time Time if its been at least this long since last update, do it.
      */
-    void refreshFeedsList(long expiration_time) {
+    void refreshFeedsList() {
         setProgressBarIndeterminateVisibility(true);
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(this);
-        mSpiceManager.execute(mSpiceRequest, getString(R.string.categories_cache), expiration_time, new FeedsRequestListener());
+        mSpiceManager.execute(new JSONRequest<Feed[]>(Feed[].class, this.baseURL + getString(R.string.feeds_endpoint)), getString(R.string.categories_cache), DurationInMillis.ALWAYS_EXPIRED, new FeedsRequestListener());
     }
 
     /**
