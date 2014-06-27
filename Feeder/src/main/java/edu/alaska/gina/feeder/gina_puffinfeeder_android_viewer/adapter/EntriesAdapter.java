@@ -54,7 +54,6 @@ public class EntriesAdapter extends BaseAdapter {
         view.setAdjustViewBounds(true);
         view.setPadding(0,0,0,0);
 
-        //Picasso.with(mContext).load(R.drawable.blank_feed_item).resize(250, 250).into(view);
         Picasso.with(mContext).load(entries.get(position).preview_url).placeholder(R.drawable.blank_feed_item).resize(250, 250).centerCrop().into(view);
 
         return view;
