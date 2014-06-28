@@ -22,6 +22,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapter.EntriesAdapter;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragment.FeederFragmentInterface;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
@@ -38,11 +39,11 @@ public class ImageFeedFragment extends Fragment {
     private Menu aBarMenu;
 
     private final ArrayList<Entry> entriesList = new ArrayList<Entry>();
-    private String entries;
+    private String entriesURL;
     private EntriesAdapter mImageAdapter;
     private int page = 1;
 
-    /** Overridden Methods. */
+    /* Overridden Methods. */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class ImageFeedFragment extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle extras = getArguments();
-        entries = extras.getString("entries");
+        entriesURL = extras.getString("entries");
 
         getActivity().setProgressBarIndeterminateVisibility(true);
 
@@ -145,8 +146,8 @@ public class ImageFeedFragment extends Fragment {
         //adaptGridViewSize((GridView) getActivity().findViewById(R.id.image_grid));
     }
 
-    /** Class to run after RoboSpice task completion. */
-    private class ImageFeedRequestListener implements RequestListener<Entry[]> {
+    /* Class to run after RoboSpice task completion. */
+    public class ImageFeedRequestListener implements RequestListener<Entry[]> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Log.d(getString(R.string.app_tag), "Image Feed load fail! " + spiceException.getMessage());
@@ -200,66 +201,7 @@ public class ImageFeedFragment extends Fragment {
         else if (!isNext)
             page = 1;
 
-        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, entries), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
-    }
-
-    /** Methods used to dynamically adapt GridView thumbnail sizing. */
-
-    /**
-     * Method containing the logic behind dynamic resizing.
-     * @param gv GridView to be adjusted.
-     */
-    void adaptGridViewSize(GridView gv) {
-        int thumbMax = 250;
-        int spacing = 2;
-
-        DisplayMetrics d = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(d);
-
-        float trueMaxThumbWidth = maxTW(2, spacing, d);
-        if (trueMaxThumbWidth <= thumbMax) {
-            gv.setNumColumns(2);
-            gv.setColumnWidth((int) trueMaxThumbWidth);
-            gv.setHorizontalSpacing(spacing);
-            return;
-        }
-
-        int numCols;
-        float maxCols = numCols(thumbMax, spacing, d);
-        if (maxCols - ((int) maxCols) > 0.5)
-            numCols = ((int) maxCols) + 1;
-        else
-            numCols = ((int) maxCols);
-
-        gv.setHorizontalSpacing(spacing);
-        gv.setVerticalSpacing(spacing);
-
-        int tWidth = (int) maxTW(numCols, spacing, d);
-        gv.setColumnWidth(tWidth);
-
-        gv.setNumColumns(numCols);
-    }
-
-    /**
-     * Calculates the maximum thumbnail width given number of columns, spacing, and display size.
-     * @param numCols Number of columns to calculate for.
-     * @param spacing Space between images in regular pixels (px).
-     * @param d Screen information (in DisplayMetrics object).
-     * @return Maximum width of thumbnails (px) given parameters.
-     */
-    float maxTW(float numCols, float spacing, DisplayMetrics d) {
-        return (d.widthPixels - ((numCols + 1) * spacing)) / numCols;
-    }
-
-    /**
-     * Calculates the number of columns possible given thumbnail width (px), spacing (px),
-     * and screen dimensions.
-     * @param thumbWidth Width of the thumbnails (px).
-     * @param spacing Space between images (px).
-     * @param d Screen information (in DisplayMetrics object).
-     * @return Maximum number of columns given parameters.
-     */
-    float numCols(float thumbWidth, float spacing, DisplayMetrics d) {
-        return (d.widthPixels - spacing) / (spacing + thumbWidth);
+        //((FeederFragmentInterface) getActivity()).networkRequest(new JSONRequest<Entry[]>(Entry[].class, entriesURL), getString(R.string.entries_cache), new ImageFeedRequestListener());
+        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, entriesURL), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 }

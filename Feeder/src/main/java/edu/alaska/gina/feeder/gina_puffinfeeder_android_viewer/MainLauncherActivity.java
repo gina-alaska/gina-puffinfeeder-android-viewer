@@ -20,6 +20,7 @@ import com.octo.android.robospice.persistence.*;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Feed;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragment.FeederFragmentInterface;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
@@ -31,7 +32,7 @@ import java.util.Collections;
  * Class that handles navigation drawer and startup.
  * created by bobby on 6/14/13.
  */
-public class MainLauncherActivity extends Activity {
+public class MainLauncherActivity extends Activity implements FeederFragmentInterface {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
     private String baseURL;
 
@@ -48,7 +49,7 @@ public class MainLauncherActivity extends Activity {
     private RelativeLayout infoDrawerLayout; //Layout for the Info Drawer.
     private ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
 
-    /** Overridden Methods */
+    /* Overridden Methods */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -298,7 +299,24 @@ public class MainLauncherActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /** Object to listen for RoboSpice task completion. */
+    @Override
+    public void networkRequest(JSONRequest request, String cacheKey, RequestListener listener) {
+        setProgressBarIndeterminateVisibility(true);
+        if (!mSpiceManager.isStarted())
+            mSpiceManager.start(this);
+        mSpiceManager.execute(request, cacheKey, DurationInMillis.ALWAYS_EXPIRED, listener);
+    }
+
+    @Override
+    public void setDescription(String description) {
+        ((TextView) findViewById(R.id.description_body)).setText(description);
+        if (masterFeedsList.get(current).more_info_url == null)
+            findViewById(R.id.more_info_button).setVisibility(View.GONE);
+        else
+            findViewById(R.id.more_info_button).setVisibility(View.VISIBLE);
+    }
+
+    /* Object to listen for RoboSpice task completion. */
     private class FeedsRequestListener implements RequestListener<Feed[]> {
         @Override
         public void onRequestSuccess(Feed[] feeds) {
@@ -387,11 +405,7 @@ public class MainLauncherActivity extends Activity {
         iFrag.setArguments(b);
         getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
 
-        ((TextView) findViewById(R.id.description_body)).setText(masterFeedsList.get(current).description);
-        if (masterFeedsList.get(current).more_info_url == null)
-            findViewById(R.id.more_info_button).setVisibility(View.GONE);
-        else
-            findViewById(R.id.more_info_button).setVisibility(View.VISIBLE);
+        setDescription(masterFeedsList.get(current).description);
     }
 
     /**
