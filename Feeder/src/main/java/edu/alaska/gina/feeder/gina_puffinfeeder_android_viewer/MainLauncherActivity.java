@@ -166,20 +166,9 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
 
     @Override
     protected void onPause() {
-        setProgressBarIndeterminateVisibility(false);
         retained.saveList = this.masterFeedsList;
         retained.current = this.current;
-        if (mSpiceManager.isStarted())
-            mSpiceManager.shouldStop();
         super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        setProgressBarIndeterminateVisibility(false);
-        if (mSpiceManager.isStarted())
-            mSpiceManager.shouldStop();
-        super.onStop();
     }
 
     @Override
