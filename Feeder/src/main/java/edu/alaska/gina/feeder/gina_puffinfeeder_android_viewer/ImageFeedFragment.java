@@ -1,5 +1,7 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Fragment;
 
 import android.content.Intent;
@@ -7,7 +9,6 @@ import android.content.res.Configuration;
 
 import android.os.Bundle;
 
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import android.view.*;
@@ -19,12 +20,11 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
-import com.octo.android.robospice.spicelist.simple.BitmapSpiceManager;
 
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapter.EntriesAdapter;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.EntriesRequest;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.PicassoImageAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,17 +33,19 @@ import java.util.Collections;
  * Fragment used to display the list of feed images in a GridView.
  * Created by bobby on 6/14/13.
  */
-class ImageFeedFragment extends Fragment {
+public class ImageFeedFragment extends Fragment {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
     private Menu aBarMenu;
+    private int fadeAnimationDuration;
+    private View loadingView, contentView;
 
     private final ArrayList<Entry> entriesList = new ArrayList<Entry>();
-    private String entries;
-    private PicassoImageAdapter mImageAdapter;
+    private String entriesURL;
+    private EntriesAdapter mImageAdapter;
     private int page = 1;
 
-    /** Overridden Methods. */
+    /* Overridden Methods. */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,12 +53,9 @@ class ImageFeedFragment extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle extras = getArguments();
-        entries = extras.getString("entries") + getString(R.string.JSON_extension);
+        entriesURL = extras.getString("entries");
 
-        getActivity().setProgressBarIndeterminateVisibility(true);
-
-        refreshThumbs(false, false);
-        mImageAdapter = new PicassoImageAdapter(this.getActivity(), entriesList);
+        mImageAdapter = new EntriesAdapter(this.getActivity(), entriesList);
 
         return v;
     }
@@ -65,9 +64,15 @@ class ImageFeedFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        GridView gridView = (GridView) getActivity().findViewById(R.id.image_grid);
+        fadeAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        loadingView = getActivity().findViewById(R.id.grid_progressBar);
+        contentView = getActivity().findViewById(R.id.image_grid);
+
+        networkRequest();
+
+        GridView gridView = (GridView) contentView;
         gridView.setAdapter(mImageAdapter);
-        adaptGridViewSize(gridView);
+        gridView.setGravity(Gravity.CENTER_HORIZONTAL);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -75,7 +80,7 @@ class ImageFeedFragment extends Fragment {
                 Intent photoView = new Intent(getActivity(), FullscreenImageViewerActivity.class);
 
                 Bundle args = new Bundle();
-                args.putString("url", entriesList.get(position).data_url);
+                args.putSerializable("entry", entriesList.get(position));
                 photoView.putExtras(args);
 
                 getActivity().startActivity(photoView);
@@ -122,19 +127,19 @@ class ImageFeedFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_load_next:
-                refreshThumbs(true, true);
+                networkRequest();
                 return true;
             case R.id.action_load_prev:
                 if (page > 1)
-                    refreshThumbs(true, false);
+                    networkRequest();
                 return true;
             case R.id.action_refresh:
-                refreshThumbs(false, true);
+                networkRequest();
                 return true;
             case R.id.action_load_first:
                 if (page <= 1)
                     Toast.makeText(getActivity(), "Already on first page.", Toast.LENGTH_SHORT).show();
-                refreshThumbs(false, false);
+                networkRequest();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -143,16 +148,15 @@ class ImageFeedFragment extends Fragment {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        adaptGridViewSize((GridView) getActivity().findViewById(R.id.image_grid));
     }
 
-    /** Class to run after RoboSpice task completion. */
-    private class ImageFeedRequestListener implements RequestListener<Entry[]> {
+    /* Class to run after RoboSpice task completion. */
+    public class ImageFeedRequestListener implements RequestListener<Entry[]> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Log.d(getString(R.string.app_tag), "Image Feed load fail! " + spiceException.getMessage());
             Toast.makeText(getActivity(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
-            getActivity().setProgressBarIndeterminateVisibility(false);
+            loadingView.setVisibility(View.GONE);
         }
 
         @Override
@@ -168,99 +172,31 @@ class ImageFeedFragment extends Fragment {
             if (entriesList.size() > 0 && !entries[0].equals(entriesList.get(0)))
                 entriesList.clear();
 
-            if (entriesList.size() <= 0) {
+            if (entriesList.size() <= 0)
                 Collections.addAll(entriesList, entries);
 
             mImageAdapter.notifyDataSetChanged();
-            getActivity().setProgressBarIndeterminateVisibility(false);
-            }
+
+            contentView.setAlpha(0f);
+            contentView.setVisibility(View.VISIBLE);
+            contentView.animate().alpha(1f).setDuration(fadeAnimationDuration).setListener(null);
+            loadingView.animate().alpha(0f).setDuration(fadeAnimationDuration).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    loadingView.setVisibility(View.GONE);
+                }
+            });
         }
     }
 
     /**
-     * Method run to start to refresh the list of FeedImages on page reload or new page load.
-     * (true, true) loads next page.
-     * (true, false) loads the previous page.
-     * (false, false) loads first page of results.
-     * (false, true) reloads the same page.
-     * @param isNew "true" if loading a new page. "false" otherwise.
-     * @param isNext "true" is loading the next page. "false" otherwise.
+     * Method that starts the network request for entries JSON file.
      */
-    void refreshThumbs(boolean isNew, boolean isNext) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
-
+    void networkRequest() {
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
-        if (isNew) {
-            if (isNext)
-                page++;
-            else
-                page--;
-        }
-        else if (!isNext)
-            page = 1;
-
-        mSpiceManager.execute(new EntriesRequest(entries), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
-    }
-
-    /** Methods used to dynamically adapt GridView thumbnail sizing. */
-
-    /**
-     * Method containing the logic behind dynamic resizing.
-     * @param gv GridView to be adjusted.
-     */
-    void adaptGridViewSize(GridView gv) {
-        int thumbMax = 250;
-        int spacing = 2;
-
-        DisplayMetrics d = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(d);
-
-        float trueMaxThumbWidth = maxTW(2, spacing, d);
-        if (trueMaxThumbWidth <= thumbMax) {
-            gv.setNumColumns(2);
-            gv.setColumnWidth((int) trueMaxThumbWidth);
-            gv.setHorizontalSpacing(spacing);
-            return;
-        }
-
-        int numCols;
-        float maxCols = numCols(thumbMax, spacing, d);
-        if (maxCols - ((int) maxCols) > 0.5)
-            numCols = ((int) maxCols) + 1;
-        else
-            numCols = ((int) maxCols);
-
-        gv.setHorizontalSpacing(spacing);
-        gv.setVerticalSpacing(spacing);
-
-        int tWidth = (int) maxTW(numCols, spacing, d);
-        gv.setColumnWidth(tWidth);
-
-        gv.setNumColumns(numCols);
-    }
-
-    /**
-     * Calculates the maximum thumbnail width given number of columns, spacing, and display size.
-     * @param numCols Number of columns to calculate for.
-     * @param spacing Space between images in regular pixels (px).
-     * @param d Screen information (in DisplayMetrics object).
-     * @return Maximum width of thumbnails (px) given parameters.
-     */
-    float maxTW(float numCols, float spacing, DisplayMetrics d) {
-        return (d.widthPixels - ((numCols + 1) * spacing)) / numCols;
-    }
-
-    /**
-     * Calculates the number of columns possible given thumbnail width (px), spacing (px),
-     * and screen dimensions.
-     * @param thumbWidth Width of the thumbnails (px).
-     * @param spacing Space between images (px).
-     * @param d Screen information (in DisplayMetrics object).
-     * @return Maximum number of columns given parameters.
-     */
-    float numCols(float thumbWidth, float spacing, DisplayMetrics d) {
-        return (d.widthPixels - spacing) / (spacing + thumbWidth);
+        //((FeederFragmentInterface) getActivity()).networkRequest(new JSONRequest<Entry[]>(Entry[].class, entriesURL), getString(R.string.entries_cache), new ImageFeedRequestListener());
+        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, entriesURL), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 }

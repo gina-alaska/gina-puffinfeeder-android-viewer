@@ -10,7 +10,7 @@ import android.preference.PreferenceFragment;
  * Fragment that allows changes to be made to the app's global settings.
  * Created by bobby on 8/9/13.
  */
-class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

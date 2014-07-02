@@ -1,36 +1,101 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapter;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
-import com.octo.android.robospice.request.simple.BitmapRequest;
-import com.octo.android.robospice.request.simple.IBitmapRequest;
-import com.octo.android.robospice.spicelist.SpiceListItemView;
-import com.octo.android.robospice.spicelist.simple.BitmapSpiceManager;
-import com.octo.android.robospice.spicelist.simple.SpiceArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
+
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
- * ArrayAdapter for API v2 thumbnail view.
- * Uses Robospice for networking and caching.
- * Created by Bobby on 6/16/2014.
+ * Adapter that places thumbnails off the feed into the primary GridView.
+ * Created by bobby on 6/19/13.
  */
-public class EntriesAdapter extends SpiceArrayAdapter<Entry> {
-    public EntriesAdapter(Context context, BitmapSpiceManager spiceManagerBinary, ArrayList<Entry> entries) {
-        super(context, spiceManagerBinary, entries);
+public class EntriesAdapter extends BaseAdapter {
+    private final Context mContext;
+    private final ArrayList<Entry> entries;
+    private final LayoutInflater inflater;
+
+    public EntriesAdapter(Context c, ArrayList<Entry> entries) {
+        this.mContext = c;
+        this.entries = entries;
+        this.inflater = LayoutInflater.from(mContext);
     }
 
-    //TODO Make new thumbnail layout
-    @Override
-    public SpiceListItemView<Entry> createView(Context context, ViewGroup viewGroup) {
-        return null;
+    private String formatDateTime(DateTime img) {
+        Period diff = new Period(img, new DateTime(System.currentTimeMillis()));
+        PeriodFormatter formatter;
+
+        if (diff.getYears() > 0) {
+            formatter = new PeriodFormatterBuilder().appendYears().appendSuffix(" year ago.", " years ago.").toFormatter();
+        } else if (diff.getMonths() > 0) {
+            formatter = new PeriodFormatterBuilder().appendMonths().appendSuffix(" month ago.", " months ago.").toFormatter();
+        } else if (diff.getWeeks() > 0) {
+            formatter = new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week ago.", " weeks ago.").toFormatter();
+        } else if (diff.getDays() > 0) {
+            formatter = new PeriodFormatterBuilder().appendDays().appendSuffix(" day ago.", " days ago.").toFormatter();
+        } else if (diff.getHours() > 0) {
+            formatter = new PeriodFormatterBuilder().appendHours().appendSuffix(" hour ago.", " hours ago.").toFormatter();
+        } else if (diff.getMinutes() > 0) {
+            formatter = new PeriodFormatterBuilder().appendMinutes().appendSuffix(" minute ago.", " minutes ago.").toFormatter();
+        } else {
+            formatter = new PeriodFormatterBuilder().appendSeconds().appendSuffix(" second ago.", " seconds ago.").toFormatter();
+        }
+
+        return formatter.print(diff);
     }
 
     @Override
-    public IBitmapRequest createRequest(Entry entry, int i, int i2, int i3) {
-        return new BitmapRequest(entry.preview_url, new File(getContext().getCacheDir().getAbsolutePath() + getContext().getString(R.string.image_cache)));
+    public int getCount() {
+        return entries.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return entries.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.entry_item_layout, null);
+        }
+
+        DisplayMetrics d = mContext.getResources().getDisplayMetrics();
+        int h = Math.round(d.widthPixels / ((GridView) parent).getNumColumns());
+
+        ((TextView) convertView.findViewById(R.id.entry_caption))
+                .setText(formatDateTime(this.entries.get(position).event_at));
+
+        Picasso.with(mContext)
+                .load(entries.get(position).preview_url + "?size=" + h + "x" + (h + 50))
+                .placeholder(R.drawable.image_placeholder)
+                .resize(h, h)
+                .centerCrop()
+                .into((ImageView) convertView.findViewById(R.id.entryImage));
+
+        convertView.setMinimumHeight(h);
+
+        return convertView;
     }
 }

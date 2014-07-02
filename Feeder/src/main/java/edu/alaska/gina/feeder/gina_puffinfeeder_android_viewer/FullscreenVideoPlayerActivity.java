@@ -43,7 +43,7 @@ public class FullscreenVideoPlayerActivity extends Activity {
         if (e != null)
             movie.setVideoPath(e.getString("url"));
         else
-            movie.setVideoPath("http://feeder.gina.alaska.edu/feeds/radar-uaf-barrow-seaice-images/movies/3464_radar-uaf-barrow-seaice-images_2014-6-5_1-day-animation.webm");
+            movie.setVideoPath("http://feeder-app-prod0.x.gina.alaska.edu/dragonfly/movies/2014/6/26/3585_webcam-uaf-barrow-seaice-images_2014-6-26_1-day-animation.mp4");
 
         MC = new MediaController(this);
         MC.setAnchorView(movie);

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/image_placeholder">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:src="@drawable/image_placeholder"
+        android:id="@+id/entryImage" />
+
+    <TextView style="@android:style/TextAppearance.Holo.Large.Inverse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Timestamp"
+        android:id="@+id/entry_caption"
+        android:layout_alignLeft="@+id/entryImage"
+        android:layout_alignBottom="@id/entryImage"
+        android:background="@drawable/entry_caption_bg"
+        android:padding="8dp" />
+
+</RelativeLayout>

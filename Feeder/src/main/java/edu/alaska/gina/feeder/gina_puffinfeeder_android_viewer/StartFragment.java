@@ -12,7 +12,7 @@ import android.widget.Toast;
  * Fragment displayed on startup.
  * Created by bobby on 6/21/13.
  */
-class StartFragment extends Fragment {
+public class StartFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_start, container, false);

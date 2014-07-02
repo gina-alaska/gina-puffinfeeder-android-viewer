@@ -1,16 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
 
-<GridView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/grid_progressBar"
+        android:layout_centerInParent="true" />
+
+    <GridView style="@style/ThumbsMargin"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="match_parent"
         android:id="@+id/image_grid"
-        android:stretchMode="none"
+
         android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:layout_centerInParent="true"
+
         android:clickable="true"
-        android:focusable="true"
         android:listSelector="?android:selectableItemBackground"
         android:drawSelectorOnTop="true"
-        android:paddingEnd="2px"
-        android:paddingStart="2px"
-        android:paddingLeft="2px"
-        android:paddingRight="2px"/>
+
+        android:scrollbars="none"
+        android:clipToPadding="false"
+        android:visibility="gone"
+
+        android:horizontalSpacing="1dp"
+        android:verticalSpacing="1dp" />
+
+</RelativeLayout>

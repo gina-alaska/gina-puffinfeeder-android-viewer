@@ -7,10 +7,11 @@
         android:id="@+id/drawer_layout"
         android:background="@android:color/background_light">
 
-    <FrameLayout
+    <RelativeLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center_horizontal"
             android:background="@android:color/background_light" />
 
     <ListView
