@@ -65,7 +65,7 @@ android {
 
     buildTypes {
         debug {
-            debuggable true
+            debuggable false
             runProguard false
         }
         release {

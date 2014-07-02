@@ -1,4 +1,4 @@
-package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapter;
+package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.content.Context;
 import android.view.View;
@@ -7,8 +7,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
 
 import java.util.ArrayList;
 
@@ -16,24 +14,24 @@ import java.util.ArrayList;
  * Adapter that places thumbnails off the feed into the primary GridView.
  * Created by bobby on 6/19/13.
  */
-public class EntriesAdapter extends BaseAdapter {
+class PicassoImageAdapter extends BaseAdapter {
     private final Context mContext;
-    private final ArrayList<Entry> entries;
+    private final ArrayList<FeedImage> mFeedImages;
     private int maxPosition = 10;
 
-    public EntriesAdapter(Context c, ArrayList<Entry> entries) {
+    public PicassoImageAdapter(Context c, ArrayList<FeedImage> feedImages) {
         this.mContext = c;
-        this.entries = entries;
+        this.mFeedImages = feedImages;
     }
 
     @Override
     public int getCount() {
-        return entries.size();
+        return mFeedImages.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return entries.get(position);
+        return mFeedImages.get(position);
     }
 
     @Override
@@ -54,7 +52,8 @@ public class EntriesAdapter extends BaseAdapter {
         view.setAdjustViewBounds(true);
         view.setPadding(0,0,0,0);
 
-        Picasso.with(mContext).load(entries.get(position).preview_url).placeholder(R.drawable.image_placeholder).into(view);
+        Picasso.with(mContext).load(R.drawable.blank_feed_item).resize(250, 250).into(view);
+        Picasso.with(mContext).load(mFeedImages.get(position).getThumbnail()).resize(250, 250).centerCrop().into(view);
 
         return view;
     }
