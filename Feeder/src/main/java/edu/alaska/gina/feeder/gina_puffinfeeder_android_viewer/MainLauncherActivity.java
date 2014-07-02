@@ -6,12 +6,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -23,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -40,20 +36,20 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import edu.alaska.gina.feeder.android.core.data.Feed;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapter.FeedsAdapter;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragment.FeederFragmentInterface;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
 /**
- * Class that handles navigation drawer and startup.
+ * Activity that handles navigation drawer and startup.
  * created by bobby on 6/14/13.
  */
 public class MainLauncherActivity extends Activity implements FeederFragmentInterface {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
     private String baseURL;
 
-    private final ArrayList<String> listItems = new ArrayList<String>();
-    private ArrayAdapter<String> primary;
+    private FeedsAdapter primary;
     private ArrayList<Feed> masterFeedsList;
     private int current = -2;
 
@@ -84,7 +80,6 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
 
         if (getActionBar() != null)
             getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
-        listItems.add("No Feeds Loaded.");
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -105,7 +100,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
             }
         };
 
-        primary = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
+        primary = new FeedsAdapter(this, masterFeedsList);
 
         navDrawerList.setAdapter(primary);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -152,7 +147,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
         } else {
             masterFeedsList = retained.saveList;
             current = retained.current;
-            updateDrawer(masterFeedsList);
+            primary.notifyDataSetChanged();
         }
 
         if (current < 0) {
@@ -329,7 +324,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
             masterFeedsList.clear();
             Collections.addAll(masterFeedsList, feeds);
 
-            updateDrawer(masterFeedsList);
+            primary.notifyDataSetChanged();
 
             primary.notifyDataSetChanged();
             if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && current < 0) {
@@ -347,7 +342,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
             f.title = "Loading failed.";
             masterFeedsList.clear();
             masterFeedsList.add(f);
-            updateDrawer(masterFeedsList);
+            primary.notifyDataSetChanged();
         }
     }
 
@@ -366,7 +361,6 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
                         ((MainLauncherActivity) getActivity()).baseURL = s;
                     }
                     ((MainLauncherActivity) getActivity()).mSpiceManager.removeAllDataFromCache();
-                    ((MainLauncherActivity) getActivity()).listItems.clear();
                     ((MainLauncherActivity) getActivity()).refreshFeedsList();
                 }
             });
@@ -384,13 +378,6 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
             super.onCreate(savedInstanceState);
             setRetainInstance(true);
         }
-    }
-
-    private void updateDrawer(ArrayList<Feed> feeds) {
-        listItems.clear();
-        for (Feed c : feeds)
-            listItems.add(c.title);
-        primary.notifyDataSetChanged();
     }
 
     /**
@@ -421,15 +408,5 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(this);
         mSpiceManager.execute(new JSONRequest<Feed[]>(Feed[].class, this.baseURL + getString(R.string.feeds_endpoint)), getString(R.string.categories_cache), DurationInMillis.ALWAYS_EXPIRED, new FeedsRequestListener());
-    }
-
-    /**
-     * Returns whether the device is actively connected to a network.
-     * @return "true" if yes, "false" otherwise.
-     */
-    boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo nFo = cm.getActiveNetworkInfo();
-        return (nFo != null && nFo.isConnectedOrConnecting());
     }
 }
