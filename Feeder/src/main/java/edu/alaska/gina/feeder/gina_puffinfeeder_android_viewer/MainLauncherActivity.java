@@ -320,11 +320,6 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
                 mDrawerLayout.closeDrawer(infoDrawerLayout);
                 mDrawerLayout.openDrawer(navDrawerList);
             }
-
-            if (isOnline())
-                Toast.makeText(getApplicationContext(), "Feed list reloaded.", Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(getApplicationContext(), "Feed list reloaded from cache. Please check internet connection.", Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -335,23 +330,23 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
         }
     }
 
-    private class URLChanger extends DialogFragment {
+    public static class URLChanger extends DialogFragment {
         View v;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            v = getLayoutInflater().inflate(R.layout.dialog_change_url, null);
+            v = getActivity().getLayoutInflater().inflate(R.layout.dialog_change_url, null);
             AlertDialog.Builder b = new AlertDialog.Builder(this.getActivity());
             b.setView(v).setTitle("Enter Base URL").setNeutralButton("Dismiss", null).setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     String s = ((EditText) v.findViewById(R.id.newBaseURL)).getText().toString();
                     if (!s.equals("")) {
-                        baseURL = s;
+                        ((MainLauncherActivity) getActivity()).baseURL = s;
                     }
-                    mSpiceManager.removeAllDataFromCache();
-                    listItems.clear();
-                    refreshFeedsList();
+                    ((MainLauncherActivity) getActivity()).mSpiceManager.removeAllDataFromCache();
+                    ((MainLauncherActivity) getActivity()).listItems.clear();
+                    ((MainLauncherActivity) getActivity()).refreshFeedsList();
                 }
             });
 
@@ -359,7 +354,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
         }
     }
 
-    private class DataFragment extends Fragment {
+    public static class DataFragment extends Fragment {
         public ArrayList<Feed> saveList;
         public int current;
 

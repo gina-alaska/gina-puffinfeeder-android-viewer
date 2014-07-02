@@ -106,7 +106,10 @@ public class FullscreenImageViewerActivity extends Activity {
         if (!manager.isStarted())
             manager.start(this);
 
-        manager.execute(new BitmapRequest(entry.data_url, new File(getCacheDir().getAbsolutePath() + getResources().getString(R.string.image_cache))), new BitmapRequestListener());
+        if (getResources().getDisplayMetrics().widthPixels > 2048 || getResources().getDisplayMetrics().heightPixels > 2048)
+            manager.execute(new BitmapRequest(entry.preview_url + "?size=4096x4096", new File(getCacheDir().getAbsolutePath() + getResources().getString(R.string.image_cache))), new BitmapRequestListener());
+        else
+            manager.execute(new BitmapRequest(entry.preview_url + "?size=2048x2048", new File(getCacheDir().getAbsolutePath() + getResources().getString(R.string.image_cache))), new BitmapRequestListener());
     }
 
     private class SysUiVisibilityListener implements View.OnSystemUiVisibilityChangeListener {
@@ -145,13 +148,6 @@ public class FullscreenImageViewerActivity extends Activity {
         @Override
         public void onRequestSuccess(Bitmap bitmap) {
             image = retained.image = bitmap;
-/*
-            if (bitmap.getWidth() > 2048 && getResources().getDisplayMetrics().widthPixels < 2048) {
-                fullscreenImage.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 2048, 2048, false));
-            } else {
-                fullscreenImage.setImageBitmap(bitmap);
-            }
-            */
             fullscreenImage.setImageBitmap(bitmap);
             photoAttacher.update();
         }
