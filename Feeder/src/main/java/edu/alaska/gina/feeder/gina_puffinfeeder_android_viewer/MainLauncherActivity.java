@@ -37,6 +37,7 @@ import java.util.Collections;
 
 import edu.alaska.gina.feeder.android.core.data.Feed;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapter.FeedsAdapter;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragment.EntriesFragment;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragment.FeederFragmentInterface;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
@@ -386,7 +387,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
      */
     private void openPreviewFragment(int position) {
         current = position;
-        ImageFeedFragment iFrag = new ImageFeedFragment();
+        EntriesFragment iFrag = new EntriesFragment();
 
         if (getActionBar() != null) {
             getActionBar().setTitle(masterFeedsList.get(position).title);
