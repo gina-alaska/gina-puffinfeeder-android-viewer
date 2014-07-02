@@ -3,15 +3,17 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Fragment;
-
 import android.content.Intent;
 import android.content.res.Configuration;
-
 import android.os.Bundle;
-
 import android.util.Log;
-
-import android.view.*;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -21,13 +23,13 @@ import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapter.EntriesAdapter;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
-
 import java.util.ArrayList;
 import java.util.Collections;
+
+import edu.alaska.gina.feeder.android.core.data.Entry;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapter.EntriesAdapter;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
 /**
  * Fragment used to display the list of feed images in a GridView.

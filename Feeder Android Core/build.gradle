@@ -1,0 +1,7 @@
+apply plugin: 'java'
+
+dependencies {
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.2.2'
+    compile 'joda-time:joda-time:2.2'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}

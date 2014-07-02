@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Feed;
+import edu.alaska.gina.feeder.android.core.data.Feed;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragment.FeederFragmentInterface;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;

@@ -5,7 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Feed;
+import edu.alaska.gina.feeder.android.core.data.Feed;
 
 import java.util.ArrayList;
 

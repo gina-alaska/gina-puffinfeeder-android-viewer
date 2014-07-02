@@ -18,7 +18,7 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
+import edu.alaska.gina.feeder.android.core.data.Entry;
 
 import java.util.ArrayList;
 
