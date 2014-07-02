@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
-        android:src="@drawable/blank_feed_item"
+        android:src="@drawable/image_placeholder"
         android:id="@+id/entryImage" />
 
     <TextView style="@android:style/TextAppearance.Holo.Large.Inverse"

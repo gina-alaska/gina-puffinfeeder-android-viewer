@@ -1,6 +1,11 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
-import android.app.*;
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,21 +17,32 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.octo.android.robospice.*;
-import com.octo.android.robospice.persistence.*;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Feed;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragment.FeederFragmentInterface;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Feed;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragment.FeederFragmentInterface;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
 /**
  * Class that handles navigation drawer and startup.
@@ -150,7 +166,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
         navDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (!listItems.get(position).equals("No Feeds Loaded.")) {
+                if (masterFeedsList.size() > 1) {
                     openPreviewFragment(position);
                 }
                 mDrawerLayout.closeDrawer(navDrawerList);
@@ -327,6 +343,11 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
             setProgressBarIndeterminateVisibility(false);
             Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             Toast.makeText(getApplicationContext(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
+            Feed f = new Feed();
+            f.title = "Loading failed.";
+            masterFeedsList.clear();
+            masterFeedsList.add(f);
+            updateDrawer(masterFeedsList);
         }
     }
 
