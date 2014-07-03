@@ -44,13 +44,20 @@ public class FeedsAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
+            //convertView = this.inflater.inflate(R.layout.feed_item_layout, null);
             convertView = this.inflater.inflate(android.R.layout.simple_list_item_1, null);
         }
+/*
+        if (feeds.get(position).preview_url != null) {
+            Picasso.with(this.context)
+                    .load(feeds.get(position).preview_url + "?size=50x50")
+                    .placeholder(R.drawable.image_placeholder)
+                    .into((ImageView) convertView.findViewById(R.id.feedPreviewImage));
+        }
 
+        ((TextView) convertView.findViewById(R.id.feedTitle)).setText(feeds.get(position).title);
+*/
         ((TextView) convertView).setText(feeds.get(position).title);
-        //convertView.setPadding(16, 16, 16, 16);
-        //((TextView) convertView).setGravity(android.R.attr.layout_alignLeft);
-
         return convertView;
     }
 }
