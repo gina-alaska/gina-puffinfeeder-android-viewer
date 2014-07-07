@@ -1,29 +1,26 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.util.Log;
-import android.view.*;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.octo.android.robospice.request.simple.BitmapRequest;
 
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
-import uk.co.senab.photoview.PhotoViewAttacher;
-
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import edu.alaska.gina.feeder.android.core.data.Entry;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * Activity for viewing a full sized image in full screen.

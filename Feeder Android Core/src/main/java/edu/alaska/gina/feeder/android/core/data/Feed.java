@@ -1,4 +1,4 @@
-package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data;
+package edu.alaska.gina.feeder.android.core.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.joda.time.DateTime;

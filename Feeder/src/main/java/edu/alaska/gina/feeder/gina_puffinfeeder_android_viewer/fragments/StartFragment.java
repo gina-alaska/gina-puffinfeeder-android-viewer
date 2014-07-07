@@ -1,4 +1,4 @@
-package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
+package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -6,7 +6,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 
 /**
  * Fragment displayed on startup.
@@ -24,10 +25,6 @@ public class StartFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_load_next) {
-            Toast.makeText(getActivity(), "No Feed Selected!", Toast.LENGTH_SHORT).show();
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 }

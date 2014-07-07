@@ -1,4 +1,4 @@
-package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragment;
+package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments;
 
 import com.octo.android.robospice.request.listener.RequestListener;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;

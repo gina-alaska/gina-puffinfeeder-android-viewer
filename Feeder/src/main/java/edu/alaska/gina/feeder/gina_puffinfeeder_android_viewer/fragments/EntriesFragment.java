@@ -1,17 +1,19 @@
-package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
+package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Fragment;
-
 import android.content.Intent;
 import android.content.res.Configuration;
-
 import android.os.Bundle;
-
 import android.util.Log;
-
-import android.view.*;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -21,19 +23,21 @@ import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapter.EntriesAdapter;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Entry;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
-
 import java.util.ArrayList;
 import java.util.Collections;
+
+import edu.alaska.gina.feeder.android.core.data.Entry;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.FullscreenImageViewerActivity;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapters.EntriesAdapter;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
 /**
  * Fragment used to display the list of feed images in a GridView.
  * Created by bobby on 6/14/13.
  */
-public class ImageFeedFragment extends Fragment {
+public class EntriesFragment extends Fragment {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
     private Menu aBarMenu;
@@ -49,7 +53,7 @@ public class ImageFeedFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_image_feed, container, false);
+        View v = inflater.inflate(R.layout.fragment_entries, container, false);
         setHasOptionsMenu(true);
 
         Bundle extras = getArguments();
@@ -114,31 +118,13 @@ public class ImageFeedFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         aBarMenu = menu;
-
-        if (page <= 1)
-            aBarMenu.findItem(R.id.action_load_prev).setIcon(R.drawable.ic_navigation_back_dud);
-        else
-            aBarMenu.findItem(R.id.action_load_prev).setIcon(R.drawable.ic_navigation_back);
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_load_next:
-                networkRequest();
-                return true;
-            case R.id.action_load_prev:
-                if (page > 1)
-                    networkRequest();
-                return true;
             case R.id.action_refresh:
-                networkRequest();
-                return true;
-            case R.id.action_load_first:
-                if (page <= 1)
-                    Toast.makeText(getActivity(), "Already on first page.", Toast.LENGTH_SHORT).show();
                 networkRequest();
                 return true;
         }
@@ -161,14 +147,6 @@ public class ImageFeedFragment extends Fragment {
 
         @Override
         public void onRequestSuccess(Entry[] entries) {
-            if (page <= 1) {
-                aBarMenu.findItem(R.id.action_load_prev).setIcon(R.drawable.ic_navigation_back_dud);
-                aBarMenu.findItem(R.id.action_load_first).setIcon(R.drawable.ic_navigation_first_dud);
-            } else {
-                aBarMenu.findItem(R.id.action_load_prev).setIcon(R.drawable.ic_navigation_back);
-                aBarMenu.findItem(R.id.action_load_first).setIcon(R.drawable.ic_navigation_first);
-            }
-
             if (entriesList.size() > 0 && !entries[0].equals(entriesList.get(0)))
                 entriesList.clear();
 

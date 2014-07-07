@@ -2,16 +2,9 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -23,8 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,21 +30,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.data.Feed;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragment.FeederFragmentInterface;
+import edu.alaska.gina.feeder.android.core.data.Feed;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapters.FeedsAdapter;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.EntriesFragment;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.FeederFragmentInterface;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.StartFragment;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
 /**
- * Class that handles navigation drawer and startup.
+ * Activity that handles navigation drawer and startup.
  * created by bobby on 6/14/13.
  */
-public class MainLauncherActivity extends Activity implements FeederFragmentInterface {
+public class MainActivity extends Activity implements FeederFragmentInterface {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
     private String baseURL;
 
-    private final ArrayList<String> listItems = new ArrayList<String>();
-    private ArrayAdapter<String> primary;
+    private FeedsAdapter primary;
     private ArrayList<Feed> masterFeedsList;
     private int current = -2;
 
@@ -71,7 +64,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.main_activity_launcher);
+        setContentView(R.layout.activity_main);
         setProgressBarIndeterminateVisibility(false);
         baseURL = getString(R.string.base_url);
         masterFeedsList = new ArrayList<Feed>();
@@ -84,7 +77,6 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
 
         if (getActionBar() != null)
             getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
-        listItems.add("No Feeds Loaded.");
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -105,7 +97,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
             }
         };
 
-        primary = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
+        primary = new FeedsAdapter(this, masterFeedsList);
 
         navDrawerList.setAdapter(primary);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -152,7 +144,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
         } else {
             masterFeedsList = retained.saveList;
             current = retained.current;
-            updateDrawer(masterFeedsList);
+            primary.notifyDataSetChanged();
         }
 
         if (current < 0) {
@@ -210,8 +202,6 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
                 ((TextView) findViewById(R.id.description_body)).setText(getResources().getString(R.string.description_placeholder));
 
                 aBarMenu.findItem(R.id.action_refresh).setVisible(false);
-                aBarMenu.findItem(R.id.action_load_next).setVisible(false);
-                aBarMenu.findItem(R.id.action_load_prev).setVisible(false);
                 aBarMenu.findItem(R.id.action_display_short_description).setVisible(false);
 
                 if (getActionBar() != null)
@@ -223,9 +213,6 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
-            menu.findItem(R.id.action_load_next).setVisible(false);
-            menu.findItem(R.id.action_load_prev).setVisible(false);
-            menu.findItem(R.id.action_load_first).setVisible(false);
             menu.findItem(R.id.action_display_short_feed_description).setVisible(false);
 
             if (mDrawerLayout.isDrawerOpen(navDrawerList))
@@ -237,24 +224,13 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
         else {
             if (mDrawerLayout.isDrawerOpen(navDrawerList)) {
                 menu.findItem(R.id.action_refresh).setVisible(true);
-                menu.findItem(R.id.action_load_next).setVisible(false);
-                menu.findItem(R.id.action_load_prev).setVisible(false);
-                menu.findItem(R.id.action_load_first).setVisible(false);
                 menu.findItem(R.id.action_display_short_feed_description).setVisible(false);
             }
             else {
                 menu.findItem(R.id.action_refresh).setVisible(true);
-                menu.findItem(R.id.action_load_next).setVisible(true);
-                menu.findItem(R.id.action_load_prev).setVisible(true);
-                menu.findItem(R.id.action_load_first).setVisible(true);
                 menu.findItem(R.id.action_display_short_feed_description).setVisible(true);
             }
         }
-
-        if (getResources().getString(R.string.alpha_test_build).equals("yes"))
-            menu.findItem(R.id.action_change_base_url).setVisible(true);
-        else
-            menu.findItem(R.id.action_change_base_url).setVisible(false);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -292,14 +268,6 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
             case R.id.action_show_credits:
                 this.startActivity(new Intent(this, WebViewActivity.class).putExtra("url", getString(R.string.credits_filepath)).putExtra("title", getString(R.string.credits_title)));
                 return true;
-
-            case R.id.action_open_preferences:
-                this.startActivity(new Intent(this, PreferencesActivity.class));
-                return true;
-
-            case R.id.action_change_base_url:
-                new URLChanger().show(getFragmentManager(), "change_url");
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -329,7 +297,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
             masterFeedsList.clear();
             Collections.addAll(masterFeedsList, feeds);
 
-            updateDrawer(masterFeedsList);
+            primary.notifyDataSetChanged();
 
             primary.notifyDataSetChanged();
             if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && current < 0) {
@@ -347,31 +315,7 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
             f.title = "Loading failed.";
             masterFeedsList.clear();
             masterFeedsList.add(f);
-            updateDrawer(masterFeedsList);
-        }
-    }
-
-    public static class URLChanger extends DialogFragment {
-        View v;
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            v = getActivity().getLayoutInflater().inflate(R.layout.dialog_change_url, null);
-            AlertDialog.Builder b = new AlertDialog.Builder(this.getActivity());
-            b.setView(v).setTitle("Enter Base URL").setNeutralButton("Dismiss", null).setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String s = ((EditText) v.findViewById(R.id.newBaseURL)).getText().toString();
-                    if (!s.equals("")) {
-                        ((MainLauncherActivity) getActivity()).baseURL = s;
-                    }
-                    ((MainLauncherActivity) getActivity()).mSpiceManager.removeAllDataFromCache();
-                    ((MainLauncherActivity) getActivity()).listItems.clear();
-                    ((MainLauncherActivity) getActivity()).refreshFeedsList();
-                }
-            });
-
-            return b.create();
+            primary.notifyDataSetChanged();
         }
     }
 
@@ -386,20 +330,13 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
         }
     }
 
-    private void updateDrawer(ArrayList<Feed> feeds) {
-        listItems.clear();
-        for (Feed c : feeds)
-            listItems.add(c.title);
-        primary.notifyDataSetChanged();
-    }
-
     /**
      * Method that loads a feed into a fragment.
      * @param position Index of feed to be loaded.
      */
     private void openPreviewFragment(int position) {
         current = position;
-        ImageFeedFragment iFrag = new ImageFeedFragment();
+        EntriesFragment iFrag = new EntriesFragment();
 
         if (getActionBar() != null) {
             getActionBar().setTitle(masterFeedsList.get(position).title);
@@ -421,15 +358,5 @@ public class MainLauncherActivity extends Activity implements FeederFragmentInte
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(this);
         mSpiceManager.execute(new JSONRequest<Feed[]>(Feed[].class, this.baseURL + getString(R.string.feeds_endpoint)), getString(R.string.categories_cache), DurationInMillis.ALWAYS_EXPIRED, new FeedsRequestListener());
-    }
-
-    /**
-     * Returns whether the device is actively connected to a network.
-     * @return "true" if yes, "false" otherwise.
-     */
-    boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo nFo = cm.getActiveNetworkInfo();
-        return (nFo != null && nFo.isConnectedOrConnecting());
     }
 }

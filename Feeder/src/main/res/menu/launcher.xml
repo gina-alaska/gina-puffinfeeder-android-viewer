@@ -1,24 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/action_load_prev"
-          android:title="Prev. Page"
-          android:showAsAction="ifRoom"
-          android:icon="@drawable/ic_navigation_back" />
-
-    <item android:id="@+id/action_load_next"
-          android:title="Next Page"
-          android:showAsAction="ifRoom"
-          android:icon="@drawable/ic_navigation_forward" />
-
     <item android:id="@+id/action_refresh"
           android:title="Refresh"
           android:showAsAction="never"
           android:icon="@drawable/ic_menu_refresh" />
-
-    <item android:id="@+id/action_load_first"
-          android:title="Latest Page"
-          android:showAsAction="never"
-          android:icon="@drawable/ic_navigation_first" />
 
     <item android:id="@+id/action_display_short_feed_description"
           android:title="@string/description_header"
@@ -29,14 +14,5 @@
           android:title="Credits"
           android:showAsAction="never"
           android:icon="@drawable/ic_action_about" />
-
-    <item android:id="@+id/action_open_preferences"
-          android:title="Settings"
-          android:showAsAction="never"
-          android:icon="@drawable/ic_action_preferences" />
-
-    <item android:id="@+id/action_change_base_url"
-          android:title="Change Base URL"
-          android:showAsAction="never" />
 
 </menu>
