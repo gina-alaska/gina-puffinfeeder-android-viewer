@@ -1,8 +1,12 @@
 package edu.alaska.gina.feeder.android.slideshow;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -84,7 +88,8 @@ public class Show extends Activity {
     protected void onStart() {
         super.onStart();
 
-        //TODO If no UID, display dialogue to set one
+        UIDDialogue d = new UIDDialogue();
+        d.show(getFragmentManager(), "uid_dialogue");
 
         if (!this.jsonManager.isStarted())
             this.jsonManager.start(this);
@@ -187,6 +192,28 @@ public class Show extends Activity {
             downloadDone = true;
             loadIntoView(bitmap);
             flipView();
+        }
+    }
+
+    private class UIDDialogue extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Enter Code:")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //TODO Set persistent variable for UID
+                            dismiss();
+                        }
+                    })
+                    .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    });
+            return builder.create();
         }
     }
 }
