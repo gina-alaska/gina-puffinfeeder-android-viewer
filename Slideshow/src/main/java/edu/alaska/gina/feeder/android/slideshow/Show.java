@@ -27,6 +27,7 @@ import edu.alaska.gina.feeder.android.slideshow.network.JsonSpiceService;
  */
 public class Show extends Activity {
     private String baseURL = "http://feeder-web-dev.x.gina.alaska.edu/feeds/snpp-truecolor/entries.json";
+
     private ViewFlipper contentView;
     private ImageView image1, image2;
     private View progressBar;
@@ -34,20 +35,41 @@ public class Show extends Activity {
     private BitmapSpiceManager imageManager = new BitmapSpiceManager();
     private Entry[] contentData;
 
+    private Thread timer = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            timerThreadRunning = true;
+            contentView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    timerDone = true;
+                    flipView();
+                }
+            }, DurationInMillis.ONE_MINUTE / 2);
+        }
+    });
+
     /**
      * Image that is currently being downloaded.
      */
     private int current = 0;
 
     /**
-     * Boolean values indicating whether downloading and the timer are done.
+     * Flags indicating whether the timer, download, and timer thread are running or complete.
      */
-    private boolean timerDone = true, downloadDone = false;
+    private boolean timerDone = true, downloadDone = false, timerThreadRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show);
+
+        if (timerThreadRunning)
+            this.timer.interrupt();
+
+        timerDone = true;
+        downloadDone = false;
+        timerThreadRunning = false;
 
         this.contentView = (ViewFlipper) findViewById(R.id.flipper);
         this.image1 = (ImageView) this.contentView.findViewById(R.id.image1);
@@ -110,16 +132,20 @@ public class Show extends Activity {
         }
 
         if (this.timerDone && this.downloadDone) {
-            contentView.showNext();
+            this.contentView.showNext();
 
-            //TODO Reset the timer
+            this.timerDone = false;
+            this.downloadDone = true;
+
+            if (!timerThreadRunning)
+                timer.start();
+            else
+                timer.run();
+            tryRequestNextImage();
         }
-
-        tryRequestNextImage();
     }
 
     private void tryRequestNextImage() {
-        this.downloadDone = false;
         if (contentData != null && current < contentData.length) {
             this.imageManager.execute(new BitmapRequest(this.contentData[current++].preview_url + "?size=2048x2048", new File(getCacheDir().getAbsolutePath() + "images.cache")), new ImageListener());
         } else {
