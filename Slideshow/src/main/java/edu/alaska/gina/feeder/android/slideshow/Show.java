@@ -30,8 +30,8 @@ public class Show extends Activity {
     private ViewFlipper contentView;
     private ImageView image1, image2;
     private View progressBar;
-    private SpiceManager jsonManager = new SpiceManager(JsonSpiceService.class);;
-    private BitmapSpiceManager imageManager = new BitmapSpiceManager();;
+    private SpiceManager jsonManager = new SpiceManager(JsonSpiceService.class);
+    private BitmapSpiceManager imageManager = new BitmapSpiceManager();
     private Entry[] contentData;
 
     /**
@@ -109,7 +109,6 @@ public class Show extends Activity {
             this.contentView.setVisibility(View.VISIBLE);
         }
 
-        //TODO If timer's done & image is loaded, flip the view
         if (this.timerDone && this.downloadDone) {
             contentView.showNext();
 
@@ -122,13 +121,10 @@ public class Show extends Activity {
     private void tryRequestNextImage() {
         this.downloadDone = false;
         if (contentData != null && current < contentData.length) {
-            if (getResources().getDisplayMetrics().widthPixels > 2048 || getResources().getDisplayMetrics().heightPixels > 2048)
-                this.imageManager.execute(new BitmapRequest(this.contentData[current++].preview_url + "?size=4096x4096", new File(getCacheDir().getAbsolutePath() + "images.cache")), new ImageListener());
-            else
-                this.imageManager.execute(new BitmapRequest(this.contentData[current++].preview_url + "?size=2048x2048", new File(getCacheDir().getAbsolutePath() + "images.cache")), new ImageListener());
+            this.imageManager.execute(new BitmapRequest(this.contentData[current++].preview_url + "?size=2048x2048", new File(getCacheDir().getAbsolutePath() + "images.cache")), new ImageListener());
         } else {
             this.jsonManager.execute(new JSONRequest<Entry[]>(Entry[].class, baseURL), "slideshow_entries", DurationInMillis.ALWAYS_EXPIRED, new EntriesRequestListener());
-            //TODO Don't bother asking why this line is here. We both know you have no clue.
+            //TODO Figure out what was supposed to be on this line.
         }
     }
 
