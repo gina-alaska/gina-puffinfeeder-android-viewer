@@ -5,13 +5,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
@@ -87,15 +88,13 @@ public class Show extends Activity {
         this.contentView.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         this.contentView.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
 
-        UIDDialogue d = new UIDDialogue();
-        d.show(getFragmentManager(), "uid_dialogue");
-
         if (!this.jsonManager.isStarted())
             this.jsonManager.start(this);
         if (!this.imageManager.isStarted())
             this.imageManager.start(this);
 
-        tryRequestNextImage();
+        UIDDialogue d = new UIDDialogue();
+        d.show(getFragmentManager(), "uid_dialogue");
     }
 
     @Override
@@ -218,20 +217,37 @@ public class Show extends Activity {
     }
 
     private class UIDDialogue extends DialogFragment {
+        private View v;
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+            v = getActivity().getLayoutInflater().inflate(R.layout.uid_dialog, null);
+
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Enter Code:")
+            builder.setTitle("Enter Code:").setView(v)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //TODO Set persistent variable for UID
+                            if (v.findViewById(R.id.newUID) != null)
+                                baseURL = "/slideshow/" + ((EditText) v.findViewById(R.id.newUID)).getText();
+                            v.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //
+                                }
+                            });
                             dismiss();
                         }
                     })
                     .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            v.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    tryRequestNextImage();
+                                }
+                            });
                             dismiss();
                         }
                     });
