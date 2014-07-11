@@ -1,5 +1,7 @@
 package edu.alaska.gina.feeder.android.slideshow;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -30,7 +32,7 @@ import edu.alaska.gina.feeder.android.slideshow.network.JsonSpiceService;
  * Feeder automated slideshow application.
  */
 public class Show extends Activity {
-    private String baseURL = "http://feeder-web-dev.x.gina.alaska.edu/feeds/snpp-truecolor/entries.json";
+    private String baseURL = "http://feeder-web-dev.x.gina.alaska.edu/feeds/snpp-day-night-band/entries.json";
 
     private ViewFlipper contentView;
     private ImageView image1, image2;
@@ -42,10 +44,12 @@ public class Show extends Activity {
     private Thread timer = new Thread(new Runnable() {
         @Override
         public void run() {
+            Log.d("slideshow_debug", "Timer reset.");
             timerThreadRunning = true;
             contentView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d("slideshow_debug", "Timer complete.");
                     timerDone = true;
                     flipView();
                 }
@@ -82,11 +86,6 @@ public class Show extends Activity {
 
         this.contentView.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         this.contentView.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         UIDDialogue d = new UIDDialogue();
         d.show(getFragmentManager(), "uid_dialogue");
@@ -121,20 +120,37 @@ public class Show extends Activity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
 
         if (jsonManager.isStarted())
             jsonManager.shouldStop();
         if (imageManager.isStarted())
             imageManager.shouldStop();
+
+        if (timerThreadRunning)
+            this.timer.interrupt();
     }
 
     private void flipView() {
+        Log.d("slideshow_debug", "Starting flipView method.");
         if (this.progressBar.getVisibility() == View.VISIBLE) {
-            this.progressBar.setVisibility(View.GONE);
-            this.contentView.setVisibility(View.VISIBLE);
+            Log.d("slideshow_debug", "ProgressBar removal starting.");
+            this.progressBar.setAlpha(1f);
+            this.progressBar.animate().alpha(0f)
+                    .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            progressBar.setVisibility(View.GONE);
+                            contentView.setVisibility(View.VISIBLE);
+                            Log.d("slideshow_debug", "ProgressBar is gone.");
+                        }
+                    });
         }
+
+        Log.d("slideshow_debug", "timerDone = " + timerDone);
+        Log.d("slideshow_debug", "downloadDone = " + downloadDone);
 
         if (this.timerDone && this.downloadDone) {
             this.contentView.showNext();
@@ -142,10 +158,14 @@ public class Show extends Activity {
             this.timerDone = false;
             this.downloadDone = true;
 
-            if (!timerThreadRunning)
+            Log.d("slideshow_debug", "Flipping triggered & flags reset.");
+
+            if (!timerThreadRunning) {
+                Log.d("slideshow_debug", "Timer started");
                 timer.start();
-            else
+            } else {
                 timer.run();
+            }
             tryRequestNextImage();
         }
     }
@@ -171,6 +191,7 @@ public class Show extends Activity {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Log.d("slideshow_debug", "Entries download fail!");
+            tryRequestNextImage();
         }
 
         @Override
@@ -185,6 +206,7 @@ public class Show extends Activity {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Log.d("slideshow_debug", "Image download fail!");
+            tryRequestNextImage();
         }
 
         @Override
