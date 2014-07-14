@@ -47,26 +47,12 @@ public class EntriesFragment extends Fragment {
     private final ArrayList<Entry> entriesList = new ArrayList<Entry>();
     private String entriesURL;
     private EntriesAdapter mImageAdapter;
-    private int page = 1;
 
     /* Overridden Methods. */
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_entries, container, false);
-        setHasOptionsMenu(true);
-
-        Bundle extras = getArguments();
-        entriesURL = extras.getString("entries");
-
-        mImageAdapter = new EntriesAdapter(this.getActivity(), entriesList);
-
-        return v;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         fadeAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
         loadingView = getActivity().findViewById(R.id.grid_progressBar);
@@ -92,6 +78,19 @@ public class EntriesFragment extends Fragment {
         });
 
         mImageAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_entries, container, false);
+        setHasOptionsMenu(true);
+
+        Bundle extras = getArguments();
+        entriesURL = extras.getString("entries");
+
+        mImageAdapter = new EntriesAdapter(this.getActivity(), entriesList);
+
+        return v;
     }
 
     @Override
