@@ -17,10 +17,10 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
-import edu.alaska.gina.feeder.android.core.data.Entry;
-
 import java.util.ArrayList;
+
+import edu.alaska.gina.feeder.android.core.data.Entry;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 
 /**
  * Adapter that places thumbnails off the feed into the primary GridView.
@@ -77,25 +77,38 @@ public class EntriesAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.entry_item_layout, null);
+
+            holder = new ViewHolder();
+            holder.timestamp = (TextView) convertView.findViewById(R.id.entry_caption);
+            holder.thumbnail = (ImageView) convertView.findViewById(R.id.entryImage);
+
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
         DisplayMetrics d = mContext.getResources().getDisplayMetrics();
         int h = Math.round(d.widthPixels / ((GridView) parent).getNumColumns());
 
-        ((TextView) convertView.findViewById(R.id.entry_caption))
-                .setText(formatDateTime(this.entries.get(position).event_at));
+        holder.timestamp.setText(formatDateTime(this.entries.get(position).event_at));
 
         Picasso.with(mContext)
                 .load(entries.get(position).preview_url + "?size=" + h + "x" + (h + 50))
                 .placeholder(R.drawable.image_placeholder)
                 .resize(h, h)
                 .centerCrop()
-                .into((ImageView) convertView.findViewById(R.id.entryImage));
+                .into(holder.thumbnail);
 
         convertView.setMinimumHeight(h);
 
         return convertView;
+    }
+
+    private static class ViewHolder {
+        TextView timestamp;
+        ImageView thumbnail;
     }
 }

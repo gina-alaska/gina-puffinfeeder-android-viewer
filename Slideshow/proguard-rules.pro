@@ -1,28 +1,17 @@
 # Add project specific ProGuard rules here.
 # By default, the flags in this file are appended to flags specified
 # in C:/Program Files (x86)/Android/android-sdk/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the ProGuard
-# include property in project.properties.
+# You can edit the include path and order by changing the proguardFiles
+# directive in build.gradle.
 #
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
-# For RoboSpice
-#Results classes that only extend a generic should be preserved as they will be pruned by Proguard
-#as they are "empty", others are kept
--keep class <your REST POJOs package>.**
-
+### For RoboSpice
 #RoboSpice requests should be preserved in most cases
--keepclassmembers class <your RoboSpice requests package>.** {
+-keepclassmembers class network.** {
   public void set*(***);
   public *** get*();
   public *** is*();
@@ -43,9 +32,15 @@
 -dontwarn com.google.common.**
 -dontwarn com.octo.android.robospice.persistence.**
 
-#
-### Jackson SERIALIZER SETTINGS
+### For Jackson, SERIALIZER SETTINGS
 -keepclassmembers,allowobfuscation class * {
     @org.codehaus.jackson.annotate.* <fields>;
     @org.codehaus.jackson.annotate.* <init>(...);
+}
+
+### For Android, disable Log output
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
 }

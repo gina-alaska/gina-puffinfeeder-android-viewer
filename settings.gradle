@@ -1,2 +1,2 @@
-include ':Feeder Android Core'
+include ':Feeder Android Core', 'Slideshow'
 include 'Feeder'

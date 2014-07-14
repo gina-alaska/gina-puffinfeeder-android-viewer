@@ -4,15 +4,13 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         tools:context=".MainActivity"
-        android:id="@+id/drawer_layout"
-        android:background="@android:color/background_light">
+        android:id="@+id/drawer_layout">
 
     <RelativeLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:background="@android:color/background_light" />
+            android:gravity="center_horizontal" />
 
     <ListView
             android:id="@+id/drawer_left_nav"

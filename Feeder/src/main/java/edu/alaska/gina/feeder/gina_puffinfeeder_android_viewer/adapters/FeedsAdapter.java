@@ -60,4 +60,8 @@ public class FeedsAdapter extends BaseAdapter {
         ((TextView) convertView).setText(feeds.get(position).title);
         return convertView;
     }
+
+    private class ViewHolder {
+        //For use only if list gets more detailed.
+    }
 }
