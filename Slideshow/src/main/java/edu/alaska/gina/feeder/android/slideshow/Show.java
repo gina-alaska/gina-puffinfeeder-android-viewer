@@ -7,8 +7,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -37,7 +40,7 @@ public class Show extends Activity {
 
     private ViewFlipper contentView;
     private ImageView image1, image2;
-    private View progressBar;
+    private View progressBar, settingsButton;
     private SpiceManager jsonManager = new SpiceManager(JsonSpiceService.class);
     private BitmapSpiceManager imageManager = new BitmapSpiceManager();
     private Entry[] contentData;
@@ -45,18 +48,25 @@ public class Show extends Activity {
     private Thread timer = new Thread(new Runnable() {
         @Override
         public void run() {
-            Log.d("slideshow_debug", "Timer reset.");
+            Log.d(getString(R.string.log_tag), "Timer reset.");
             timerThreadRunning = true;
             contentView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("slideshow_debug", "Timer complete.");
+                    Log.d(getString(R.string.log_tag), "Timer complete.");
                     timerDone = true;
                     flipView();
                 }
             }, DurationInMillis.ONE_MINUTE / 2);
         }
     });
+
+    private Handler hideSysUIHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            hideUI();
+        }
+    };
 
     /**
      * Image that is currently being downloaded.
@@ -76,14 +86,15 @@ public class Show extends Activity {
         if (timerThreadRunning)
             this.timer.interrupt();
 
-        timerDone = true;
-        downloadDone = false;
-        timerThreadRunning = false;
+        this.timerDone = true;
+        this.downloadDone = false;
+        this.timerThreadRunning = false;
 
         this.contentView = (ViewFlipper) findViewById(R.id.flipper);
         this.image1 = (ImageView) this.contentView.findViewById(R.id.image1);
         this.image2 = (ImageView) this.contentView.findViewById(R.id.image2);
         this.progressBar = this.findViewById(R.id.loadingIndicator);
+        this.settingsButton = this.findViewById(R.id.settingsButton);
 
         this.contentView.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         this.contentView.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
@@ -93,29 +104,122 @@ public class Show extends Activity {
         if (!this.imageManager.isStarted())
             this.imageManager.start(this);
 
-        UIDDialogue d = new UIDDialogue();
-        d.show(getFragmentManager(), "uid_dialogue");
+        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                    showUI();
+                }
+            }
+        });
+
+        this.settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UIDDialogue d = new UIDDialogue();
+                d.show(getFragmentManager(), "uid_dialogue");
+            }
+        });
+
+        View.OnClickListener clickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(getString(R.string.log_tag) + "-ui", "Click event registered.");
+                if (settingsButton.getVisibility() == View.VISIBLE) {
+                    hideUI();
+                } else {
+                    showUI();
+                    //delayedHide();
+                }
+            }
+        };
+        this.image1.setOnClickListener(clickListener);
+        this.image2.setOnClickListener(clickListener);
+
+        SharedPreferences setting = getPreferences(0);
+        if (setting.getString(getString(R.string.code_pref), "").equals("")) {
+            UIDDialogue d = new UIDDialogue();
+            d.show(getFragmentManager(), "uid_dialogue");
+        } else {
+            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "");
+            tryRequestNextImage();
+        }
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        delayedHide();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         if (!this.jsonManager.isStarted())
             this.jsonManager.start(this);
         if (!this.imageManager.isStarted())
             this.imageManager.start(this);
+    }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+/*
         if (hasFocus) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            );
+            delayedHide();
+        } else {
+            hideSysUIHandler.removeMessages(0);
         }
+        */
+    }
+
+    private void delayedHide() {
+        Log.d(getString(R.string.log_tag) + "-ui", "Sys UI Delayed Hide Start");
+        this.hideSysUIHandler.removeMessages(0);
+        this.hideSysUIHandler.sendEmptyMessageDelayed(0, 2000);
+    }
+
+    private void hideUI() {
+        Log.d(getString(R.string.log_tag) + "-ui", "Sys UI Hidden");
+        this.hideSysUIHandler.removeMessages(0);
+        getWindow().getDecorView().setSystemUiVisibility(
+                  View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN);
+
+        settingsButton.setAlpha(1f);
+        settingsButton.animate().alpha(0f)
+                .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        settingsButton.setVisibility(View.GONE);
+                    }
+                });
+    }
+
+    private void showUI() {
+        Log.d(getString(R.string.log_tag) + "-ui", "Sys UI Shown");
+        this.hideSysUIHandler.removeMessages(0);
+        getWindow().getDecorView().setSystemUiVisibility(
+                  View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
+        settingsButton.setVisibility(View.VISIBLE);
+        settingsButton.setAlpha(0f);
+        settingsButton.animate().alpha(1f)
+                .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        settingsButton.setVisibility(View.VISIBLE);
+                        delayedHide();
+                    }
+                });
     }
 
     @Override
@@ -127,14 +231,15 @@ public class Show extends Activity {
         if (imageManager.isStarted())
             imageManager.shouldStop();
 
-        if (timerThreadRunning)
+        if (timerThreadRunning) {
             this.timer.interrupt();
+        }
     }
 
     private void flipView() {
-        Log.d("slideshow_debug", "Starting flipView method.");
+        Log.d(getString(R.string.log_tag), "Starting flipView method.");
         if (this.progressBar.getVisibility() == View.VISIBLE) {
-            Log.d("slideshow_debug", "ProgressBar removal starting.");
+            Log.d(getString(R.string.log_tag), "ProgressBar removal starting.");
             this.progressBar.setAlpha(1f);
             this.progressBar.animate().alpha(0f)
                     .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
@@ -143,13 +248,13 @@ public class Show extends Activity {
                         public void onAnimationEnd(Animator animation) {
                             progressBar.setVisibility(View.GONE);
                             contentView.setVisibility(View.VISIBLE);
-                            Log.d("slideshow_debug", "ProgressBar is gone.");
+                            Log.d(getString(R.string.log_tag), "ProgressBar is gone.");
                         }
                     });
         }
 
-        Log.d("slideshow_debug", "timerDone = " + timerDone);
-        Log.d("slideshow_debug", "downloadDone = " + downloadDone);
+        Log.d(getString(R.string.log_tag), "timerDone = " + timerDone);
+        Log.d(getString(R.string.log_tag), "downloadDone = " + downloadDone);
 
         if (this.timerDone && this.downloadDone) {
             this.contentView.showNext();
@@ -157,10 +262,10 @@ public class Show extends Activity {
             this.timerDone = false;
             this.downloadDone = true;
 
-            Log.d("slideshow_debug", "Flipping triggered & flags reset.");
+            Log.d(getString(R.string.log_tag), "Flipping triggered & flags reset.");
 
             if (!timerThreadRunning) {
-                Log.d("slideshow_debug", "Timer started");
+                Log.d(getString(R.string.log_tag), "Timer started");
                 timer.start();
             } else {
                 timer.run();
@@ -170,6 +275,11 @@ public class Show extends Activity {
     }
 
     private void tryRequestNextImage() {
+        if (!this.jsonManager.isStarted())
+            this.jsonManager.start(this);
+        if (!this.imageManager.isStarted())
+            this.imageManager.start(this);
+
         if (contentData != null && current < contentData.length) {
             this.imageManager.execute(new BitmapRequest(this.contentData[current++].preview_url + "?size=2048x2048", new File(getCacheDir().getAbsolutePath() + "images.cache")), new ImageListener());
         } else {
@@ -189,7 +299,7 @@ public class Show extends Activity {
     private class EntriesRequestListener implements RequestListener<Entry[]> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Log.d("slideshow_debug", "Entries download fail!");
+            Log.d(getString(R.string.log_tag), "Entries download fail!");
             tryRequestNextImage();
         }
 
@@ -204,7 +314,7 @@ public class Show extends Activity {
     private class ImageListener implements RequestListener<Bitmap> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Log.d("slideshow_debug", "Image download fail!");
+            Log.d(getString(R.string.log_tag), "Image download fail!");
             tryRequestNextImage();
         }
 
@@ -221,6 +331,11 @@ public class Show extends Activity {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+            if (jsonManager.isStarted())
+                jsonManager.shouldStop();
+            if (imageManager.isStarted())
+                imageManager.shouldStop();
+
             v = getActivity().getLayoutInflater().inflate(R.layout.uid_dialog, null);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -228,12 +343,18 @@ public class Show extends Activity {
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (v.findViewById(R.id.newUID) != null)
-                                baseURL = "/slideshow/" + ((EditText) v.findViewById(R.id.newUID)).getText();
+                            if (v.findViewById(R.id.newUID) != null) {
+                                String s = ((EditText) v.findViewById(R.id.newUID)).getText().toString();
+                                baseURL += s;
+                                SharedPreferences.Editor setting = getPreferences(0).edit();
+                                setting.putString(getString(R.string.code_pref), s).commit();
+                            }
                             v.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    //
+                                    if (contentData != null)
+                                        current = contentData.length;
+                                    tryRequestNextImage();
                                 }
                             });
                             dismiss();
