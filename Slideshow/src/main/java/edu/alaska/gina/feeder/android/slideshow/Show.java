@@ -147,12 +147,6 @@ public class Show extends Activity {
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        delayedHide();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
 
@@ -357,6 +351,7 @@ public class Show extends Activity {
                                     tryRequestNextImage();
                                 }
                             });
+                            delayedHide();
                             dismiss();
                         }
                     })
@@ -369,6 +364,7 @@ public class Show extends Activity {
                                     tryRequestNextImage();
                                 }
                             });
+                            delayedHide();
                             dismiss();
                         }
                     });
