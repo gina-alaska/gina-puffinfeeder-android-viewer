@@ -4,6 +4,6 @@
     <string name="app_name">Slideshow</string>
     <string name="log_tag">slideshow_debug</string>
     <string name="code_pref">UID</string>
-    <string name="base_url">http://feeder-web-dev.x.gina.alaska.edu/slideshow/</string>
+    <string name="base_url">http://feeder-web-dev.x.gina.alaska.edu/slideshows/</string>
 
 </resources>

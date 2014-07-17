@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextSwitcher;
 import android.widget.ViewFlipper;
 
 import com.octo.android.robospice.SpiceManager;
@@ -25,6 +26,11 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.octo.android.robospice.request.simple.BitmapRequest;
 import com.octo.android.robospice.spicelist.simple.BitmapSpiceManager;
+
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 import java.io.File;
 
@@ -39,6 +45,7 @@ public class Show extends Activity {
     private String baseURL = "http://feeder-web-dev.x.gina.alaska.edu/feeds/snpp-day-night-band/entries.json";
 
     private ViewFlipper contentView;
+    private TextSwitcher timestamp;
     private ImageView image1, image2;
     private View progressBar, settingsButton;
     private SpiceManager jsonManager = new SpiceManager(JsonSpiceService.class);
@@ -91,6 +98,7 @@ public class Show extends Activity {
         this.timerThreadRunning = false;
 
         this.contentView = (ViewFlipper) findViewById(R.id.flipper);
+        this.timestamp = (TextSwitcher) findViewById(R.id.timestamp);
         this.image1 = (ImageView) this.contentView.findViewById(R.id.image1);
         this.image2 = (ImageView) this.contentView.findViewById(R.id.image2);
         this.progressBar = this.findViewById(R.id.loadingIndicator);
@@ -98,6 +106,9 @@ public class Show extends Activity {
 
         this.contentView.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         this.contentView.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
+
+        this.timestamp.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+        this.timestamp.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
 
         if (!this.jsonManager.isStarted())
             this.jsonManager.start(this);
@@ -129,19 +140,19 @@ public class Show extends Activity {
                     hideUI();
                 } else {
                     showUI();
-                    //delayedHide();
                 }
             }
         };
         this.image1.setOnClickListener(clickListener);
         this.image2.setOnClickListener(clickListener);
+        this.timestamp.setOnClickListener(clickListener);
 
         SharedPreferences setting = getPreferences(0);
         if (setting.getString(getString(R.string.code_pref), "").equals("")) {
             UIDDialogue d = new UIDDialogue();
             d.show(getFragmentManager(), "uid_dialogue");
         } else {
-            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "");
+            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "") + "/entries.json";
             tryRequestNextImage();
         }
     }
@@ -159,13 +170,12 @@ public class Show extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-/*
+
         if (hasFocus) {
             delayedHide();
         } else {
             hideSysUIHandler.removeMessages(0);
         }
-        */
     }
 
     private void delayedHide() {
@@ -216,6 +226,29 @@ public class Show extends Activity {
                 });
     }
 
+    private String formatDateTime(DateTime img) {
+        Period diff = new Period(img, new DateTime(System.currentTimeMillis()));
+        PeriodFormatter formatter;
+
+        if (diff.getYears() > 0) {
+            formatter = new PeriodFormatterBuilder().appendYears().appendSuffix(" year ago.", " years ago.").toFormatter();
+        } else if (diff.getMonths() > 0) {
+            formatter = new PeriodFormatterBuilder().appendMonths().appendSuffix(" month ago.", " months ago.").toFormatter();
+        } else if (diff.getWeeks() > 0) {
+            formatter = new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week ago.", " weeks ago.").toFormatter();
+        } else if (diff.getDays() > 0) {
+            formatter = new PeriodFormatterBuilder().appendDays().appendSuffix(" day ago.", " days ago.").toFormatter();
+        } else if (diff.getHours() > 0) {
+            formatter = new PeriodFormatterBuilder().appendHours().appendSuffix(" hour ago.", " hours ago.").toFormatter();
+        } else if (diff.getMinutes() > 0) {
+            formatter = new PeriodFormatterBuilder().appendMinutes().appendSuffix(" minute ago.", " minutes ago.").toFormatter();
+        } else {
+            formatter = new PeriodFormatterBuilder().appendSeconds().appendSuffix(" second ago.", " seconds ago.").toFormatter();
+        }
+
+        return formatter.print(diff);
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -242,6 +275,7 @@ public class Show extends Activity {
                         public void onAnimationEnd(Animator animation) {
                             progressBar.setVisibility(View.GONE);
                             contentView.setVisibility(View.VISIBLE);
+                            timestamp.setVisibility(View.VISIBLE);
                             Log.d(getString(R.string.log_tag), "ProgressBar is gone.");
                         }
                     });
@@ -251,6 +285,8 @@ public class Show extends Activity {
         Log.d(getString(R.string.log_tag), "downloadDone = " + downloadDone);
 
         if (this.timerDone && this.downloadDone) {
+            DateTime stamp = this.contentData[current - 1].event_at;
+            this.timestamp.setText(formatDateTime(stamp));
             this.contentView.showNext();
 
             this.timerDone = false;
@@ -339,7 +375,7 @@ public class Show extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             if (v.findViewById(R.id.newUID) != null) {
                                 String s = ((EditText) v.findViewById(R.id.newUID)).getText().toString();
-                                baseURL += s;
+                                baseURL += s + "/entries.json";
                                 SharedPreferences.Editor setting = getPreferences(0).edit();
                                 setting.putString(getString(R.string.code_pref), s).commit();
                             }
@@ -367,7 +403,7 @@ public class Show extends Activity {
                             delayedHide();
                             dismiss();
                         }
-                    });
+                    }).setCancelable(false);
             return builder.create();
         }
     }
