@@ -33,7 +33,7 @@ import java.util.Collections;
 import edu.alaska.gina.feeder.android.core.data.Feed;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapters.FeedsAdapter;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.EntriesFragment;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.FeederFragmentInterface;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.FeederActivity;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.StartFragment;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
@@ -42,7 +42,7 @@ import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpice
  * Activity that handles navigation drawer and startup.
  * created by bobby on 6/14/13.
  */
-public class MainActivity extends Activity implements FeederFragmentInterface {
+public class MainActivity extends Activity implements FeederActivity {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
     private String baseURL;
 
@@ -123,19 +123,6 @@ public class MainActivity extends Activity implements FeederFragmentInterface {
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        primary.notifyDataSetChanged();
 
         if (retained == null) {
             retained = new DataFragment();
@@ -152,18 +139,24 @@ public class MainActivity extends Activity implements FeederFragmentInterface {
             getFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
             findViewById(R.id.more_info_button).setVisibility(View.GONE);
         } else {
-            openPreviewFragment(current);
+            openEntriesFragment(masterFeedsList.get(current));
         }
 
         navDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (masterFeedsList.size() > 1) {
-                    openPreviewFragment(position);
+                    openEntriesFragment(masterFeedsList.get(current));
                 }
                 mDrawerLayout.closeDrawer(navDrawerList);
             }
         });
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
     }
 
     @Override
@@ -272,21 +265,32 @@ public class MainActivity extends Activity implements FeederFragmentInterface {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void networkRequest(JSONRequest request, String cacheKey, RequestListener listener) {
-        setProgressBarIndeterminateVisibility(true);
-        if (!mSpiceManager.isStarted())
-            mSpiceManager.start(this);
-        mSpiceManager.execute(request, cacheKey, DurationInMillis.ALWAYS_EXPIRED, listener);
-    }
-
-    @Override
-    public void setDescription(String description) {
-        ((TextView) findViewById(R.id.description_body)).setText(description);
-        if (masterFeedsList.get(current).more_info_url == null)
+    public void setDescription(Feed newFeed) {
+        ((TextView) findViewById(R.id.description_body)).setText(newFeed.description);
+        if (newFeed.more_info_url == null)
             findViewById(R.id.more_info_button).setVisibility(View.GONE);
         else
             findViewById(R.id.more_info_button).setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Method that loads a new EntriesFragment into the main content view.
+     * @param newFeed New feed to be loaded.
+     */
+    @Override
+    public void openEntriesFragment(Feed newFeed) {
+        EntriesFragment iFrag = new EntriesFragment();
+
+        if (getActionBar() != null) {
+            getActionBar().setTitle(newFeed.title);
+        }
+
+        Bundle b = new Bundle();
+        b.putString("entries", newFeed.entries_url);
+        iFrag.setArguments(b);
+        getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
+
+        setDescription(newFeed);
     }
 
     /* Object to listen for RoboSpice task completion. */
@@ -328,26 +332,6 @@ public class MainActivity extends Activity implements FeederFragmentInterface {
             super.onCreate(savedInstanceState);
             setRetainInstance(true);
         }
-    }
-
-    /**
-     * Method that loads a feed into a fragment.
-     * @param position Index of feed to be loaded.
-     */
-    private void openPreviewFragment(int position) {
-        current = position;
-        EntriesFragment iFrag = new EntriesFragment();
-
-        if (getActionBar() != null) {
-            getActionBar().setTitle(masterFeedsList.get(position).title);
-        }
-
-        Bundle b = new Bundle();
-        b.putString("entries", masterFeedsList.get(position).entries_url);
-        iFrag.setArguments(b);
-        getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
-
-        setDescription(masterFeedsList.get(current).description);
     }
 
     /**
