@@ -40,15 +40,40 @@ import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpice
 public class EntriesFragment extends Fragment {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
-    private Menu aBarMenu;
     private int fadeAnimationDuration;
     private View loadingView, contentView;
 
+    private ContentDataFragment data;
     private final ArrayList<Entry> entriesList = new ArrayList<Entry>();
     private String entriesURL;
     private EntriesAdapter mImageAdapter;
 
     /* Overridden Methods. */
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_entries, container, false);
+        setHasOptionsMenu(true);
+
+        Bundle extras = getArguments();
+        this.entriesURL = extras.getString("entries");
+
+        this.data = (ContentDataFragment) getFragmentManager().findFragmentByTag(getString(R.string.content_retained_tag));
+        if (this.data == null) {
+            this.data = new ContentDataFragment();
+            this.data.retainedURL = this.entriesURL;
+            this.data.entriesList = new ArrayList<Entry>(12);
+            networkRequest();
+        } else if (!this.data.retainedURL.equals(this.entriesURL)) {
+            this.data.retainedURL = this.entriesURL;
+            this.data.entriesList = new ArrayList<Entry>(12);
+            networkRequest();
+        }
+
+        mImageAdapter = new EntriesAdapter(this.getActivity(), entriesList);
+
+        return v;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -58,7 +83,7 @@ public class EntriesFragment extends Fragment {
         loadingView = getActivity().findViewById(R.id.grid_progressBar);
         contentView = getActivity().findViewById(R.id.image_grid);
 
-        networkRequest();
+        //networkRequest();
 
         GridView gridView = (GridView) contentView;
         gridView.setAdapter(mImageAdapter);
@@ -81,33 +106,6 @@ public class EntriesFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_entries, container, false);
-        setHasOptionsMenu(true);
-
-        Bundle extras = getArguments();
-        entriesURL = extras.getString("entries");
-
-        mImageAdapter = new EntriesAdapter(this.getActivity(), entriesList);
-
-        return v;
-    }
-
-    @Override
-    public void onPause() {
-        if (mSpiceManager.isStarted())
-            mSpiceManager.shouldStop();
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        if (mSpiceManager.isStarted())
-            mSpiceManager.shouldStop();
-        super.onStop();
-    }
-
-    @Override
     public void onDetach() {
         if (mSpiceManager.isStarted())
             mSpiceManager.shouldStop();
@@ -116,7 +114,6 @@ public class EntriesFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        aBarMenu = menu;
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -173,7 +170,18 @@ public class EntriesFragment extends Fragment {
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
-        //((FeederFragmentInterface) getActivity()).networkRequest(new JSONRequest<Entry[]>(Entry[].class, entriesURL), getString(R.string.entries_cache), new ImageFeedRequestListener());
         mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, entriesURL), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+    }
+
+    public static class ContentDataFragment extends Fragment {
+        //TODO Add fields to retain
+        String retainedURL;
+        ArrayList<Entry> entriesList;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setRetainInstance(true);
+        }
     }
 }
