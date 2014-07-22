@@ -4,13 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Fragment;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,14 +37,12 @@ import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpice
 public class EntriesFragment extends Fragment {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
-    private Menu aBarMenu;
     private int fadeAnimationDuration;
     private View loadingView, contentView;
 
-    private final ArrayList<Entry> entriesList = new ArrayList<Entry>();
-    private String entriesURL;
+    private ContentDataFragment data;
+    private String currentURL;
     private EntriesAdapter mImageAdapter;
-    private int page = 1;
 
     /* Overridden Methods. */
 
@@ -57,22 +52,44 @@ public class EntriesFragment extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle extras = getArguments();
-        entriesURL = extras.getString("entries");
-
-        mImageAdapter = new EntriesAdapter(this.getActivity(), entriesList);
+        this.currentURL = extras.getString("entries");
 
         return v;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         fadeAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
         loadingView = getActivity().findViewById(R.id.grid_progressBar);
         contentView = getActivity().findViewById(R.id.image_grid);
 
-        networkRequest();
+        this.data = (ContentDataFragment) getActivity().getFragmentManager().findFragmentByTag(getString(R.string.content_retained_tag));
+        if (this.data == null) {
+            this.data = new ContentDataFragment();
+            getActivity().getFragmentManager().beginTransaction().add(this.data, getString(R.string.content_retained_tag)).commit();
+            this.data.retainedURL = this.currentURL;
+            this.data.entries = new ArrayList<Entry>(12);
+            this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
+            networkRequest();
+        } else if (!this.data.retainedURL.equals(this.currentURL)) {
+            this.data.retainedURL = this.currentURL;
+            this.data.entries = new ArrayList<Entry>(12);
+            this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
+            networkRequest();
+        } else {
+            mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
+            contentView.setAlpha(0f);
+            contentView.setVisibility(View.VISIBLE);
+            contentView.animate().alpha(1f).setDuration(fadeAnimationDuration).setListener(null);
+            loadingView.animate().alpha(0f).setDuration(fadeAnimationDuration).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    loadingView.setVisibility(View.GONE);
+                }
+            });
+        }
 
         GridView gridView = (GridView) contentView;
         gridView.setAdapter(mImageAdapter);
@@ -84,7 +101,7 @@ public class EntriesFragment extends Fragment {
                 Intent photoView = new Intent(getActivity(), FullscreenImageViewerActivity.class);
 
                 Bundle args = new Bundle();
-                args.putSerializable("entry", entriesList.get(position));
+                args.putSerializable("entry", data.entries.get(position));
                 photoView.putExtras(args);
 
                 getActivity().startActivity(photoView);
@@ -95,30 +112,10 @@ public class EntriesFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        if (mSpiceManager.isStarted())
-            mSpiceManager.shouldStop();
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        if (mSpiceManager.isStarted())
-            mSpiceManager.shouldStop();
-        super.onStop();
-    }
-
-    @Override
     public void onDetach() {
         if (mSpiceManager.isStarted())
             mSpiceManager.shouldStop();
         super.onDetach();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        aBarMenu = menu;
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -129,11 +126,6 @@ public class EntriesFragment extends Fragment {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
     }
 
     /* Class to run after RoboSpice task completion. */
@@ -147,11 +139,11 @@ public class EntriesFragment extends Fragment {
 
         @Override
         public void onRequestSuccess(Entry[] entries) {
-            if (entriesList.size() > 0 && !entries[0].equals(entriesList.get(0)))
-                entriesList.clear();
+            if (data.entries.size() > 0 && !entries[0].equals(data.entries.get(0)))
+                data.entries.clear();
 
-            if (entriesList.size() <= 0)
-                Collections.addAll(entriesList, entries);
+            if (data.entries.size() <= 0)
+                Collections.addAll(data.entries, entries);
 
             mImageAdapter.notifyDataSetChanged();
 
@@ -174,7 +166,17 @@ public class EntriesFragment extends Fragment {
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
-        //((FeederFragmentInterface) getActivity()).networkRequest(new JSONRequest<Entry[]>(Entry[].class, entriesURL), getString(R.string.entries_cache), new ImageFeedRequestListener());
-        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, entriesURL), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentURL + "?count=24"), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+    }
+
+    public static class ContentDataFragment extends Fragment {
+        String retainedURL;
+        ArrayList<Entry> entries;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setRetainInstance(true);
+        }
     }
 }

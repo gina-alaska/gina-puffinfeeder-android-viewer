@@ -38,6 +38,8 @@
 -dontwarn org.w3c.dom.**
 -dontwarn com.google.common.**
 -dontwarn com.octo.android.robospice.persistence.**
+-dontwarn com.squareup.okhttp.**
+-dontwarn com.octo.android.robospice.okhttp.**
 
 ### For Jackson, SERIALIZER SETTINGS
 -keepclassmembers,allowobfuscation class * {

@@ -12,15 +12,12 @@
             android:layout_height="match_parent"
             android:gravity="center_horizontal" />
 
-    <ListView
-            android:id="@+id/drawer_left_nav"
-            android:layout_height="match_parent"
-            android:layout_width="256dp"
-            android:layout_gravity="start"
-            android:choiceMode="singleChoice"
-            android:textColor="@android:color/primary_text_light"
-            android:divider="?android:dividerHorizontal"
-            android:background="@android:color/background_light" />
+    <FrameLayout
+        android:id="@+id/drawer_left_nav"
+        android:background="@android:color/background_light"
+        android:layout_height="match_parent"
+        android:layout_width="256dp"
+        android:layout_gravity="start" />
 
     <RelativeLayout
             android:layout_width="300dp"

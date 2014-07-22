@@ -19,36 +19,14 @@
     <string name="credits_filepath">file:///android_res/raw/credits.html</string>
     <string name="credits_title">Credits and Licenses</string>
 
-    <!-- Image Size Selection Data -->
-    <string-array name="pref_viewer_image_size_entries">
-        <item>Small</item>
-        <item>Normal</item>
-        <item>Large</item>
-    </string-array>
-    <string-array name="pref_viewer_image_size_entryValues">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
-    <string name="pref_viewer_image_size_defaultValue">med</string>
-
-    <!-- Smart Sizing Selection Data -->
-    <string-array name="pref_smart_sizing_size_entries">
-        <item>Small</item>
-        <item>Normal</item>
-        <item>Large (WARNING: HIGH DATA USE!)</item>
-    </string-array>
-    <string-array name="pref_smart_sizing_size_entryValues">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
     <!-- Cache Names & Keys -->
     <string name="image_cache">images.cache</string>
     <string name="categories_cache">categories</string>
     <string name="entries_cache">entries</string>
+
+    <!-- Retained Fragment Tags -->
+    <string name="drawer_retained_tag">drawer_retained_data</string>
+    <string name="content_retained_tag">content_retained_tag</string>
 
     <!-- Base URL Strings -->
     <string name="base_url">http://feeder-web-dev.x.gina.alaska.edu/</string>

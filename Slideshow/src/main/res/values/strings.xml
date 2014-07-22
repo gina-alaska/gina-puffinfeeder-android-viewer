@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">Slideshow</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="log_tag">slideshow_debug</string>
+    <string name="code_pref">UID</string>
+    <string name="base_url">http://feeder-web-dev.x.gina.alaska.edu/slideshows/</string>
 
 </resources>
