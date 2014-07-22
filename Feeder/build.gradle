@@ -44,7 +44,7 @@ android {
 
     buildTypes {
         debug {
-            debuggable false
+            debuggable true
             runProguard false
         }
         release {

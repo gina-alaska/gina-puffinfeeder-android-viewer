@@ -8,4 +8,6 @@ import edu.alaska.gina.feeder.android.core.data.Feed;
  */
 public interface FeederActivity {
     public void openEntriesFragment(Feed newFeed);
+    public void openNavDrawer();
+    public void closeNavDrawer();
 }

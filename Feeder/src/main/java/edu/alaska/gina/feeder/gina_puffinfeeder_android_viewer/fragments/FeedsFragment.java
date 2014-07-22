@@ -3,6 +3,8 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.octo.android.robospice.SpiceManager;
@@ -36,8 +39,6 @@ import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpice
  * Created by Bobby on 7/2/2014.
  */
 public class FeedsFragment extends Fragment {
-    //TODO Write Feeds Fragment.
-
     private final SpiceManager networkManager = new SpiceManager(JsonSpiceService.class);
 
     private ProgressBar progressBar;
@@ -53,34 +54,60 @@ public class FeedsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         this.baseURL = getString(R.string.base_url);
 
-        this.data = (DrawerDataFragment) getFragmentManager().findFragmentByTag("drawer_data");
+        this.data = (DrawerDataFragment) getFragmentManager().findFragmentByTag(getString(R.string.drawer_retained_tag));
         if (data == null) {
             this.data = new DrawerDataFragment();
             this.data.feeds = new ArrayList<Feed>(20);
             this.data.current = -2;
-            getFragmentManager().beginTransaction().add(this.data, getString(R.string.drawer_retained_tag)).commit();
+            getActivity().getFragmentManager().beginTransaction().add(this.data, getString(R.string.drawer_retained_tag)).commit();
             reloadFeeds();
         }
+
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_feeds, container);
+        View v = inflater.inflate(R.layout.fragment_feeds, container, false);
+
+        //Initialize ListView & set adapters
         this.navList = (ListView) v.findViewById(R.id.drawer_left_nav_list);
         this.navAdapter = new FeedsAdapter(this.getActivity(), this.data.feeds);
         this.navList.setAdapter(navAdapter);
 
+        //Initialize views for use later on
         this.progressBar = (ProgressBar) v.findViewById(R.id.drawer_left_nav_progressbar);
         this.navDrawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         this.infoDrawerLayout = (RelativeLayout) getActivity().findViewById(R.id.drawer_right_info);
 
+        //Set More Info button OnClickListener
+        this.infoDrawerLayout.findViewById(R.id.more_info_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.feeds.get(data.current).more_info_url));
+                startActivity(browserIntent);
+            }
+        });
+
+        //Set list item OnItemClickListeners
         this.navList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((FeederActivity) getActivity()).openEntriesFragment(data.feeds.get(data.current));
+                ((FeederActivity) getActivity()).openEntriesFragment(data.feeds.get(position));
+                setDescription(data.feeds.get(position));
+                data.current = position;
+                ((FeederActivity) getActivity()).closeNavDrawer();
             }
         });
+
+        //If we just opened the application...
+        if (this.data.current < 0) {
+            StartFragment sFrag = new StartFragment();
+            getFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
+            this.infoDrawerLayout.findViewById(R.id.more_info_button).setVisibility(View.GONE);
+        } else {
+            ((FeederActivity) getActivity()).openEntriesFragment(this.data.feeds.get(this.data.current));
+        }
 
         return v;
     }
@@ -88,6 +115,11 @@ public class FeedsFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if (this.data.current >= 0) {
+            this.navAdapter.notifyDataSetChanged();
+            showNavList();
+        }
     }
 
     @Override
@@ -127,11 +159,19 @@ public class FeedsFragment extends Fragment {
     /**
      * Reloads the list of the feeds.
      */
-    void reloadFeeds() {
+    public void reloadFeeds() {
         getActivity().setProgressBarIndeterminateVisibility(true);
         if (!this.networkManager.isStarted())
             this.networkManager.start(getActivity());
         this.networkManager.execute(new JSONRequest<Feed[]>(Feed[].class, this.baseURL + getString(R.string.feeds_endpoint)), getString(R.string.categories_cache), DurationInMillis.ALWAYS_EXPIRED, new FeedsRequestListener());
+    }
+
+    private void setDescription(Feed newFeed) {
+        ((TextView) infoDrawerLayout.findViewById(R.id.description_body)).setText(newFeed.description);
+        if (newFeed.more_info_url == null)
+            infoDrawerLayout.findViewById(R.id.more_info_button).setVisibility(View.GONE);
+        else
+            infoDrawerLayout.findViewById(R.id.more_info_button).setVisibility(View.VISIBLE);
     }
 
     private void showNavList() {
@@ -182,10 +222,7 @@ public class FeedsFragment extends Fragment {
 
             navAdapter.notifyDataSetChanged();
             showNavList();
-            if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && data.current < 0) {
-                navDrawer.closeDrawer(infoDrawerLayout);
-                navDrawer.openDrawer(navDrawer);
-            }
+            ((FeederActivity) getActivity()).openNavDrawer();
         }
 
         @Override

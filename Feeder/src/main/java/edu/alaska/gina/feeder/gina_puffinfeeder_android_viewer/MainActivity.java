@@ -2,59 +2,36 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.persistence.DurationInMillis;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 import edu.alaska.gina.feeder.android.core.data.Feed;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapters.FeedsAdapter;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.EntriesFragment;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.FeederActivity;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.FeedsFragment;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.StartFragment;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
 /**
  * Activity that handles navigation drawer and startup.
  * created by bobby on 6/14/13.
  */
 public class MainActivity extends Activity implements FeederActivity {
-    private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
-    private String baseURL;
-
-    private FeedsAdapter primary;
-    private ArrayList<Feed> masterFeedsList;
-    private int current = -2;
+    private FeedsFragment feedsDrawer;
+    private Feed currentFeed;
 
     private Menu aBarMenu;
-    private DataFragment retained;
-
     private DrawerLayout mDrawerLayout; //Contains the entire activity.
-    private ListView navDrawerList; //ListView of Nav Drawer.
+    private FrameLayout navDrawerList; //View contaning Nav Drawer.
     private RelativeLayout infoDrawerLayout; //Layout for the Info Drawer.
     private ActionBarDrawerToggle mDrawerToggle; //Indicates presence of nav drawer in action bar.
 
@@ -66,97 +43,39 @@ public class MainActivity extends Activity implements FeederActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_main);
         setProgressBarIndeterminateVisibility(false);
-        baseURL = getString(R.string.base_url);
-        masterFeedsList = new ArrayList<Feed>();
 
-        retained = (DataFragment) getFragmentManager().findFragmentByTag("data");
+        this.mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        this.navDrawerList = (FrameLayout) findViewById(R.id.drawer_left_nav);
+        this.infoDrawerLayout = (RelativeLayout) findViewById(R.id.drawer_right_info);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navDrawerList = (ListView) findViewById(R.id.drawer_left_nav);
-        infoDrawerLayout = (RelativeLayout) findViewById(R.id.drawer_right_info);
+        this.feedsDrawer = new FeedsFragment();
 
-        if (getActionBar() != null)
+        if (getActionBar() != null) {
             getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+        this.mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment)
                     getActionBar().setTitle("GINA Puffin Feeder");
                 else
-                    getActionBar().setTitle(masterFeedsList.get(current).title);
+                    getActionBar().setTitle(currentFeed.title);
                 invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 if (mDrawerLayout.isDrawerOpen(navDrawerList)) {
-                    getActionBar().setTitle("Select a Feed");
+                    getActionBar().setTitle("GINA Puffin Feeder");
                     invalidateOptionsMenu();
                 }
             }
         };
 
-        primary = new FeedsAdapter(this, masterFeedsList);
-
-        navDrawerList.setAdapter(primary);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, infoDrawerLayout);
-        mDrawerLayout.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK && mDrawerLayout.isDrawerOpen(infoDrawerLayout)) {
-                    mDrawerLayout.closeDrawer(infoDrawerLayout);
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        findViewById(R.id.more_info_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(masterFeedsList.get(current).more_info_url));
-                startActivity(browserIntent);
-            }
-        });
-
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
-
-        if (retained == null) {
-            retained = new DataFragment();
-            getFragmentManager().beginTransaction().add(retained, "data").commit();
-            refreshFeedsList();
-        } else {
-            masterFeedsList = retained.saveList;
-            current = retained.current;
-            primary.notifyDataSetChanged();
-        }
-
-        if (current < 0) {
-            StartFragment sFrag = new StartFragment();
-            getFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
-            findViewById(R.id.more_info_button).setVisibility(View.GONE);
-        } else {
-            openEntriesFragment(masterFeedsList.get(current));
-        }
-
-        navDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (masterFeedsList.size() > 1) {
-                    openEntriesFragment(masterFeedsList.get(current));
-                }
-                mDrawerLayout.closeDrawer(navDrawerList);
-            }
-        });
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
+        getFragmentManager().beginTransaction().replace(R.id.drawer_left_nav, this.feedsDrawer, "nav_drawer").commit();
     }
 
     @Override
@@ -166,17 +85,8 @@ public class MainActivity extends Activity implements FeederActivity {
     }
 
     @Override
-    protected void onPause() {
-        retained.saveList = this.masterFeedsList;
-        retained.current = this.current;
-        super.onPause();
-    }
-
-    @Override
     protected void onDestroy() {
         setProgressBarIndeterminateVisibility(false);
-        if (mSpiceManager.isStarted())
-            mSpiceManager.shouldStop();
         super.onDestroy();
     }
 
@@ -248,8 +158,7 @@ public class MainActivity extends Activity implements FeederActivity {
 
             case R.id.action_refresh:
                 if (mDrawerLayout.isDrawerOpen(navDrawerList)) {
-                    refreshFeedsList();
-                    primary.notifyDataSetChanged();
+                    this.feedsDrawer.reloadFeeds();
                     return true;
                 }
                 break;
@@ -265,20 +174,13 @@ public class MainActivity extends Activity implements FeederActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void setDescription(Feed newFeed) {
-        ((TextView) findViewById(R.id.description_body)).setText(newFeed.description);
-        if (newFeed.more_info_url == null)
-            findViewById(R.id.more_info_button).setVisibility(View.GONE);
-        else
-            findViewById(R.id.more_info_button).setVisibility(View.VISIBLE);
-    }
-
     /**
      * Method that loads a new EntriesFragment into the main content view.
      * @param newFeed New feed to be loaded.
      */
     @Override
     public void openEntriesFragment(Feed newFeed) {
+        this.currentFeed = newFeed;
         EntriesFragment iFrag = new EntriesFragment();
 
         if (getActionBar() != null) {
@@ -289,58 +191,16 @@ public class MainActivity extends Activity implements FeederActivity {
         b.putString("entries", newFeed.entries_url);
         iFrag.setArguments(b);
         getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
-
-        setDescription(newFeed);
     }
 
-    /* Object to listen for RoboSpice task completion. */
-    private class FeedsRequestListener implements RequestListener<Feed[]> {
-        @Override
-        public void onRequestSuccess(Feed[] feeds) {
-            setProgressBarIndeterminateVisibility(false);
-            masterFeedsList.clear();
-            Collections.addAll(masterFeedsList, feeds);
-
-            primary.notifyDataSetChanged();
-
-            primary.notifyDataSetChanged();
-            if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment && current < 0) {
-                mDrawerLayout.closeDrawer(infoDrawerLayout);
-                mDrawerLayout.openDrawer(navDrawerList);
-            }
-        }
-
-        @Override
-        public void onRequestFailure(SpiceException e) {
-            setProgressBarIndeterminateVisibility(false);
-            Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
-            Toast.makeText(getApplicationContext(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
-            Feed f = new Feed();
-            f.title = "Loading failed.";
-            masterFeedsList.clear();
-            masterFeedsList.add(f);
-            primary.notifyDataSetChanged();
-        }
+    @Override
+    public void openNavDrawer() {
+        mDrawerLayout.closeDrawer(infoDrawerLayout);
+        mDrawerLayout.openDrawer(navDrawerList);
     }
 
-    public static class DataFragment extends Fragment {
-        public ArrayList<Feed> saveList;
-        public int current;
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setRetainInstance(true);
-        }
-    }
-
-    /**
-     * Reloads the list of the feeds.
-     */
-    void refreshFeedsList() {
-        setProgressBarIndeterminateVisibility(true);
-        if (!mSpiceManager.isStarted())
-            mSpiceManager.start(this);
-        mSpiceManager.execute(new JSONRequest<Feed[]>(Feed[].class, this.baseURL + getString(R.string.feeds_endpoint)), getString(R.string.categories_cache), DurationInMillis.ALWAYS_EXPIRED, new FeedsRequestListener());
+    @Override
+    public void closeNavDrawer() {
+        mDrawerLayout.closeDrawer(navDrawerList);
     }
 }
