@@ -38,13 +38,17 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 19
-        versionCode 4
-        versionName "2.2.1a"
+        versionCode 5
+        versionName "2.2.2a"
     }
 
     buildTypes {
         debug {
             debuggable true
+            runProguard false
+        }
+        alphaRelease {
+            debuggable false
             runProguard false
         }
         release {
