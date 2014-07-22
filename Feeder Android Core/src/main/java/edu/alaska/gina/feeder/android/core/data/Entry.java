@@ -13,6 +13,7 @@ import java.util.Comparator;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Entry implements Comparable<Entry>, Comparator<Entry>, Serializable {
     public int id;
+    public long uid;
     public String slug;
     public DateTime event_at;
     public String url;

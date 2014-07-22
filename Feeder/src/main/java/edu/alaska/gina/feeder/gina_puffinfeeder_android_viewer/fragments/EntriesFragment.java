@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -38,11 +39,16 @@ public class EntriesFragment extends Fragment {
     private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
 
     private int fadeAnimationDuration;
-    private View loadingView, contentView;
+    private View loadingView;
+    private GridView contentView;
 
     private ContentDataFragment data;
     private String currentURL;
     private EntriesAdapter mImageAdapter;
+
+    /* Variables for keeping track of what to load next */
+    private long mostRecentId = 0;
+    private long leastRecentId = 0;
 
     /* Overridden Methods. */
 
@@ -50,10 +56,6 @@ public class EntriesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_entries, container, false);
         setHasOptionsMenu(true);
-
-        Bundle extras = getArguments();
-        this.currentURL = extras.getString("entries");
-
         return v;
     }
 
@@ -61,9 +63,11 @@ public class EntriesFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        fadeAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
-        loadingView = getActivity().findViewById(R.id.grid_progressBar);
-        contentView = getActivity().findViewById(R.id.image_grid);
+        Bundle extras = getArguments();
+        this.currentURL = extras.getString("entries");
+        this.fadeAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        this.loadingView = getActivity().findViewById(R.id.grid_progressBar);
+        this.contentView = (GridView) getActivity().findViewById(R.id.image_grid);
 
         this.data = (ContentDataFragment) getActivity().getFragmentManager().findFragmentByTag(getString(R.string.content_retained_tag));
         if (this.data == null) {
@@ -72,18 +76,18 @@ public class EntriesFragment extends Fragment {
             this.data.retainedURL = this.currentURL;
             this.data.entries = new ArrayList<Entry>(12);
             this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
-            networkRequest();
+            initialEntriesNetworkRequest();
         } else if (!this.data.retainedURL.equals(this.currentURL)) {
             this.data.retainedURL = this.currentURL;
             this.data.entries = new ArrayList<Entry>(12);
             this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
-            networkRequest();
+            initialEntriesNetworkRequest();
         } else {
-            mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
-            contentView.setAlpha(0f);
-            contentView.setVisibility(View.VISIBLE);
-            contentView.animate().alpha(1f).setDuration(fadeAnimationDuration).setListener(null);
-            loadingView.animate().alpha(0f).setDuration(fadeAnimationDuration).setListener(new AnimatorListenerAdapter() {
+            this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
+            this.contentView.setAlpha(0f);
+            this.contentView.setVisibility(View.VISIBLE);
+            this.contentView.animate().alpha(1f).setDuration(fadeAnimationDuration).setListener(null);
+            this.loadingView.animate().alpha(0f).setDuration(fadeAnimationDuration).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     loadingView.setVisibility(View.GONE);
@@ -91,7 +95,7 @@ public class EntriesFragment extends Fragment {
             });
         }
 
-        GridView gridView = (GridView) contentView;
+        GridView gridView = contentView;
         gridView.setAdapter(mImageAdapter);
         gridView.setGravity(Gravity.CENTER_HORIZONTAL);
 
@@ -108,7 +112,33 @@ public class EntriesFragment extends Fragment {
             }
         });
 
-        mImageAdapter.notifyDataSetChanged();
+        this.contentView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            private boolean loading = false;
+            private int previousTotalItems = 0;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                //
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (!this.loading && (firstVisibleItem + visibleItemCount) == totalItemCount) {
+                    //TODO Start loading more
+                    moreEntriesNetworkRequest(leastRecentId);
+                    this.loading = true;
+                }
+
+                if (this.loading && this.previousTotalItems < totalItemCount) {
+                    this.loading = false;
+                    mImageAdapter.notifyDataSetChanged();
+                }
+
+                this.previousTotalItems = totalItemCount;
+            }
+        });
+
+        this.mImageAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -122,10 +152,34 @@ public class EntriesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                networkRequest();
+                initialEntriesNetworkRequest();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Method that starts the initial network request for entries JSON file.
+     */
+    private void initialEntriesNetworkRequest() {
+        if (!mSpiceManager.isStarted())
+            mSpiceManager.start(getActivity().getBaseContext());
+
+        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentURL + "?count=24"), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+    }
+
+    private void moreEntriesNetworkRequest(long maxId) {
+        if (!mSpiceManager.isStarted())
+            mSpiceManager.start(getActivity().getBaseContext());
+
+        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentURL + "?count=24&max_id=" + maxId), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+    }
+
+    private void sinceEntriesNetworkRequest(long sinceId) {
+        if (!mSpiceManager.isStarted())
+            mSpiceManager.start(getActivity().getBaseContext());
+
+        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentURL + "?count=24&since_id=" + sinceId), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
     /* Class to run after RoboSpice task completion. */
@@ -139,34 +193,24 @@ public class EntriesFragment extends Fragment {
 
         @Override
         public void onRequestSuccess(Entry[] entries) {
-            if (data.entries.size() > 0 && !entries[0].equals(data.entries.get(0)))
-                data.entries.clear();
-
-            if (data.entries.size() <= 0)
-                Collections.addAll(data.entries, entries);
-
+            Collections.addAll(data.entries, entries);
             mImageAdapter.notifyDataSetChanged();
 
-            contentView.setAlpha(0f);
-            contentView.setVisibility(View.VISIBLE);
-            contentView.animate().alpha(1f).setDuration(fadeAnimationDuration).setListener(null);
-            loadingView.animate().alpha(0f).setDuration(fadeAnimationDuration).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    loadingView.setVisibility(View.GONE);
-                }
-            });
+            if (contentView.getVisibility() == View.GONE) {
+                contentView.setAlpha(0f);
+                contentView.setVisibility(View.VISIBLE);
+                contentView.animate().alpha(1f).setDuration(fadeAnimationDuration).setListener(null);
+                loadingView.animate().alpha(0f).setDuration(fadeAnimationDuration).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        loadingView.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            mostRecentId = data.entries.get(0).uid;
+            leastRecentId = data.entries.get(data.entries.size() - 1).uid;
         }
-    }
-
-    /**
-     * Method that starts the network request for entries JSON file.
-     */
-    void networkRequest() {
-        if (!mSpiceManager.isStarted())
-            mSpiceManager.start(getActivity().getBaseContext());
-
-        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentURL + "?count=24"), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
     public static class ContentDataFragment extends Fragment {
