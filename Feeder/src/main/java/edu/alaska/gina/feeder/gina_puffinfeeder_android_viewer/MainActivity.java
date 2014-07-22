@@ -49,6 +49,7 @@ public class MainActivity extends Activity implements FeederActivity {
         this.infoDrawerLayout = (RelativeLayout) findViewById(R.id.drawer_right_info);
 
         this.feedsDrawer = new FeedsFragment();
+        this.mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, this.infoDrawerLayout);
 
         if (getActionBar() != null) {
             getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
