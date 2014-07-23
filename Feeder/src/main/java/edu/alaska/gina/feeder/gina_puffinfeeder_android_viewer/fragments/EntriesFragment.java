@@ -48,8 +48,8 @@ public class EntriesFragment extends Fragment {
     private EntriesAdapter mImageAdapter;
 
     /* Variables for keeping track of what to load next */
-    private long mostRecentId = 0;
-    private long leastRecentId = 0;
+    private long mostRecentId = -1;
+    private long leastRecentId = -1;
 
     /* Overridden Methods. */
 
@@ -122,11 +122,14 @@ public class EntriesFragment extends Fragment {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                //
+                /* Do noting. No idea what this does. */
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (leastRecentId < 0)
+                    return;
+
                 if (!this.loading && (firstVisibleItem + visibleItemCount) == totalItemCount) {
                     moreEntriesNetworkRequest(leastRecentId);
                     this.loading = true;
@@ -166,16 +169,20 @@ public class EntriesFragment extends Fragment {
      * Method that starts the initial network request for entries JSON file.
      */
     private void initialEntriesNetworkRequest() {
+        Log.d(getString(R.string.app_tag), "Requesting newest entries.");
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
+        //getActivity().setProgressBarIndeterminateVisibility(true);
         mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentFeed.entries_url + "?count=24"), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
     private void moreEntriesNetworkRequest(long maxId) {
+        Log.d(getString(R.string.app_tag), "Requesting entries from entry " + this.leastRecentId + ".");
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
+        getActivity().setProgressBarIndeterminateVisibility(true);
         mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentFeed.entries_url + "?count=24&max_id=" + maxId), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
@@ -190,6 +197,7 @@ public class EntriesFragment extends Fragment {
     public class ImageFeedRequestListener implements RequestListener<Entry[]> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
+            getActivity().setProgressBarIndeterminateVisibility(false);
             Log.d(getString(R.string.app_tag), "Image Feed load fail! " + spiceException.getMessage());
             Toast.makeText(getActivity(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
             loadingView.setVisibility(View.GONE);
@@ -208,8 +216,11 @@ public class EntriesFragment extends Fragment {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         loadingView.setVisibility(View.GONE);
+                        getActivity().setProgressBarIndeterminateVisibility(false);
                     }
                 });
+            } else {
+                getActivity().setProgressBarIndeterminateVisibility(false);
             }
 
             mostRecentId = data.entries.get(0).uid;
