@@ -3,6 +3,7 @@ package edu.alaska.gina.feeder.android.core.data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Comparator;
  * Created by Bobby on 6/6/2014.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Feed implements Comparator<Feed>, Comparable<Feed> {
+public class Feed implements Comparator<Feed>, Comparable<Feed>, Serializable {
     public int id;
     public String title;
     public String slug;
