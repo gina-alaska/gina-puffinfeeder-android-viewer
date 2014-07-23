@@ -43,6 +43,8 @@ public class MainActivity extends Activity implements FeederActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_main);
         setProgressBarIndeterminateVisibility(false);
+        if (getActionBar() != null)
+            getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
 
         this.mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         this.navDrawerList = (FrameLayout) findViewById(R.id.drawer_left_nav);
@@ -51,32 +53,38 @@ public class MainActivity extends Activity implements FeederActivity {
         this.feedsDrawer = new FeedsFragment();
         this.mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, this.infoDrawerLayout);
 
-        if (getActionBar() != null) {
-            getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_CUSTOM);
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActionBar().setHomeButtonEnabled(true);
-        }
-
         this.mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
                 if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment)
                     getActionBar().setTitle("GINA Puffin Feeder");
                 else
                     getActionBar().setTitle(currentFeed.title);
-                invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
                 if (mDrawerLayout.isDrawerOpen(navDrawerList)) {
                     getActionBar().setTitle("GINA Puffin Feeder");
-                    invalidateOptionsMenu();
+                    if (mDrawerLayout.isDrawerOpen(infoDrawerLayout))
+                        mDrawerLayout.closeDrawer(infoDrawerLayout);
                 }
             }
         };
+        this.mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 
         getFragmentManager().beginTransaction().replace(R.id.drawer_left_nav, this.feedsDrawer, "nav_drawer").commit();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        this.mDrawerToggle.syncState();
     }
 
     @Override
@@ -148,15 +156,12 @@ public class MainActivity extends Activity implements FeederActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            if (mDrawerLayout.isDrawerOpen(this.infoDrawerLayout))
+                this.mDrawerLayout.closeDrawer(infoDrawerLayout);
+            return true;
+        }
         switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawerLayout.closeDrawer(infoDrawerLayout);
-                if (mDrawerLayout.isDrawerOpen(navDrawerList))
-                    mDrawerLayout.closeDrawer(navDrawerList);
-                else
-                    mDrawerLayout.openDrawer(navDrawerList);
-                return true;
-
             case R.id.action_refresh:
                 if (mDrawerLayout.isDrawerOpen(navDrawerList)) {
                     this.feedsDrawer.reloadFeeds();
@@ -175,19 +180,10 @@ public class MainActivity extends Activity implements FeederActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Method that loads a new EntriesFragment into the main content view.
-     * @param newFeed New feed to be loaded.
-     */
     @Override
     public void openEntriesFragment(Feed newFeed) {
         this.currentFeed = newFeed;
         EntriesFragment iFrag = new EntriesFragment();
-
-        if (getActionBar() != null) {
-            getActionBar().setTitle(newFeed.title);
-        }
-
         Bundle b = new Bundle();
         b.putString("entries", newFeed.entries_url);
         iFrag.setArguments(b);
