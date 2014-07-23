@@ -26,6 +26,11 @@ public class Feed implements Comparator<Feed>, Comparable<Feed>, Serializable {
     public String more_info_url;
 
     @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof Feed && ((Feed) obj).id == this.id);
+    }
+
+    @Override
     public String toString() {
         return this.title;
     }
