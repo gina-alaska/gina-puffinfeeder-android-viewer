@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import edu.alaska.gina.feeder.android.core.data.Entry;
+import edu.alaska.gina.feeder.android.core.data.Feed;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.FullscreenImageViewerActivity;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapters.EntriesAdapter;
@@ -43,7 +44,7 @@ public class EntriesFragment extends Fragment {
     private GridView contentView;
 
     private ContentDataFragment data;
-    private String currentURL;
+    private Feed currentFeed;
     private EntriesAdapter mImageAdapter;
 
     /* Variables for keeping track of what to load next */
@@ -64,25 +65,28 @@ public class EntriesFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         Bundle extras = getArguments();
-        this.currentURL = extras.getString("entries");
+        this.currentFeed = (Feed) extras.getSerializable("feed");
         this.fadeAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
         this.loadingView = getActivity().findViewById(R.id.grid_progressBar);
         this.contentView = (GridView) getActivity().findViewById(R.id.image_grid);
 
         this.data = (ContentDataFragment) getActivity().getFragmentManager().findFragmentByTag(getString(R.string.content_retained_tag));
         if (this.data == null) {
+            Log.d(getResources().getString(R.string.app_tag), "No retained data found.");
             this.data = new ContentDataFragment();
             getActivity().getFragmentManager().beginTransaction().add(this.data, getString(R.string.content_retained_tag)).commit();
-            this.data.retainedURL = this.currentURL;
+            this.data.retainedFeed = this.currentFeed;
             this.data.entries = new ArrayList<Entry>(12);
             this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
             initialEntriesNetworkRequest();
-        } else if (!this.data.retainedURL.equals(this.currentURL)) {
-            this.data.retainedURL = this.currentURL;
+        } else if (!this.data.retainedFeed.equals(this.currentFeed)) {
+            Log.d(getResources().getString(R.string.app_tag), "Incorrect retained data found.");
+            this.data.retainedFeed = this.currentFeed;
             this.data.entries = new ArrayList<Entry>(12);
             this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
             initialEntriesNetworkRequest();
         } else {
+            Log.d(getResources().getString(R.string.app_tag), "Retained data found.");
             this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
             this.contentView.setAlpha(0f);
             this.contentView.setVisibility(View.VISIBLE);
@@ -124,7 +128,6 @@ public class EntriesFragment extends Fragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (!this.loading && (firstVisibleItem + visibleItemCount) == totalItemCount) {
-                    //TODO Start loading more
                     moreEntriesNetworkRequest(leastRecentId);
                     this.loading = true;
                 }
@@ -152,7 +155,8 @@ public class EntriesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                initialEntriesNetworkRequest();
+                this.data.retainedFeed = new Feed();
+                ((FeederActivity)getActivity()).openEntriesFragment(this.currentFeed);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -165,21 +169,21 @@ public class EntriesFragment extends Fragment {
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
-        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentURL + "?count=24"), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentFeed.entries_url + "?count=24"), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
     private void moreEntriesNetworkRequest(long maxId) {
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
-        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentURL + "?count=24&max_id=" + maxId), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentFeed.entries_url + "?count=24&max_id=" + maxId), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
     private void sinceEntriesNetworkRequest(long sinceId) {
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
-        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentURL + "?count=24&since_id=" + sinceId), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
+        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentFeed.entries_url + "?count=24&since_id=" + sinceId), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
     /* Class to run after RoboSpice task completion. */
@@ -214,7 +218,7 @@ public class EntriesFragment extends Fragment {
     }
 
     public static class ContentDataFragment extends Fragment {
-        String retainedURL;
+        Feed retainedFeed;
         ArrayList<Entry> entries;
 
         @Override

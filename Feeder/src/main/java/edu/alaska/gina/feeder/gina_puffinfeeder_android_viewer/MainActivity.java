@@ -185,7 +185,7 @@ public class MainActivity extends Activity implements FeederActivity {
         this.currentFeed = newFeed;
         EntriesFragment iFrag = new EntriesFragment();
         Bundle b = new Bundle();
-        b.putString("entries", newFeed.entries_url);
+        b.putSerializable("feed", newFeed);
         iFrag.setArguments(b);
         getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
     }

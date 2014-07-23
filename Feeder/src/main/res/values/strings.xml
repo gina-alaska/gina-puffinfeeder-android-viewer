@@ -2,7 +2,7 @@
 <resources>
     <!-- Application Info -->
     <string name="app_name">GINA Puffin Feeder</string>
-    <string name="app_tag">Feeder_App</string>
+    <string name="app_tag">feeder_debug</string>
 
     <!-- Drawer Accessibility Strings -->
     <string name="drawer_open">Open navigation drawer</string>
