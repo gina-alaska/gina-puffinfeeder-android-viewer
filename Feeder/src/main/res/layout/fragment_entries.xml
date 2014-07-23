@@ -2,7 +2,8 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:gravity="center_horizontal">
 
     <ProgressBar
         style="?android:attr/progressBarStyleLarge"
@@ -13,22 +14,24 @@
 
     <GridView style="@style/ThumbsMargin"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_height="match_parent"
-        android:id="@+id/image_grid"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
 
+        android:id="@+id/image_grid"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
-        android:layout_centerInParent="true"
 
         android:clickable="true"
         android:listSelector="?android:selectableItemBackground"
         android:drawSelectorOnTop="true"
-
-        android:scrollbars="none"
         android:clipToPadding="false"
-        android:visibility="gone"
 
         android:horizontalSpacing="1dp"
-        android:verticalSpacing="1dp" />
+        android:verticalSpacing="1dp"
+        android:visibility="gone"
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
