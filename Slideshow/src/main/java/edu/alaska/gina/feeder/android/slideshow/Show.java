@@ -291,7 +291,7 @@ public class Show extends Activity {
 
         if (this.timerDone && this.downloadDone) {
             DateTime stamp = this.contentData[current - 1].event_at;
-            if (this.contentData[current - 1].highlight_description.equals("null")) {
+            if (this.contentData[current - 1].highlight_description == null) {
                 this.timestamp.setText(formatDateTime(stamp));
             } else {
                 this.timestamp.setText(this.contentData[current - 1].highlight_description + " - " + formatDateTime(stamp));
