@@ -89,6 +89,7 @@ public class Show extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(getString(R.string.log_tag) + "-lifecycle", "onCreate");
         setContentView(R.layout.activity_show);
 
         TextView text1 = (TextView) findViewById(R.id.textView), text2 = (TextView) findViewById(R.id.textView2);
@@ -165,6 +166,7 @@ public class Show extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(getString(R.string.log_tag) + "-lifecycle", "onResume");
 
         if (!this.jsonManager.isStarted())
             this.jsonManager.start(this);
@@ -175,6 +177,7 @@ public class Show extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        Log.d(getString(R.string.log_tag) + "-lifecycle", "onWindowFocusChanged");
 
         if (hasFocus) {
             delayedHide();
@@ -257,6 +260,7 @@ public class Show extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        Log.d(getString(R.string.log_tag) + "-lifecycle", "onStop");
 
         if (jsonManager.isStarted())
             jsonManager.shouldStop();
