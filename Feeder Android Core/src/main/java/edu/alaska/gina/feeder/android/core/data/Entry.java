@@ -21,6 +21,8 @@ public class Entry implements Comparable<Entry>, Comparator<Entry>, Serializable
     public String data_url;
     public String preview_url;
     public boolean starred;
+    public boolean highlighted;
+    public String highlight_description;
 
     @Override
     public int compareTo(Entry another) {
@@ -42,8 +44,6 @@ public class Entry implements Comparable<Entry>, Comparator<Entry>, Serializable
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Entry)
-            return this.id == ((Entry) o).id;
-        return false;
+        return (o instanceof Entry) && (this.id == ((Entry) o).id);
     }
 }

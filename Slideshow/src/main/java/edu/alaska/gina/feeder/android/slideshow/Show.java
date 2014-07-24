@@ -18,6 +18,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextSwitcher;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.octo.android.robospice.SpiceManager;
@@ -90,6 +91,10 @@ public class Show extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show);
 
+        TextView text1 = (TextView) findViewById(R.id.textView), text2 = (TextView) findViewById(R.id.textView2);
+        text1.setSelected(true);
+        text2.setSelected(true);
+
         if (timerThreadRunning)
             this.timer.interrupt();
 
@@ -152,7 +157,7 @@ public class Show extends Activity {
             UIDDialogue d = new UIDDialogue();
             d.show(getFragmentManager(), "uid_dialogue");
         } else {
-            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "") + "/entries.json";
+            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "").toLowerCase() + "/entries.json";
             tryRequestNextImage();
         }
     }
@@ -286,7 +291,11 @@ public class Show extends Activity {
 
         if (this.timerDone && this.downloadDone) {
             DateTime stamp = this.contentData[current - 1].event_at;
-            this.timestamp.setText(formatDateTime(stamp));
+            if (this.contentData[current - 1].highlight_description.equals("null")) {
+                this.timestamp.setText(formatDateTime(stamp));
+            } else {
+                this.timestamp.setText(this.contentData[current - 1].highlight_description + " - " + formatDateTime(stamp));
+            }
             this.contentView.showNext();
 
             this.timerDone = false;
