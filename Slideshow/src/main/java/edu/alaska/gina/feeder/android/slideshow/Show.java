@@ -110,7 +110,7 @@ public class Show extends Activity {
         this.progressBar = this.findViewById(R.id.loadingIndicator);
         this.settingsButton = this.findViewById(R.id.settingsButton);
 
-        this.contentView.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+        //this.contentView.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         this.contentView.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
 
         this.timestamp.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
