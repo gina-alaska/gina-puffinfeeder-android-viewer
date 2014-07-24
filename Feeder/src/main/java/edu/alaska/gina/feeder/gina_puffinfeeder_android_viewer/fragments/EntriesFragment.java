@@ -88,8 +88,10 @@ public class EntriesFragment extends Fragment {
         } else {
             Log.d(getResources().getString(R.string.app_tag), "Retained data found.");
             this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
+            this.mImageAdapter.notifyDataSetChanged();
             this.contentView.setAlpha(0f);
             this.contentView.setVisibility(View.VISIBLE);
+            this.contentView.scrollTo(this.data.currentXLoc, this.data.currentYLoc);
             this.contentView.animate().alpha(1f).setDuration(fadeAnimationDuration).setListener(null);
             this.loadingView.animate().alpha(0f).setDuration(fadeAnimationDuration).setListener(new AnimatorListenerAdapter() {
                 @Override
@@ -141,6 +143,8 @@ public class EntriesFragment extends Fragment {
                 }
 
                 this.previousTotalItems = totalItemCount;
+                data.currentXLoc = contentView.getScrollX();
+                data.currentYLoc = contentView.getScrollY();
             }
         });
 
@@ -231,6 +235,7 @@ public class EntriesFragment extends Fragment {
     public static class ContentDataFragment extends Fragment {
         Feed retainedFeed;
         ArrayList<Entry> entries;
+        int currentXLoc, currentYLoc;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
