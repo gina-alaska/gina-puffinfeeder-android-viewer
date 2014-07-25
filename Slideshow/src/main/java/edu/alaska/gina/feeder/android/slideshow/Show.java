@@ -2,6 +2,7 @@ package edu.alaska.gina.feeder.android.slideshow;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -380,6 +381,8 @@ public class Show extends Activity {
         }
     }
 
+    //TODO Make dialog Fragment Static so we can remove the following line
+    @SuppressLint("ValidFragment")
     public class UIDDialogue extends DialogFragment {
         private View v;
 
