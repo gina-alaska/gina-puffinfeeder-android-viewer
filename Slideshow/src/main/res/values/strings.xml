@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Slideshow</string>
+    <string name="app_name">Feeder Slideshow</string>
     <string name="log_tag">slideshow_debug</string>
     <string name="code_pref">UID</string>
     <string name="base_url">http://feeder-web-dev.x.gina.alaska.edu/slideshows/</string>

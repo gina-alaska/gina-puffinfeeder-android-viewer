@@ -9,6 +9,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,10 +17,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
+import android.widget.Toast;
 
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
@@ -45,7 +47,7 @@ import edu.alaska.gina.feeder.android.slideshow.network.JsonSpiceService;
 public class Show extends Activity {
     private String baseURL = "http://feeder-web-dev.x.gina.alaska.edu/feeds/snpp-day-night-band/entries.json";
 
-    private ViewFlipper contentView;
+    private ImageSwitcher contentView;
     private TextSwitcher timestamp;
     private ImageView image1, image2;
     private View progressBar, settingsButton;
@@ -103,14 +105,14 @@ public class Show extends Activity {
         this.downloadDone = false;
         this.timerThreadRunning = false;
 
-        this.contentView = (ViewFlipper) findViewById(R.id.flipper);
+        this.contentView = (ImageSwitcher) findViewById(R.id.flipper);
         this.timestamp = (TextSwitcher) findViewById(R.id.timestamp);
         this.image1 = (ImageView) this.contentView.findViewById(R.id.image1);
         this.image2 = (ImageView) this.contentView.findViewById(R.id.image2);
         this.progressBar = this.findViewById(R.id.loadingIndicator);
         this.settingsButton = this.findViewById(R.id.settingsButton);
 
-        //this.contentView.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+        this.contentView.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         this.contentView.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
 
         this.timestamp.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
@@ -324,7 +326,7 @@ public class Show extends Activity {
             this.imageManager.start(this);
 
         if (contentData != null && current < contentData.length) {
-            this.imageManager.execute(new BitmapRequest(this.contentData[current++].preview_url + "?size=2048x2048", new File(getCacheDir().getAbsolutePath() + "images.cache")), new ImageListener());
+            this.imageManager.execute(new BitmapRequest(this.contentData[current++].preview_url + "?size=2048x2048", new File(getFilesDir().getAbsolutePath() + "images.cache")), new ImageListener());
         } else {
             this.jsonManager.execute(new JSONRequest<Entry[]>(Entry[].class, baseURL), "slideshow_entries", DurationInMillis.ALWAYS_EXPIRED, new EntriesRequestListener());
             //TODO Figure out what was supposed to be on this line.
@@ -332,17 +334,24 @@ public class Show extends Activity {
     }
 
     private void loadIntoView(Bitmap bitmap) {
+        BitmapDrawable b;
         if (this.image1.getVisibility() != View.VISIBLE) {
+            b = ((BitmapDrawable) this.image1.getDrawable());
             this.image1.setImageBitmap(bitmap);
         } else {
+            b = ((BitmapDrawable) this.image2.getDrawable());
             this.image2.setImageBitmap(bitmap);
         }
+
+        if (b != null)
+            b.getBitmap().recycle();
     }
 
     private class EntriesRequestListener implements RequestListener<Entry[]> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Log.d(getString(R.string.log_tag), "Entries download fail!");
+            Toast.makeText(getApplicationContext(), "Can't download data!", Toast.LENGTH_SHORT);
             tryRequestNextImage();
         }
 
@@ -358,18 +367,20 @@ public class Show extends Activity {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Log.d(getString(R.string.log_tag), "Image download fail!");
+            Toast.makeText(getApplicationContext(), "Can't download image!", Toast.LENGTH_SHORT);
             tryRequestNextImage();
         }
 
         @Override
         public void onRequestSuccess(Bitmap bitmap) {
             downloadDone = true;
+            Log.d(getString(R.string.log_tag) + "-memory", "Bitmap size in memory: " + bitmap.getByteCount() + " bytes.");
             loadIntoView(bitmap);
             flipView();
         }
     }
 
-    private class UIDDialogue extends DialogFragment {
+    public class UIDDialogue extends DialogFragment {
         private View v;
 
         @Override
