@@ -84,12 +84,6 @@ public class Show extends Activity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(getString(R.string.log_tag) + "-lifecycle", "onResume");
-    }
-
-    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         Log.d(getString(R.string.log_tag) + "-lifecycle", "onWindowFocusChanged");
@@ -150,8 +144,8 @@ public class Show extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
         Log.d(getString(R.string.log_tag) + "-lifecycle", "onStop");
         this.hideSysUIHandler.removeMessages(0);
     }
@@ -164,7 +158,6 @@ public class Show extends Activity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             v = getActivity().getLayoutInflater().inflate(R.layout.uid_dialog, null);
-
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Enter Code:").setView(v)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
