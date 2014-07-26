@@ -4,6 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/contentView"
+        android:background="#ff000000" />
+
     <ProgressBar
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
@@ -11,32 +17,7 @@
         android:id="@+id/loadingIndicator"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:visibility="visible" />
-
-    <ImageSwitcher
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/flipper"
-        android:visibility="gone"
-        android:foregroundGravity="center"
-        android:layout_gravity="center">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:id="@+id/image1" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:id="@+id/image2" />
-
-    </ImageSwitcher>
+        android:visibility="gone" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -47,42 +28,4 @@
         android:layout_centerHorizontal="true"
         android:visibility="gone" />
 
-    <TextSwitcher
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/timestamp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:padding="8dp"
-        android:background="@drawable/text_bg"
-        android:animateFirstView="true"
-        android:visibility="invisible">
-
-        <TextView
-            android:focusable="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:fadingEdge="horizontal"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:text="Large Text"
-            android:id="@+id/textView" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:fadingEdge="horizontal"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:text="Large Text"
-            android:id="@+id/textView2" />
-    </TextSwitcher>
 </RelativeLayout>
