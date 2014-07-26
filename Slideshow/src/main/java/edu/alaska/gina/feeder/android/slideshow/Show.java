@@ -9,68 +9,22 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AnimationUtils;
+import android.webkit.WebView;
 import android.widget.EditText;
-import android.widget.ImageSwitcher;
-import android.widget.ImageView;
-import android.widget.TextSwitcher;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.persistence.DurationInMillis;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
-import com.octo.android.robospice.request.simple.BitmapRequest;
-import com.octo.android.robospice.spicelist.simple.BitmapSpiceManager;
-
-import org.joda.time.DateTime;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
-
-import java.io.File;
-
-import edu.alaska.gina.feeder.android.core.data.Entry;
-import edu.alaska.gina.feeder.android.slideshow.network.JSONRequest;
-import edu.alaska.gina.feeder.android.slideshow.network.JsonSpiceService;
 
 /**
  * Feeder automated slideshow application.
  */
 public class Show extends Activity {
-    private String baseURL = "http://feeder-web-dev.x.gina.alaska.edu/feeds/snpp-day-night-band/entries.json";
+    private String baseURL = "http://feeder-web-dev.x.gina.alaska.edu/feeds/snpp-day-night-band/";
 
-    private ImageSwitcher contentView;
-    private TextSwitcher timestamp;
-    private ImageView image1, image2;
-    private View progressBar, settingsButton;
-    private SpiceManager jsonManager = new SpiceManager(JsonSpiceService.class);
-    private BitmapSpiceManager imageManager = new BitmapSpiceManager();
-    private Entry[] contentData;
-
-    private Thread timer = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            Log.d(getString(R.string.log_tag), "Timer reset.");
-            timerThreadRunning = true;
-            contentView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(getString(R.string.log_tag), "Timer complete.");
-                    timerDone = true;
-                    flipView();
-                }
-            }, DurationInMillis.ONE_MINUTE / 2);
-        }
-    });
+    private WebView webContent;
+    private View settingsButton;
 
     private Handler hideSysUIHandler = new Handler() {
         @Override
@@ -79,51 +33,16 @@ public class Show extends Activity {
         }
     };
 
-    /**
-     * Image that is currently being downloaded.
-     */
-    private int current = 0;
-
-    /**
-     * Flags indicating whether the timer, download, and timer thread are running or complete.
-     */
-    private boolean timerDone = true, downloadDone = false, timerThreadRunning = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(getString(R.string.log_tag) + "-lifecycle", "onCreate");
         setContentView(R.layout.activity_show);
 
-        TextView text1 = (TextView) findViewById(R.id.textView), text2 = (TextView) findViewById(R.id.textView2);
-        text1.setSelected(true);
-        text2.setSelected(true);
-
-        if (timerThreadRunning)
-            this.timer.interrupt();
-
-        this.timerDone = true;
-        this.downloadDone = false;
-        this.timerThreadRunning = false;
-
-        this.contentView = (ImageSwitcher) findViewById(R.id.flipper);
-        this.timestamp = (TextSwitcher) findViewById(R.id.timestamp);
-        this.image1 = (ImageView) this.contentView.findViewById(R.id.image1);
-        this.image2 = (ImageView) this.contentView.findViewById(R.id.image2);
-        this.progressBar = this.findViewById(R.id.loadingIndicator);
+        this.webContent = (WebView) findViewById(R.id.contentView);
         this.settingsButton = this.findViewById(R.id.settingsButton);
 
-        this.contentView.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
-        this.contentView.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
-
-        this.timestamp.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
-        this.timestamp.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
-
-        if (!this.jsonManager.isStarted())
-            this.jsonManager.start(this);
-        if (!this.imageManager.isStarted())
-            this.imageManager.start(this);
-
+        this.webContent.getSettings().setJavaScriptEnabled(true);
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
             @Override
             public void onSystemUiVisibilityChange(int visibility) {
@@ -152,29 +71,16 @@ public class Show extends Activity {
                 }
             }
         };
-        this.image1.setOnClickListener(clickListener);
-        this.image2.setOnClickListener(clickListener);
-        this.timestamp.setOnClickListener(clickListener);
+        this.webContent.setOnClickListener(clickListener);
 
         SharedPreferences setting = getPreferences(0);
         if (setting.getString(getString(R.string.code_pref), "").equals("")) {
             UIDDialogue d = new UIDDialogue();
             d.show(getFragmentManager(), "uid_dialogue");
         } else {
-            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "").toLowerCase() + "/entries.json";
-            tryRequestNextImage();
+            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "").toLowerCase() + "/carousel";
+            this.webContent.loadUrl(baseURL);
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(getString(R.string.log_tag) + "-lifecycle", "onResume");
-
-        if (!this.jsonManager.isStarted())
-            this.jsonManager.start(this);
-        if (!this.imageManager.isStarted())
-            this.imageManager.start(this);
     }
 
     @Override
@@ -237,148 +143,11 @@ public class Show extends Activity {
                 });
     }
 
-    private String formatDateTime(DateTime img) {
-        Period diff = new Period(img, new DateTime(System.currentTimeMillis()));
-        PeriodFormatter formatter;
-
-        if (diff.getYears() > 0) {
-            formatter = new PeriodFormatterBuilder().appendYears().appendSuffix(" year ago.", " years ago.").toFormatter();
-        } else if (diff.getMonths() > 0) {
-            formatter = new PeriodFormatterBuilder().appendMonths().appendSuffix(" month ago.", " months ago.").toFormatter();
-        } else if (diff.getWeeks() > 0) {
-            formatter = new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week ago.", " weeks ago.").toFormatter();
-        } else if (diff.getDays() > 0) {
-            formatter = new PeriodFormatterBuilder().appendDays().appendSuffix(" day ago.", " days ago.").toFormatter();
-        } else if (diff.getHours() > 0) {
-            formatter = new PeriodFormatterBuilder().appendHours().appendSuffix(" hour ago.", " hours ago.").toFormatter();
-        } else if (diff.getMinutes() > 0) {
-            formatter = new PeriodFormatterBuilder().appendMinutes().appendSuffix(" minute ago.", " minutes ago.").toFormatter();
-        } else {
-            formatter = new PeriodFormatterBuilder().appendSeconds().appendSuffix(" second ago.", " seconds ago.").toFormatter();
-        }
-
-        return formatter.print(diff);
-    }
-
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
         Log.d(getString(R.string.log_tag) + "-lifecycle", "onStop");
-
-        if (jsonManager.isStarted())
-            jsonManager.shouldStop();
-        if (imageManager.isStarted())
-            imageManager.shouldStop();
-
-        if (timerThreadRunning) {
-            this.timer.interrupt();
-        }
-    }
-
-    private void flipView() {
-        Log.d(getString(R.string.log_tag), "Starting flipView method.");
-        if (this.progressBar.getVisibility() == View.VISIBLE) {
-            Log.d(getString(R.string.log_tag), "ProgressBar removal starting.");
-            this.progressBar.setAlpha(1f);
-            this.progressBar.animate().alpha(0f)
-                    .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            progressBar.setVisibility(View.GONE);
-                            contentView.setVisibility(View.VISIBLE);
-                            timestamp.setVisibility(View.VISIBLE);
-                            Log.d(getString(R.string.log_tag), "ProgressBar is gone.");
-                        }
-                    });
-        }
-
-        Log.d(getString(R.string.log_tag), "timerDone = " + timerDone);
-        Log.d(getString(R.string.log_tag), "downloadDone = " + downloadDone);
-
-        if (this.timerDone && this.downloadDone) {
-            DateTime stamp = this.contentData[current - 1].event_at;
-            if (this.contentData[current - 1].highlight_description == null) {
-                this.timestamp.setText(formatDateTime(stamp));
-            } else {
-                this.timestamp.setText(this.contentData[current - 1].highlight_description + " - " + formatDateTime(stamp));
-            }
-            this.contentView.showNext();
-
-            this.timerDone = false;
-            this.downloadDone = true;
-
-            Log.d(getString(R.string.log_tag), "Flipping triggered & flags reset.");
-
-            if (!timerThreadRunning) {
-                Log.d(getString(R.string.log_tag), "Timer started");
-                timer.start();
-            } else {
-                timer.run();
-            }
-            tryRequestNextImage();
-        }
-    }
-
-    private void tryRequestNextImage() {
-        if (!this.jsonManager.isStarted())
-            this.jsonManager.start(this);
-        if (!this.imageManager.isStarted())
-            this.imageManager.start(this);
-
-        if (contentData != null && current < contentData.length) {
-            this.imageManager.execute(new BitmapRequest(this.contentData[current++].preview_url + "?size=2048x2048", new File(getFilesDir().getAbsolutePath() + "images.cache")), new ImageListener());
-        } else {
-            this.jsonManager.execute(new JSONRequest<Entry[]>(Entry[].class, baseURL), "slideshow_entries", DurationInMillis.ALWAYS_EXPIRED, new EntriesRequestListener());
-            //TODO Figure out what was supposed to be on this line.
-        }
-    }
-
-    private void loadIntoView(Bitmap bitmap) {
-        BitmapDrawable b;
-        if (this.image1.getVisibility() != View.VISIBLE) {
-            b = ((BitmapDrawable) this.image1.getDrawable());
-            this.image1.setImageBitmap(bitmap);
-        } else {
-            b = ((BitmapDrawable) this.image2.getDrawable());
-            this.image2.setImageBitmap(bitmap);
-        }
-
-        if (b != null)
-            b.getBitmap().recycle();
-    }
-
-    private class EntriesRequestListener implements RequestListener<Entry[]> {
-        @Override
-        public void onRequestFailure(SpiceException spiceException) {
-            Log.d(getString(R.string.log_tag), "Entries download fail!");
-            Toast.makeText(getApplicationContext(), "Can't download data!", Toast.LENGTH_SHORT);
-            tryRequestNextImage();
-        }
-
-        @Override
-        public void onRequestSuccess(Entry[] entries) {
-            contentData = entries;
-            current = 0;
-            tryRequestNextImage();
-        }
-    }
-
-    private class ImageListener implements RequestListener<Bitmap> {
-        @Override
-        public void onRequestFailure(SpiceException spiceException) {
-            Log.d(getString(R.string.log_tag), "Image download fail!");
-            Toast.makeText(getApplicationContext(), "Can't download image!", Toast.LENGTH_SHORT);
-            tryRequestNextImage();
-        }
-
-        @Override
-        public void onRequestSuccess(Bitmap bitmap) {
-            downloadDone = true;
-            Log.d(getString(R.string.log_tag) + "-memory", "Bitmap size in memory: " + bitmap.getByteCount() + " bytes.");
-            loadIntoView(bitmap);
-            flipView();
-        }
+        this.hideSysUIHandler.removeMessages(0);
     }
 
     //TODO Make dialog Fragment Static so we can remove the following line
@@ -388,13 +157,7 @@ public class Show extends Activity {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            if (jsonManager.isStarted())
-                jsonManager.shouldStop();
-            if (imageManager.isStarted())
-                imageManager.shouldStop();
-
             v = getActivity().getLayoutInflater().inflate(R.layout.uid_dialog, null);
-
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Enter Code:").setView(v)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -402,16 +165,14 @@ public class Show extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             if (v.findViewById(R.id.newUID) != null) {
                                 String s = ((EditText) v.findViewById(R.id.newUID)).getText().toString();
-                                baseURL += s + "/entries.json";
+                                baseURL = getString(R.string.base_url) + s + "/carousel";
                                 SharedPreferences.Editor setting = getPreferences(0).edit();
-                                setting.putString(getString(R.string.code_pref), s).commit();
+                                setting.putString(getString(R.string.code_pref), s).apply();
                             }
                             v.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (contentData != null)
-                                        current = contentData.length;
-                                    tryRequestNextImage();
+                                    webContent.loadUrl(baseURL);
                                 }
                             });
                             delayedHide();
@@ -424,7 +185,7 @@ public class Show extends Activity {
                             v.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    tryRequestNextImage();
+                                    webContent.loadUrl(baseURL);
                                 }
                             });
                             delayedHide();
