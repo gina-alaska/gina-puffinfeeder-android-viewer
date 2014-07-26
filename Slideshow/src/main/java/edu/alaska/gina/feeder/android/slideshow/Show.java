@@ -17,11 +17,6 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.EditText;
 
-import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.spicelist.simple.BitmapSpiceManager;
-
-import edu.alaska.gina.feeder.android.slideshow.network.JsonSpiceService;
-
 /**
  * Feeder automated slideshow application.
  */
@@ -30,8 +25,6 @@ public class Show extends Activity {
 
     private WebView webContent;
     private View settingsButton;
-    private SpiceManager jsonManager = new SpiceManager(JsonSpiceService.class);
-    private BitmapSpiceManager imageManager = new BitmapSpiceManager();
 
     private Handler hideSysUIHandler = new Handler() {
         @Override
@@ -80,9 +73,6 @@ public class Show extends Activity {
         };
         this.webContent.setOnClickListener(clickListener);
 
-        if (!this.jsonManager.isStarted())
-            this.jsonManager.start(this);
-
         SharedPreferences setting = getPreferences(0);
         if (setting.getString(getString(R.string.code_pref), "").equals("")) {
             UIDDialogue d = new UIDDialogue();
@@ -97,8 +87,6 @@ public class Show extends Activity {
     protected void onResume() {
         super.onResume();
         Log.d(getString(R.string.log_tag) + "-lifecycle", "onResume");
-        if (!this.jsonManager.isStarted())
-            this.jsonManager.start(this);
     }
 
     @Override
@@ -175,11 +163,6 @@ public class Show extends Activity {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            if (jsonManager.isStarted())
-                jsonManager.shouldStop();
-            if (imageManager.isStarted())
-                imageManager.shouldStop();
-
             v = getActivity().getLayoutInflater().inflate(R.layout.uid_dialog, null);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
