@@ -14,7 +14,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 
 /**
@@ -25,6 +27,7 @@ public class Show extends Activity {
 
     private WebView webContent;
     private View settingsButton;
+    private View progressBar;
 
     private Handler hideSysUIHandler = new Handler() {
         @Override
@@ -38,20 +41,13 @@ public class Show extends Activity {
         super.onCreate(savedInstanceState);
         Log.d(getString(R.string.log_tag) + "-lifecycle", "onCreate");
         setContentView(R.layout.activity_show);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         this.webContent = (WebView) findViewById(R.id.contentView);
         this.settingsButton = this.findViewById(R.id.settingsButton);
+        this.progressBar = findViewById(R.id.loadingIndicator);
 
         this.webContent.getSettings().setJavaScriptEnabled(true);
-        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-            @Override
-            public void onSystemUiVisibilityChange(int visibility) {
-                if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                    showUI();
-                }
-            }
-        });
-
         this.settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,19 +55,22 @@ public class Show extends Activity {
                 d.show(getFragmentManager(), "uid_dialogue");
             }
         });
-
-        View.OnClickListener clickListener = new View.OnClickListener() {
+        this.webContent.setWebViewClient(new WebViewClient() {
             @Override
-            public void onClick(View v) {
-                Log.d(getString(R.string.log_tag) + "-ui", "Click event registered.");
-                if (settingsButton.getVisibility() == View.VISIBLE) {
-                    hideUI();
-                } else {
-                    showUI();
-                }
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                progressBar.setVisibility(View.VISIBLE);
+                progressBar.animate().alpha(0f)
+                        .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                progressBar.setVisibility(View.GONE);
+                                webContent.setVisibility(View.VISIBLE);
+                            }
+                        });
             }
-        };
-        this.webContent.setOnClickListener(clickListener);
+        });
 
         SharedPreferences setting = getPreferences(0);
         if (setting.getString(getString(R.string.code_pref), "").equals("")) {
@@ -81,18 +80,23 @@ public class Show extends Activity {
             this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "").toLowerCase() + "/carousel";
             this.webContent.loadUrl(baseURL);
         }
+
+        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                    showUI();
+                    delayedHide();
+                }
+            }
+        });
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        Log.d(getString(R.string.log_tag) + "-lifecycle", "onWindowFocusChanged");
-
-        if (hasFocus) {
-            delayedHide();
-        } else {
-            hideSysUIHandler.removeMessages(0);
-        }
+    protected void onResume() {
+        super.onResume();
+        showUI();
+        delayedHide();
     }
 
     private void delayedHide() {
@@ -125,10 +129,6 @@ public class Show extends Activity {
     private void showUI() {
         Log.d(getString(R.string.log_tag) + "-ui", "Sys UI Shown");
         this.hideSysUIHandler.removeMessages(0);
-        getWindow().getDecorView().setSystemUiVisibility(
-                  View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         settingsButton.setVisibility(View.VISIBLE);
         settingsButton.setAlpha(0f);

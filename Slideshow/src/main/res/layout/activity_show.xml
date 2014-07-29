@@ -8,7 +8,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/contentView"
-        android:background="#ff000000" />
+        android:background="#ff000000"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change Code"
+        android:id="@+id/settingsButton"
+        android:drawSelectorOnTop="true"
+        android:background="@android:color/holo_blue_dark"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_alignParentTop="true"
+        android:layout_alignEnd="@+id/contentView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
 
     <ProgressBar
         style="?android:attr/progressBarStyleLarge"
@@ -17,15 +34,6 @@
         android:id="@+id/loadingIndicator"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:visibility="gone" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/settingsButton"
-        android:src="@drawable/ic_action_settings"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
 </RelativeLayout>
