@@ -2,7 +2,6 @@ package edu.alaska.gina.feeder.android.slideshow;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -47,14 +46,15 @@ public class Show extends Activity {
         this.settingsButton = this.findViewById(R.id.settingsButton);
         this.progressBar = findViewById(R.id.loadingIndicator);
 
-        this.webContent.getSettings().setJavaScriptEnabled(true);
         this.settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UIDDialogue d = new UIDDialogue();
+                UIDDialog d = new UIDDialog();
                 d.show(getFragmentManager(), "uid_dialogue");
             }
         });
+
+        this.webContent.getSettings().setJavaScriptEnabled(true);
         this.webContent.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -74,7 +74,7 @@ public class Show extends Activity {
 
         SharedPreferences setting = getPreferences(0);
         if (setting.getString(getString(R.string.code_pref), "").equals("")) {
-            UIDDialogue d = new UIDDialogue();
+            UIDDialog d = new UIDDialog();
             d.show(getFragmentManager(), "uid_dialogue");
         } else {
             this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "").toLowerCase() + "/carousel";
@@ -150,10 +150,15 @@ public class Show extends Activity {
         this.hideSysUIHandler.removeMessages(0);
     }
 
-    //TODO Make dialog Fragment Static so we can remove the following line
-    @SuppressLint("ValidFragment")
-    public class UIDDialogue extends DialogFragment {
+    public static class UIDDialog extends DialogFragment {
         private View v;
+        private String baseURL;
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            this.baseURL = getString(R.string.base_url);
+        }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -165,17 +170,17 @@ public class Show extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             if (v.findViewById(R.id.newUID) != null) {
                                 String s = ((EditText) v.findViewById(R.id.newUID)).getText().toString();
-                                baseURL = getString(R.string.base_url) + s + "/carousel";
-                                SharedPreferences.Editor setting = getPreferences(0).edit();
+                                ((Show) getActivity()).baseURL = baseURL + s + "/carousel";
+                                SharedPreferences.Editor setting = getActivity().getPreferences(0).edit();
                                 setting.putString(getString(R.string.code_pref), s).apply();
                             }
                             v.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    webContent.loadUrl(baseURL);
+                                    ((Show) getActivity()).webContent.loadUrl(((Show) getActivity()).baseURL);
                                 }
                             });
-                            delayedHide();
+                            ((Show) getActivity()).delayedHide();
                             dismiss();
                         }
                     })
@@ -185,10 +190,10 @@ public class Show extends Activity {
                             v.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    webContent.loadUrl(baseURL);
+                                    ((Show) getActivity()).webContent.loadUrl(((Show) getActivity()).baseURL);
                                 }
                             });
-                            delayedHide();
+                            ((Show) getActivity()).delayedHide();
                             dismiss();
                         }
                     }).setCancelable(false);
