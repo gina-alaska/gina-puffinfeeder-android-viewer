@@ -12,14 +12,6 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name">
 
-        <service
-            android:name=".network.JsonSpiceService"
-            android:exported="false" />
-
-        <service
-            android:name="com.octo.android.robospice.spicelist.simple.BitmapSpiceService"
-            android:exported="false" />
-
         <activity
             android:name=".Show"
             android:configChanges="orientation|keyboardHidden|screenSize"
