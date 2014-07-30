@@ -29,7 +29,7 @@
     <string name="content_retained_tag">content_retained_tag</string>
 
     <!-- Base URL Strings -->
-    <string name="base_url">http://feeder-web-dev.x.gina.alaska.edu/</string>
+    <string name="base_url">http://feeder-beta.gina.alaska.edu/</string>
 
     <!-- Endpoint Strings -->
     <string name="categories_endpoint">categories</string>
