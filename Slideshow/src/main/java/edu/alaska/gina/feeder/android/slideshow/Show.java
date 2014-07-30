@@ -33,6 +33,7 @@ public class Show extends Activity {
     private Handler hideSysUIHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+            super.handleMessage(msg);
             hideUI();
         }
     };
@@ -227,6 +228,7 @@ public class Show extends Activity {
     private class TouchDetector extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onDown(MotionEvent e) {
+            delayedHide();
             return super.onDown(e);
         }
     }
