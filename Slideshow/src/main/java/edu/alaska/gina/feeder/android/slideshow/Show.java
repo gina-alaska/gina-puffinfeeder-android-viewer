@@ -34,7 +34,12 @@ public class Show extends Activity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            hideUI();
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
         }
     };
 
@@ -88,7 +93,7 @@ public class Show extends Activity {
             UIDDialog d = new UIDDialog();
             d.show(getFragmentManager(), "uid_dialogue");
         } else {
-            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "").toLowerCase() + "/carousel";
+            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "c6d4c4").toLowerCase() + "/carousel";
             this.webContent.loadUrl(baseURL);
         }
 
@@ -98,6 +103,8 @@ public class Show extends Activity {
                 if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
                     showUI();
                     delayedHide();
+                } else {
+                    hideUI();
                 }
             }
         });
@@ -111,24 +118,19 @@ public class Show extends Activity {
     }
 
     private void delayedHide() {
-        Log.d(getString(R.string.log_tag) + "-ui", "Sys UI Delayed Hide Start");
         this.hideSysUIHandler.removeMessages(0);
         this.hideSysUIHandler.sendEmptyMessageDelayed(0, 2000);
     }
 
     private void hideUI() {
-        Log.d(getString(R.string.log_tag) + "-ui", "Sys UI Hidden");
+        int animTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
         this.hideSysUIHandler.removeMessages(0);
-        getWindow().getDecorView().setSystemUiVisibility(
-                  View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN);
+
+        this.webContent.loadUrl(getString(R.string.hide_ui_js) + "(" + animTime + ")");
 
         settingsButton.setAlpha(1f);
         settingsButton.animate().alpha(0f)
-                .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
+                .setDuration(animTime)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -138,13 +140,15 @@ public class Show extends Activity {
     }
 
     private void showUI() {
-        Log.d(getString(R.string.log_tag) + "-ui", "Sys UI Shown");
+        int animTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
         this.hideSysUIHandler.removeMessages(0);
+
+        this.webContent.loadUrl(getString(R.string.show_ui_js) + "(" + animTime + ")");
 
         settingsButton.setVisibility(View.VISIBLE);
         settingsButton.setAlpha(0f);
         settingsButton.animate().alpha(1f)
-                .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
+                .setDuration(animTime)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -159,19 +163,6 @@ public class Show extends Activity {
         super.onPause();
         Log.d(getString(R.string.log_tag) + "-lifecycle", "onStop");
         this.hideSysUIHandler.removeMessages(0);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                hideSysUIHandler.removeMessages(0);
-                break;
-            case MotionEvent.ACTION_UP:
-                delayedHide();
-                break;
-        }
-        return super.onTouchEvent(event);
     }
 
     public static class UIDDialog extends DialogFragment {
