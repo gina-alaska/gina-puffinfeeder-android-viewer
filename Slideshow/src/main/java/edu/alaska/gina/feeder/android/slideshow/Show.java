@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
@@ -69,6 +71,14 @@ public class Show extends Activity {
                                 webContent.setVisibility(View.VISIBLE);
                             }
                         });
+            }
+        });
+
+        final GestureDetector gd = new GestureDetector(this, new TouchDetector());
+        this.webContent.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gd.onTouchEvent(event);
             }
         });
 
@@ -150,6 +160,19 @@ public class Show extends Activity {
         this.hideSysUIHandler.removeMessages(0);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                hideSysUIHandler.removeMessages(0);
+                break;
+            case MotionEvent.ACTION_UP:
+                delayedHide();
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
     public static class UIDDialog extends DialogFragment {
         private View v;
         private String baseURL;
@@ -198,6 +221,13 @@ public class Show extends Activity {
                         }
                     }).setCancelable(false);
             return builder.create();
+        }
+    }
+
+    private class TouchDetector extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return super.onDown(e);
         }
     }
 }
