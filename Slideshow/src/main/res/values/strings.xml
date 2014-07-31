@@ -6,7 +6,7 @@
     <string name="code_pref">UID</string>
 
     <string name="base_url">http://feeder-beta.gina.alaska.edu/slideshows/</string>
-    <string name="highlights_slideshow">c6d4c4</string>
+    <string name="highlights_slideshow">000000</string>
     <string name="hide_ui_js">javascript:Slideshow.hideUI</string>
     <string name="show_ui_js">javascript:Slideshow.showUI</string>
 </resources>
