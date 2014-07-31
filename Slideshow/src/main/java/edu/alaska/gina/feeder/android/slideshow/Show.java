@@ -24,7 +24,7 @@ import android.widget.EditText;
  * Feeder automated slideshow application.
  */
 public class Show extends Activity {
-    private String baseURL = "http://feeder-web-dev.x.gina.alaska.edu/feeds/snpp-day-night-band/";
+    private String baseURL;
 
     private WebView webContent;
     private View settingsButton;
@@ -39,20 +39,22 @@ public class Show extends Activity {
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+            );
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(getString(R.string.log_tag) + "-lifecycle", "onCreate");
         setContentView(R.layout.activity_show);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        SharedPreferences setting = getPreferences(0);
         this.webContent = (WebView) findViewById(R.id.contentView);
         this.settingsButton = this.findViewById(R.id.settingsButton);
         this.progressBar = findViewById(R.id.loadingIndicator);
+        this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), getString(R.string.highlights_slideshow)) + "/carousel";
 
         this.settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,12 +90,12 @@ public class Show extends Activity {
             }
         });
 
-        SharedPreferences setting = getPreferences(0);
         if (setting.getString(getString(R.string.code_pref), "").equals("")) {
             UIDDialog d = new UIDDialog();
             d.show(getFragmentManager(), "uid_dialogue");
         } else {
-            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), "c6d4c4").toLowerCase() + "/carousel";
+            this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), getString(R.string.highlights_slideshow)).toLowerCase() + "/carousel";
+            Log.d(getString(R.string.log_tag), baseURL);
             this.webContent.loadUrl(baseURL);
         }
 
@@ -161,19 +163,11 @@ public class Show extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(getString(R.string.log_tag) + "-lifecycle", "onStop");
         this.hideSysUIHandler.removeMessages(0);
     }
 
     public static class UIDDialog extends DialogFragment {
         private View v;
-        private String baseURL;
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            this.baseURL = getString(R.string.base_url);
-        }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -185,13 +179,14 @@ public class Show extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             if (v.findViewById(R.id.newUID) != null) {
                                 String s = ((EditText) v.findViewById(R.id.newUID)).getText().toString();
-                                ((Show) getActivity()).baseURL = baseURL + s + "/carousel";
+                                ((Show) getActivity()).baseURL = getString(R.string.base_url) + s + "/carousel";
                                 SharedPreferences.Editor setting = getActivity().getPreferences(0).edit();
                                 setting.putString(getString(R.string.code_pref), s).apply();
                             }
                             v.post(new Runnable() {
                                 @Override
                                 public void run() {
+                                    Log.d(getString(R.string.log_tag), ((Show) getActivity()).baseURL);
                                     ((Show) getActivity()).webContent.loadUrl(((Show) getActivity()).baseURL);
                                 }
                             });
@@ -205,6 +200,7 @@ public class Show extends Activity {
                             v.post(new Runnable() {
                                 @Override
                                 public void run() {
+                                    Log.d(getString(R.string.log_tag), ((Show) getActivity()).baseURL);
                                     ((Show) getActivity()).webContent.loadUrl(((Show) getActivity()).baseURL);
                                 }
                             });
