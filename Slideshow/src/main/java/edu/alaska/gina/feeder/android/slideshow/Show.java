@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -95,7 +94,6 @@ public class Show extends Activity {
             d.show(getFragmentManager(), "uid_dialogue");
         } else {
             this.baseURL = getString(R.string.base_url) + setting.getString(getString(R.string.code_pref), getString(R.string.highlights_slideshow)).toLowerCase() + "/carousel";
-            Log.d(getString(R.string.log_tag), baseURL);
             this.webContent.loadUrl(baseURL);
         }
 
@@ -186,7 +184,6 @@ public class Show extends Activity {
                             v.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Log.d(getString(R.string.log_tag), ((Show) getActivity()).baseURL);
                                     ((Show) getActivity()).webContent.loadUrl(((Show) getActivity()).baseURL);
                                 }
                             });
@@ -200,7 +197,6 @@ public class Show extends Activity {
                             v.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Log.d(getString(R.string.log_tag), ((Show) getActivity()).baseURL);
                                     ((Show) getActivity()).webContent.loadUrl(((Show) getActivity()).baseURL);
                                 }
                             });
