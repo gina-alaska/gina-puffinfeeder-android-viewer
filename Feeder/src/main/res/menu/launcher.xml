@@ -2,17 +2,15 @@
 
     <item android:id="@+id/action_refresh"
           android:title="Refresh"
-          android:showAsAction="never"
+          android:showAsAction="ifRoom"
           android:icon="@drawable/ic_menu_refresh" />
 
     <item android:id="@+id/action_display_short_feed_description"
           android:title="@string/description_header"
-          android:showAsAction="never"
-          android:icon="@drawable/ic_action_about" />
+          android:showAsAction="never" />
 
     <item android:id="@+id/action_show_credits"
           android:title="Credits"
-          android:showAsAction="never"
-          android:icon="@drawable/ic_action_about" />
+          android:showAsAction="never" />
 
 </menu>

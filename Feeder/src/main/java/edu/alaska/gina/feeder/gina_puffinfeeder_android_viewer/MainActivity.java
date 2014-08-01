@@ -114,7 +114,7 @@ public class MainActivity extends Activity implements FeederActivity {
                 ((TextView) findViewById(R.id.description_body)).setText(getResources().getString(R.string.description_placeholder));
 
                 aBarMenu.findItem(R.id.action_refresh).setVisible(false);
-                aBarMenu.findItem(R.id.action_display_short_description).setVisible(false);
+                aBarMenu.findItem(R.id.action_display_short_feed_description).setVisible(false);
 
                 if (getActionBar() != null)
                     getActionBar().setTitle("GINA Puffin Feeder");
