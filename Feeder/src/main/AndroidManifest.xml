@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer">
+    package="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer" >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -36,14 +37,14 @@
             android:exported="false" />
 
         <service
-                android:name="com.octo.android.robospice.spicelist.simple.BitmapSpiceService"
-                android:exported="false" />
+            android:name="com.octo.android.robospice.spicelist.simple.BitmapSpiceService"
+            android:exported="false" />
 
         <activity
             android:name=".FullscreenImageViewerActivity"
             android:label="@string/title_activity_fullscreen_image_viewer"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/FullscreenTheme">
+            android:theme="@style/FullscreenTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.MainLauncherActivity" />
@@ -52,11 +53,22 @@
         <activity
             android:name=".FullscreenVideoPlayerActivity"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/FullscreenTheme">
+            android:theme="@style/FullscreenTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.MainLauncherActivity" />
         </activity>
+
+        <activity
+            android:name=".FullscreenViewerActivity"
+            android:label="@string/title_activity_fullscreen_viewer"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/FullscreenTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.MainActivity" />
+        </activity>
+
     </application>
 
 </manifest>

@@ -26,7 +26,7 @@ import java.util.Collections;
 
 import edu.alaska.gina.feeder.android.core.data.Entry;
 import edu.alaska.gina.feeder.android.core.data.Feed;
-import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.FullscreenImageViewerActivity;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.FullscreenViewerActivity;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapters.EntriesAdapter;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
@@ -108,10 +108,11 @@ public class EntriesFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent photoView = new Intent(getActivity(), FullscreenImageViewerActivity.class);
+                Intent photoView = new Intent(getActivity(), FullscreenViewerActivity.class);
 
                 Bundle args = new Bundle();
                 args.putSerializable("entry", data.entries.get(position));
+                args.putString("feed-title", currentFeed.title);
                 photoView.putExtras(args);
 
                 getActivity().startActivity(photoView);
