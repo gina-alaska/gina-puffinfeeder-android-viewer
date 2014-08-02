@@ -17,8 +17,14 @@
 #}
 
 ### For RoboSpice
+-keep class edu.alaska.gina.feeder.core.data.**
+-keepclasseswithmembers class edu.alaska.gina.feeder.core.data.**
+-keepclassmembers class edu.alaska.gina.feeder.core.data.** {
+      *;
+}
+
 #RoboSpice requests should be preserved in most cases
--keepclassmembers class network.** {
+-keepclassmembers class edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.** {
   public void set*(***);
   public *** get*();
   public *** is*();

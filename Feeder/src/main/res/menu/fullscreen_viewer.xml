@@ -1,7 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.FullscreenViewerActivity" >
+
+    <item
+        android:id="@+id/action_share"
+        android:showAsAction="ifRoom"
+        android:title="Share"
+        android:actionProviderClass="android.widget.ShareActionProvider" />
+
     <item android:id="@+id/action_download"
         android:title="@string/action_download"
         android:showAsAction="never" />
+
 </menu>
