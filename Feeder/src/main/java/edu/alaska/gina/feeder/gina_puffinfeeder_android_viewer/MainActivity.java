@@ -187,7 +187,7 @@ public class MainActivity extends Activity implements FeederActivity {
         Bundle b = new Bundle();
         b.putSerializable("feed", newFeed);
         iFrag.setArguments(b);
-        getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "grid").addToBackStack(null).commit();
+        getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "entries").addToBackStack(null).commit();
     }
 
     @Override

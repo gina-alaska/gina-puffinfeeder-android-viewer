@@ -47,8 +47,7 @@ public class EntriesFragment extends Fragment {
     private Feed currentFeed;
     private EntriesAdapter mImageAdapter;
 
-    /* Variables for keeping track of what to load next */
-    private long mostRecentId = -1;
+    /* Variable for keeping track of what to load next */
     private long leastRecentId = -1;
 
     /* Overridden Methods. */
@@ -74,6 +73,7 @@ public class EntriesFragment extends Fragment {
         if (this.data == null) {
             Log.d(getResources().getString(R.string.app_tag), "No retained data found.");
             this.data = new ContentDataFragment();
+            this.data.firstVisible = 0;
             getActivity().getFragmentManager().beginTransaction().add(this.data, getString(R.string.content_retained_tag)).commit();
             this.data.retainedFeed = this.currentFeed;
             this.data.entries = new ArrayList<Entry>(12);
@@ -81,6 +81,7 @@ public class EntriesFragment extends Fragment {
             initialEntriesNetworkRequest();
         } else if (!this.data.retainedFeed.equals(this.currentFeed)) {
             Log.d(getResources().getString(R.string.app_tag), "Incorrect retained data found.");
+            this.data.firstVisible = 0;
             this.data.retainedFeed = this.currentFeed;
             this.data.entries = new ArrayList<Entry>(12);
             this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
@@ -88,10 +89,10 @@ public class EntriesFragment extends Fragment {
         } else {
             Log.d(getResources().getString(R.string.app_tag), "Retained data found.");
             this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
+            this.leastRecentId = this.data.entries.get(this.data.entries.size() - 1).uid;
             this.mImageAdapter.notifyDataSetChanged();
             this.contentView.setAlpha(0f);
             this.contentView.setVisibility(View.VISIBLE);
-            this.contentView.scrollTo(this.data.currentXLoc, this.data.currentYLoc);
             this.contentView.animate().alpha(1f).setDuration(fadeAnimationDuration).setListener(null);
             this.loadingView.animate().alpha(0f).setDuration(fadeAnimationDuration).setListener(new AnimatorListenerAdapter() {
                 @Override
@@ -125,15 +126,22 @@ public class EntriesFragment extends Fragment {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                /* Do noting. No idea what this does. */
+                /* Do noting. */
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                Log.d(getString(R.string.app_tag) + "-scroll", "leastRecentId: " + leastRecentId);
                 if (leastRecentId < 0)
                     return;
 
-                if (!this.loading && (firstVisibleItem + visibleItemCount) == totalItemCount) {
+                Log.d(getString(R.string.app_tag) + "-scroll", "firstVisibleItem: " + firstVisibleItem);
+                Log.d(getString(R.string.app_tag) + "-scroll", "visibleItemCount: " + visibleItemCount);
+                Log.d(getString(R.string.app_tag) + "-scroll", "totalItemCount: " + totalItemCount);
+                Log.d(getString(R.string.app_tag) + "-scroll", "loading: " + this.loading);
+
+                if (!this.loading && (firstVisibleItem + visibleItemCount) >= totalItemCount) {
+                    Log.d(getString(R.string.app_tag) + "-scroll", "Loading more entries");
                     moreEntriesNetworkRequest(leastRecentId);
                     this.loading = true;
                 }
@@ -144,12 +152,22 @@ public class EntriesFragment extends Fragment {
                 }
 
                 this.previousTotalItems = totalItemCount;
-                data.currentXLoc = contentView.getScrollX();
-                data.currentYLoc = contentView.getScrollY();
             }
         });
 
         this.mImageAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.contentView.setSelection(this.data.firstVisible);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.data.firstVisible = contentView.getFirstVisiblePosition();
     }
 
     @Override
@@ -183,19 +201,12 @@ public class EntriesFragment extends Fragment {
     }
 
     private void moreEntriesNetworkRequest(long maxId) {
-        Log.d(getString(R.string.app_tag), "Requesting entries from entry " + this.leastRecentId + ".");
+        Log.d(getString(R.string.app_tag) + "-network", "Requesting entries from entry " + this.leastRecentId + ".");
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
         getActivity().setProgressBarIndeterminateVisibility(true);
         mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentFeed.entries_url + "?count=24&max_id=" + maxId), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
-    }
-
-    private void sinceEntriesNetworkRequest(long sinceId) {
-        if (!mSpiceManager.isStarted())
-            mSpiceManager.start(getActivity().getBaseContext());
-
-        mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentFeed.entries_url + "?count=24&since_id=" + sinceId), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
 
     /* Class to run after RoboSpice task completion. */
@@ -228,7 +239,6 @@ public class EntriesFragment extends Fragment {
                 getActivity().setProgressBarIndeterminateVisibility(false);
             }
 
-            mostRecentId = data.entries.get(0).uid;
             leastRecentId = data.entries.get(data.entries.size() - 1).uid;
         }
     }
@@ -236,7 +246,7 @@ public class EntriesFragment extends Fragment {
     public static class ContentDataFragment extends Fragment {
         Feed retainedFeed;
         ArrayList<Entry> entries;
-        int currentXLoc, currentYLoc;
+        int firstVisible;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
