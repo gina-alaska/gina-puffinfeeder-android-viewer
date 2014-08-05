@@ -1,6 +1,7 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ShareActionProvider;
+import android.widget.TextView;
 
 import edu.alaska.gina.feeder.android.core.data.Entry;
 
@@ -97,16 +99,37 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
                 finish();
                 return true;
             case R.id.action_download:
-                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(this.entry.data_url));
-                request.setTitle(getActionBar().getTitle() + "-" + entry.uid + ".jpg");
-                request.setVisibleInDownloadsUi(true);
-                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, getActionBar().getTitle() + "-" + entry.uid + ".jpg");
-                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                ((DownloadManager) this.getSystemService(DOWNLOAD_SERVICE)).enqueue(request);
+                downloadImage();
+                return true;
+            case R.id.action_details:
+                showDetails();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void downloadImage() {
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(this.entry.data_url));
+        request.setTitle(getActionBar().getTitle() + "-" + entry.uid + ".jpg");
+        request.setVisibleInDownloadsUi(true);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, getActionBar().getTitle() + "-" + entry.uid + ".jpg");
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        ((DownloadManager) this.getSystemService(DOWNLOAD_SERVICE)).enqueue(request);
+    }
+
+    private void showDetails() {
+        TextView text = new TextView(this);
+        String details = "Time: ";
+        details += entry.event_at;
+        if (entry.highlighted)
+            details += "Description: " + entry.highlight_description;
+        text.setText(details);
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Details");
+        alert.setView(text);
+        alert.show();
     }
 
     private void delayedHide() {
