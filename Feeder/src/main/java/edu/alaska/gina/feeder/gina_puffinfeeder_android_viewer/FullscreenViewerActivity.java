@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.DownloadManager;
+import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -162,26 +163,37 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
     }
 
     public static class DetailsDialog extends DialogFragment {
-        private Entry innerEntry;
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            this.innerEntry = ((FullscreenViewerActivity) activity).entry;
-        }
+        private Holder details;
 
         @Override
         public AlertDialog onCreateDialog(@Nullable Bundle savedInstanceState) {
             View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_details, null);
             DateTimeFormatter dateFormat = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
-            ((TextView) v.findViewById(R.id.timestamp)).setText(dateFormat.print(innerEntry.event_at));
-            if (innerEntry.highlighted)
-                ((TextView) v.findViewById(R.id.description)).setText(innerEntry.highlight_description);
+            this.details = (Holder) getFragmentManager().findFragmentByTag("details_info");
+            if (this.details == null) {
+                this.details = new Holder();
+                this.details.innerEntry = ((FullscreenViewerActivity) getActivity()).entry;
+                getFragmentManager().beginTransaction().add(this.details, "details_info");
+            }
+
+            ((TextView) v.findViewById(R.id.timestamp)).setText(dateFormat.print(this.details.innerEntry.event_at));
+            if (this.details.innerEntry.highlighted)
+                ((TextView) v.findViewById(R.id.description)).setText(this.details.innerEntry.highlight_description);
 
             AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
             b.setCustomTitle(null);
             b.setView(v);
             return b.create();
+        }
+
+        public static class Holder extends Fragment {
+            public Entry innerEntry;
+
+            @Override
+            public void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+                setRetainInstance(true);
+            }
         }
     }
 }
