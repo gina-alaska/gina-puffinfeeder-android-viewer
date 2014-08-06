@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+        android:text="Time:"
+        android:id="@+id/textView"
+        android:textColor="@android:color/darker_gray" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Timestamp"
+        android:id="@+id/timestamp"
+        android:layout_gravity="right"
+        android:gravity="left"
+        android:textIsSelectable="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+        android:text="Description:"
+        android:id="@+id/textView2"
+        android:textColor="@android:color/darker_gray"
+        android:singleLine="false" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Highlight description goes here."
+        android:id="@+id/description"
+        android:layout_gravity="right"
+        android:textIsSelectable="false"
+        android:singleLine="false"
+        android:gravity="left" />
+</LinearLayout>

@@ -2,6 +2,7 @@ package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -18,6 +20,9 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
+
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import edu.alaska.gina.feeder.android.core.data.Entry;
 
@@ -119,6 +124,7 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
     }
 
     private void showDetails() {
+        /*
         TextView text = new TextView(this);
         String details = "Time: ";
         details += entry.event_at;
@@ -130,6 +136,10 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
         alert.setTitle("Details");
         alert.setView(text);
         alert.show();
+        */
+
+        DetailsDialog d = new DetailsDialog();
+        d.show(getFragmentManager(), "details");
     }
 
     private void delayedHide() {
@@ -166,5 +176,27 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
         }
     }
 
-    //TODO Description Dialog
+    public static class DetailsDialog extends DialogFragment {
+        private Entry innerEntry;
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            this.innerEntry = ((FullscreenViewerActivity) activity).entry;
+        }
+
+        @Override
+        public AlertDialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+            View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_details, null);
+            DateTimeFormatter dateFormat = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
+            ((TextView) v.findViewById(R.id.timestamp)).setText(dateFormat.print(innerEntry.event_at));
+            if (innerEntry.highlighted)
+                ((TextView) v.findViewById(R.id.description)).setText(innerEntry.highlight_description);
+
+            AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+            b.setView(v);
+            b.setTitle(getString(R.string.action_details));
+            return b.create();
+        }
+    }
 }
