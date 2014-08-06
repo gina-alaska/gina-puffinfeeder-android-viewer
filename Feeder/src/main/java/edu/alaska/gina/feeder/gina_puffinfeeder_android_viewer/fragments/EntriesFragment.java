@@ -155,6 +155,7 @@ public class EntriesFragment extends Fragment {
             }
         });
 
+        getActivity().getActionBar().setTitle(currentFeed.title);
         this.mImageAdapter.notifyDataSetChanged();
     }
 
@@ -186,6 +187,10 @@ public class EntriesFragment extends Fragment {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public Feed getCurrentFeed() {
+        return this.currentFeed;
     }
 
     /**

@@ -27,7 +27,7 @@ import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.fragments.StartFr
  */
 public class MainActivity extends Activity implements FeederActivity {
     private FeedsFragment feedsDrawer;
-    private Feed currentFeed;
+    private EntriesFragment contentFragment;
 
     private Menu aBarMenu;
     private DrawerLayout mDrawerLayout; //Contains the entire activity.
@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements FeederActivity {
                 if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment)
                     getActionBar().setTitle("GINA Puffin Feeder");
                 else
-                    getActionBar().setTitle(currentFeed.title);
+                    getActionBar().setTitle(contentFragment.getCurrentFeed().title);
             }
 
             @Override
@@ -109,17 +109,18 @@ public class MainActivity extends Activity implements FeederActivity {
             return;
         }
 
-        try {
-            if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
-                ((TextView) findViewById(R.id.description_body)).setText(getResources().getString(R.string.description_placeholder));
+        if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
+            ((TextView) findViewById(R.id.description_body)).setText(getResources().getString(R.string.description_placeholder));
 
-                aBarMenu.findItem(R.id.action_refresh).setVisible(false);
-                aBarMenu.findItem(R.id.action_display_short_feed_description).setVisible(false);
+            aBarMenu.findItem(R.id.action_refresh).setVisible(false);
+            aBarMenu.findItem(R.id.action_display_short_feed_description).setVisible(false);
 
-                if (getActionBar() != null)
-                    getActionBar().setTitle("GINA Puffin Feeder");
-            }
-        } catch (NullPointerException e) {/*Do Nothing*/}
+            if (getActionBar() != null)
+                getActionBar().setTitle("GINA Puffin Feeder");
+        } else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof EntriesFragment) {
+            this.contentFragment = (EntriesFragment) getFragmentManager().findFragmentById(R.id.content_frame);
+            getActionBar().setTitle(this.contentFragment.getCurrentFeed().title);
+        }
     }
 
     @Override
@@ -182,12 +183,11 @@ public class MainActivity extends Activity implements FeederActivity {
 
     @Override
     public void openEntriesFragment(Feed newFeed) {
-        this.currentFeed = newFeed;
-        EntriesFragment iFrag = new EntriesFragment();
+        this.contentFragment = new EntriesFragment();
         Bundle b = new Bundle();
         b.putSerializable("feed", newFeed);
-        iFrag.setArguments(b);
-        getFragmentManager().beginTransaction().replace(R.id.content_frame, iFrag, "entries").addToBackStack(null).commit();
+        contentFragment.setArguments(b);
+        getFragmentManager().beginTransaction().replace(R.id.content_frame, contentFragment, "entries").addToBackStack(null).commit();
     }
 
     @Override
