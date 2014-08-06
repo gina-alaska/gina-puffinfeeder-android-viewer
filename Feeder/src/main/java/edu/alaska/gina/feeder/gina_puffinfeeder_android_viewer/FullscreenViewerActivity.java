@@ -98,7 +98,6 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(getString(R.string.app_tag) + "-input", "onOptionsItemSelected");
-        this.hideUIHandler.removeMessages(0);
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
@@ -124,20 +123,6 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
     }
 
     private void showDetails() {
-        /*
-        TextView text = new TextView(this);
-        String details = "Time: ";
-        details += entry.event_at;
-        if (entry.highlighted)
-            details += "Description: " + entry.highlight_description;
-        text.setText(details);
-
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Details");
-        alert.setView(text);
-        alert.show();
-        */
-
         DetailsDialog d = new DetailsDialog();
         d.show(getFragmentManager(), "details");
     }
@@ -194,8 +179,8 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
                 ((TextView) v.findViewById(R.id.description)).setText(innerEntry.highlight_description);
 
             AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
+            b.setCustomTitle(null);
             b.setView(v);
-            b.setTitle(getString(R.string.action_details));
             return b.create();
         }
     }
