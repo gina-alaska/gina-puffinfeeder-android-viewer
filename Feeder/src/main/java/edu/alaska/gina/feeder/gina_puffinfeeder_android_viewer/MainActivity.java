@@ -61,6 +61,7 @@ public class MainActivity extends Activity implements FeederActivity {
                     getActionBar().setTitle("GINA Puffin Feeder");
                 else
                     getActionBar().setTitle(contentFragment.getCurrentFeed().title);
+                invalidateOptionsMenu();
             }
 
             @Override
@@ -71,6 +72,7 @@ public class MainActivity extends Activity implements FeederActivity {
                     if (mDrawerLayout.isDrawerOpen(infoDrawerLayout))
                         mDrawerLayout.closeDrawer(infoDrawerLayout);
                 }
+                invalidateOptionsMenu();
             }
         };
         this.mDrawerLayout.setDrawerListener(mDrawerToggle);
