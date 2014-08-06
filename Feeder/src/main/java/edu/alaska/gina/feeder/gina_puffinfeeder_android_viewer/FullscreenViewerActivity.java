@@ -49,6 +49,7 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
         Bundle extras = getIntent().getExtras();
         this.entry = (Entry) extras.getSerializable("entry");
         WebView content = (WebView) findViewById(R.id.contentView);
+        content.getSettings().setJavaScriptEnabled(true);
         content.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
         content.getSettings().setSupportZoom(true);
         content.getSettings().setBuiltInZoomControls(true);
