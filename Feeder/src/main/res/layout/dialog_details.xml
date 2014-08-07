@@ -30,7 +30,8 @@
         android:text="Description:"
         android:id="@+id/textView2"
         android:textColor="@android:color/darker_gray"
-        android:singleLine="false" />
+        android:singleLine="false"
+        android:visibility="gone" />
 
     <TextView
         android:layout_width="match_parent"
@@ -41,5 +42,6 @@
         android:layout_gravity="right"
         android:textIsSelectable="false"
         android:singleLine="false"
-        android:gravity="left" />
+        android:gravity="left"
+        android:visibility="gone" />
 </LinearLayout>

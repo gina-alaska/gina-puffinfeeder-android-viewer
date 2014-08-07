@@ -119,7 +119,7 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(this.entry.data_url));
         request.setTitle(getActionBar().getTitle() + "-" + entry.uid + ".jpg");
         request.setVisibleInDownloadsUi(true);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, getActionBar().getTitle() + "-" + entry.uid + ".jpg");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, getActionBar().getTitle() + "-" + entry.event_at + ".jpg");
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         ((DownloadManager) this.getSystemService(DOWNLOAD_SERVICE)).enqueue(request);
     }
@@ -178,9 +178,11 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
             }
 
             ((TextView) v.findViewById(R.id.timestamp)).setText(dateFormat.print(this.details.innerEntry.event_at));
-            if (this.details.innerEntry.highlighted)
+            if (this.details.innerEntry.highlighted) {
                 ((TextView) v.findViewById(R.id.description)).setText(this.details.innerEntry.highlight_description);
-
+                v.findViewById(R.id.textView2).setVisibility(View.VISIBLE);
+                v.findViewById(R.id.description).setVisibility(View.VISIBLE);
+            }
             AlertDialog.Builder b = new AlertDialog.Builder(getActivity());
             b.setCustomTitle(null);
             b.setView(v);
