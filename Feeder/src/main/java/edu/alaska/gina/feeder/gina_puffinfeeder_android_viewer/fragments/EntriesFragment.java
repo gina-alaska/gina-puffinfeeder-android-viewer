@@ -70,7 +70,7 @@ public class EntriesFragment extends Fragment {
         this.contentView = (GridView) getActivity().findViewById(R.id.image_grid);
 
         this.data = (ContentDataFragment) getActivity().getFragmentManager().findFragmentByTag(getString(R.string.content_retained_tag));
-        if (this.data == null) {
+        if (this.data == null || this.data.entries.size() < 1) {
             Log.d(getResources().getString(R.string.app_tag), "No retained data found.");
             this.data = new ContentDataFragment();
             this.data.firstVisible = 0;
@@ -131,17 +131,10 @@ public class EntriesFragment extends Fragment {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                Log.d(getString(R.string.app_tag) + "-scroll", "leastRecentId: " + leastRecentId);
                 if (leastRecentId < 0)
                     return;
 
-                Log.d(getString(R.string.app_tag) + "-scroll", "firstVisibleItem: " + firstVisibleItem);
-                Log.d(getString(R.string.app_tag) + "-scroll", "visibleItemCount: " + visibleItemCount);
-                Log.d(getString(R.string.app_tag) + "-scroll", "totalItemCount: " + totalItemCount);
-                Log.d(getString(R.string.app_tag) + "-scroll", "loading: " + this.loading);
-
                 if (!this.loading && (firstVisibleItem + visibleItemCount) >= totalItemCount) {
-                    Log.d(getString(R.string.app_tag) + "-scroll", "Loading more entries");
                     moreEntriesNetworkRequest(leastRecentId);
                     this.loading = true;
                 }
@@ -219,8 +212,8 @@ public class EntriesFragment extends Fragment {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             getActivity().setProgressBarIndeterminateVisibility(false);
-            Log.d(getString(R.string.app_tag), "Image Feed load fail! " + spiceException.getMessage());
-            Toast.makeText(getActivity(), "Image Feed load fail!", Toast.LENGTH_SHORT).show();
+            Log.d(getString(R.string.app_tag), "Failed to load entries " + spiceException.getMessage());
+            Toast.makeText(getActivity(), "Failed to load entries", Toast.LENGTH_SHORT).show();
             loadingView.setVisibility(View.GONE);
         }
 
@@ -244,7 +237,8 @@ public class EntriesFragment extends Fragment {
                 getActivity().setProgressBarIndeterminateVisibility(false);
             }
 
-            leastRecentId = data.entries.get(data.entries.size() - 1).uid;
+            if (data.entries.size() >= 1)
+                leastRecentId = data.entries.get(data.entries.size() - 1).uid;
         }
     }
 
