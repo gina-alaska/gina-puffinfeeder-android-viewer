@@ -114,6 +114,7 @@ public class EntriesFragment extends Fragment {
                 Bundle args = new Bundle();
                 args.putSerializable("entry", data.entries.get(position));
                 args.putString("feed-title", currentFeed.title);
+                args.putString("feed-type", currentFeed.category);
                 photoView.putExtras(args);
 
                 getActivity().startActivity(photoView);

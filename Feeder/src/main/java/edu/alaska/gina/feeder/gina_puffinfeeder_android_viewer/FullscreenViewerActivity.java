@@ -31,6 +31,8 @@ import edu.alaska.gina.feeder.android.core.data.Entry;
 public class FullscreenViewerActivity extends Activity implements View.OnTouchListener {
     private Entry entry;
     private GestureDetector touchDetector;
+    private String feedTitle;
+    private String category;
 
     private Handler hideUIHandler = new Handler() {
         @Override
@@ -64,8 +66,10 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
         });
         content.loadUrl(entry.url);
 
+        this.category = extras.getString("feed-type");
+        this.feedTitle = extras.getString("feed-title");
         if (getActionBar() != null)
-            getActionBar().setTitle(extras.getString("feed-title"));
+            getActionBar().setTitle(this.feedTitle);
 
         getWindow().getDecorView().setOnTouchListener(this);
     }
@@ -90,9 +94,12 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
         ShareActionProvider shareItem = (ShareActionProvider) item.getActionProvider();
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(entry.data_url));
-        shareIntent.setType("image/jpeg");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, entry.url);
+        shareIntent.setType("text/plain");
         shareItem.setShareIntent(shareIntent);
+
+        if (!this.category.equals("Image"))
+            menu.findItem(R.id.action_download).setVisible(false);
 
         return true;
     }
@@ -105,7 +112,7 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
                 finish();
                 return true;
             case R.id.action_download:
-                downloadImage();
+                downloadData();
                 return true;
             case R.id.action_details:
                 showDetails();
@@ -115,11 +122,11 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
         }
     }
 
-    private void downloadImage() {
+    private void downloadData() {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(this.entry.data_url));
-        request.setTitle(getActionBar().getTitle() + "-" + entry.uid + ".jpg");
+        request.setTitle(entry.data_url.substring(entry.data_url.lastIndexOf('/') + 1));
         request.setVisibleInDownloadsUi(true);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, getActionBar().getTitle() + "-" + entry.event_at + ".jpg");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, entry.data_url.substring(entry.data_url.lastIndexOf('/') + 1));
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         ((DownloadManager) this.getSystemService(DOWNLOAD_SERVICE)).enqueue(request);
     }
