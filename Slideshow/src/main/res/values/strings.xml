@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Feeder Slideshow</string>
+    <string name="app_name">GINA Puffin Feeder Slideshow</string>
     <string name="log_tag">slideshow_debug</string>
 
     <string name="code_pref">UID</string>
