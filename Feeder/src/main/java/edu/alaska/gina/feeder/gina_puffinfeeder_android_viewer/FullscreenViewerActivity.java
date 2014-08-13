@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
@@ -29,8 +31,10 @@ import edu.alaska.gina.feeder.android.core.data.Entry;
 
 @SuppressWarnings("ConstantConditions")
 public class FullscreenViewerActivity extends Activity implements View.OnTouchListener {
-    private Entry entry;
+    private WebView content;
     private GestureDetector touchDetector;
+    private Entry entry;
+    private FrameLayout frame;
     private String feedTitle;
     private String category;
 
@@ -46,17 +50,21 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen_viewer);
-        touchDetector = new GestureDetector(this, new TouchDetector());
+        this.touchDetector = new GestureDetector(this, new TouchDetector());
 
         Bundle extras = getIntent().getExtras();
+        this.category = extras.getString("feed-type");
+        this.feedTitle = extras.getString("feed-title");
         this.entry = (Entry) extras.getSerializable("entry");
-        WebView content = (WebView) findViewById(R.id.contentView);
-        content.getSettings().setJavaScriptEnabled(true);
-        content.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
-        content.getSettings().setSupportZoom(true);
-        content.getSettings().setBuiltInZoomControls(true);
-        content.getSettings().setDisplayZoomControls(false);
-        content.setOnTouchListener(new View.OnTouchListener() {
+
+        this.frame = (FrameLayout) findViewById(R.id.contentView);
+        this.content = new WebView(this);
+        this.content.getSettings().setJavaScriptEnabled(true);
+        this.content.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
+        this.content.getSettings().setSupportZoom(true);
+        this.content.getSettings().setBuiltInZoomControls(true);
+        this.content.getSettings().setDisplayZoomControls(false);
+        this.content.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(getString(R.string.app_tag) + "-input", "WebView onTouch");
@@ -64,10 +72,10 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
                 return touchDetector.onTouchEvent(event);
             }
         });
-        content.loadUrl(entry.url);
+        if (savedInstanceState == null)
+            this.content.loadUrl(entry.url);
+        this.frame.addView(this.content);
 
-        this.category = extras.getString("feed-type");
-        this.feedTitle = extras.getString("feed-title");
         if (getActionBar() != null)
             getActionBar().setTitle(this.feedTitle);
 
@@ -75,9 +83,26 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        this.content.restoreState(savedInstanceState);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         delayedHide();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        this.content.saveState(outState);
     }
 
     @Override
