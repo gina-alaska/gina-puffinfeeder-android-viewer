@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:padding="8dp"
-    android:id="@+id/feedItem">
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:id="@+id/feedItem"
+    android:paddingLeft="16dp"
+    android:paddingTop="8dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="8dp"
+    android:minHeight="48dp">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/feedPreviewImage"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:id="@+id/videoIndicator"
         android:scaleType="centerCrop"
-        android:background="@drawable/image_placeholder"
-        android:layout_marginRight="8dp" />
+        android:src="@drawable/ic_indicator_video"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -22,6 +26,7 @@
         android:text="@string/app_name"
         android:textAppearance="?android:textAppearanceListItem"
         android:id="@+id/feedTitle"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/feedPreviewImage" />
+        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

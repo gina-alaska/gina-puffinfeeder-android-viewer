@@ -31,7 +31,6 @@
         android:layout_alignParentEnd="true"
         android:src="@drawable/ic_indicator_star"
         android:padding="8dp"
-        android:layout_alignTop="@+id/entry_caption"
-        android:visibility="invisible" />
+        android:layout_alignTop="@+id/entry_caption" />
 
 </RelativeLayout>
