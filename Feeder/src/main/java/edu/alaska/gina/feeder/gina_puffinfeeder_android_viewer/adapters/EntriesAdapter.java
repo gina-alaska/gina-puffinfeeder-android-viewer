@@ -103,7 +103,6 @@ public class EntriesAdapter extends BaseAdapter {
 
         Picasso.with(mContext)
                 .load(entries.get(position).preview_url + "?size=" + h + "x" + (h + 50))
-                .placeholder(R.drawable.image_placeholder)
                 .resize(h, h)
                 .centerCrop()
                 .into(holder.thumbnail);
