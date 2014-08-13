@@ -22,4 +22,16 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true" />
 
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/star"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_indicator_star"
+        android:padding="8dp"
+        android:layout_alignTop="@+id/entry_caption"
+        android:visibility="invisible" />
+
 </RelativeLayout>

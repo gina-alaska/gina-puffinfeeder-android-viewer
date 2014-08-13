@@ -84,6 +84,7 @@ public class EntriesAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.timestamp = (TextView) convertView.findViewById(R.id.entry_caption);
             holder.thumbnail = (ImageView) convertView.findViewById(R.id.entryImage);
+            holder.star = (ImageView) convertView.findViewById(R.id.star);
 
             convertView.setTag(holder);
         } else {
@@ -94,6 +95,9 @@ public class EntriesAdapter extends BaseAdapter {
         int h = Math.round(d.widthPixels / ((GridView) parent).getNumColumns());
 
         holder.timestamp.setText(formatDateTime(this.entries.get(position).event_at));
+
+        if (this.entries.get(position).highlighted)
+            holder.star.setVisibility(View.VISIBLE);
 
         Picasso.with(mContext)
                 .load(entries.get(position).preview_url + "?size=" + h + "x" + (h + 50))
@@ -110,5 +114,6 @@ public class EntriesAdapter extends BaseAdapter {
     private static class ViewHolder {
         TextView timestamp;
         ImageView thumbnail;
+        ImageView star;
     }
 }
