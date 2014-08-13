@@ -98,6 +98,8 @@ public class EntriesAdapter extends BaseAdapter {
 
         if (this.entries.get(position).highlighted)
             holder.star.setVisibility(View.VISIBLE);
+        else
+            holder.star.setVisibility(View.INVISIBLE);
 
         Picasso.with(mContext)
                 .load(entries.get(position).preview_url + "?size=" + h + "x" + (h + 50))
