@@ -16,9 +16,10 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/app_name"
         android:id="@+id/entry_caption"
-        android:layout_alignLeft="@+id/entryImage"
-        android:layout_alignBottom="@id/entryImage"
         android:background="@drawable/entry_caption_bg"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
