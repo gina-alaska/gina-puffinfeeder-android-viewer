@@ -16,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -29,6 +28,7 @@ import edu.alaska.gina.feeder.android.core.data.Feed;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.FullscreenViewerActivity;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapters.EntriesAdapter;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.FeederSpiceManager;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
@@ -37,7 +37,7 @@ import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpice
  * Created by bobby on 6/14/13.
  */
 public class EntriesFragment extends Fragment {
-    private final SpiceManager mSpiceManager = new SpiceManager(JsonSpiceService.class);
+    private final FeederSpiceManager mSpiceManager = new FeederSpiceManager(JsonSpiceService.class);
 
     private int fadeAnimationDuration;
     private View loadingView;

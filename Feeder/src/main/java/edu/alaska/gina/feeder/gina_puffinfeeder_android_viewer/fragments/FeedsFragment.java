@@ -19,7 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -31,6 +30,7 @@ import java.util.Collections;
 import edu.alaska.gina.feeder.android.core.data.Feed;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.R;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapters.FeedsAdapter;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.FeederSpiceManager;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JSONRequest;
 import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpiceService;
 
@@ -39,7 +39,7 @@ import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.JsonSpice
  * Created by Bobby on 7/2/2014.
  */
 public class FeedsFragment extends Fragment {
-    private final SpiceManager networkManager = new SpiceManager(JsonSpiceService.class);
+    private final FeederSpiceManager networkManager = new FeederSpiceManager(JsonSpiceService.class);
 
     private ProgressBar progressBar;
     private FeedsAdapter navAdapter;
