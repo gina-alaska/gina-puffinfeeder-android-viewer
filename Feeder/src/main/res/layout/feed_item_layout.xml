@@ -28,5 +28,7 @@
         android:id="@+id/feedTitle"
         android:layout_gravity="center_vertical"
         android:layout_centerVertical="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/videoIndicator"
+        android:layout_toStartOf="@+id/videoIndicator" />
 </RelativeLayout>

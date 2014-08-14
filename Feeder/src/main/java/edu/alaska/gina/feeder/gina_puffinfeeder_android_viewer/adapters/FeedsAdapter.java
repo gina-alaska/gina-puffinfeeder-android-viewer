@@ -56,7 +56,7 @@ public class FeedsAdapter extends BaseAdapter {
         if (this.feeds.get(position).category != null && (this.feeds.get(position).category.equalsIgnoreCase("movie") || this.feeds.get(position).category.equalsIgnoreCase("movies")))
             holder.videoIndicator.setVisibility(View.VISIBLE);
         else
-            holder.videoIndicator.setVisibility(View.GONE);
+            holder.videoIndicator.setVisibility(View.INVISIBLE);
 
         holder.feedTitle.setText(feeds.get(position).title);
         return convertView;
