@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
+import com.octo.android.robospice.request.listener.PendingRequestListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -213,7 +213,7 @@ public class FeedsFragment extends Fragment {
     }
 
     /* Object to listen for RoboSpice task completion. */
-    private class FeedsRequestListener implements RequestListener<Feed[]> {
+    private class FeedsRequestListener implements PendingRequestListener<Feed[]> {
         @Override
         public void onRequestSuccess(Feed[] feeds) {
             getActivity().setProgressBarIndeterminateVisibility(false);
@@ -231,6 +231,12 @@ public class FeedsFragment extends Fragment {
             Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             Toast.makeText(getActivity(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
             showListLoadFailScreen();
+        }
+
+        @Override
+        public void onRequestNotFound() {
+            Log.d(getString(R.string.app_tag) + "-network", "Request Lost, retrying.");
+            reloadFeeds();
         }
     }
 

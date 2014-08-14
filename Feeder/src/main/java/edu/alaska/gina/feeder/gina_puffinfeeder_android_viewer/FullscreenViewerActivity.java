@@ -60,7 +60,6 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
         this.feedTitle = extras.getString("feed-title");
         this.entry = (Entry) extras.getSerializable("entry");
 
-        //TODO Finish implementing new WebChromeClient
         FrameLayout fullscreenView = (FrameLayout) findViewById(R.id.fullscreenView);
         this.content = new VideoEnabledWebView(this);
         VideoEnabledWebChromeClient videoClient = new VideoEnabledWebChromeClient(this.content, fullscreenView, null, this.content) {
