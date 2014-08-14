@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -19,7 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.webkit.WebView;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
@@ -28,10 +29,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import edu.alaska.gina.feeder.android.core.data.Entry;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.mediaViewer.VideoEnabledWebChromeClient;
+import edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.network.mediaViewer.VideoEnabledWebView;
 
 @SuppressWarnings("ConstantConditions")
 public class FullscreenViewerActivity extends Activity implements View.OnTouchListener {
-    private WebView content;
+    private VideoEnabledWebView content;
     private GestureDetector touchDetector;
     private Entry entry;
     private FrameLayout frame;
@@ -57,13 +60,50 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
         this.feedTitle = extras.getString("feed-title");
         this.entry = (Entry) extras.getSerializable("entry");
 
+        //TODO Finish implementing new WebChromeClient
+        FrameLayout fullscreenView = (FrameLayout) findViewById(R.id.fullscreenView);
+        this.content = new VideoEnabledWebView(this);
+        VideoEnabledWebChromeClient videoClient = new VideoEnabledWebChromeClient(this.content, fullscreenView, null, this.content) {
+            @Override
+            public void onShowCustomView(View view, CustomViewCallback callback) {
+                super.onShowCustomView(view, callback);
+            }
+
+            @Override
+            public void onHideCustomView() {
+                super.onHideCustomView();
+            }
+        };
+        videoClient.setOnToggledFullscreen(new VideoEnabledWebChromeClient.ToggledFullscreenCallback() {
+            @Override
+            public void toggledFullscreen(boolean fullscreen) {
+                if (fullscreen) {
+                    WindowManager.LayoutParams attrs = getWindow().getAttributes();
+                    attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+                    attrs.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+                    getWindow().setAttributes(attrs);
+                    if (Build.VERSION.SDK_INT >= 14) {
+                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+                    }
+                } else {
+                    WindowManager.LayoutParams attrs = getWindow().getAttributes();
+                    attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+                    attrs.flags &= ~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+                    getWindow().setAttributes(attrs);
+                    if (Build.VERSION.SDK_INT >= 14) {
+                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                    }
+                }
+            }
+        });
+
         this.frame = (FrameLayout) findViewById(R.id.contentView);
-        this.content = new WebView(this);
         this.content.getSettings().setJavaScriptEnabled(true);
         this.content.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
         this.content.getSettings().setSupportZoom(true);
         this.content.getSettings().setBuiltInZoomControls(true);
         this.content.getSettings().setDisplayZoomControls(false);
+        this.content.setWebChromeClient(videoClient);
         this.content.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -91,7 +131,7 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
     @Override
     protected void onResume() {
         super.onResume();
-        delayedHide();
+        hideUI();
     }
 
     @Override
@@ -163,7 +203,7 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
 
     private void delayedHide() {
         hideUIHandler.removeMessages(0);
-        hideUIHandler.sendEmptyMessageDelayed(0, 2000);
+        hideUIHandler.sendEmptyMessageDelayed(0, 4000);
     }
 
     private void hideUI() {
@@ -173,6 +213,7 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
 
     private void showUI() {
         getActionBar().show();
+        delayedHide();
     }
 
     @Override
