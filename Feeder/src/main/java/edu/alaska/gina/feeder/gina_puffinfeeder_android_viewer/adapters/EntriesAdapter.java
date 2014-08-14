@@ -1,6 +1,9 @@
 package edu.alaska.gina.feeder.gina_puffinfeeder_android_viewer.adapters;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
@@ -88,7 +92,9 @@ public class EntriesAdapter extends BaseAdapter {
 
             convertView.setTag(holder);
         } else {
+            convertView.setBackgroundColor(Color.parseColor("#aaaaaa"));
             holder = (ViewHolder) convertView.getTag();
+            Picasso.with(holder.thumbnail.getContext()).cancelRequest(holder.thumbnail);
         }
 
         DisplayMetrics d = mContext.getResources().getDisplayMetrics();
@@ -105,7 +111,8 @@ public class EntriesAdapter extends BaseAdapter {
                 .load(entries.get(position).preview_url + "?size=" + h + "x" + (h + 50))
                 .resize(h, h)
                 .centerCrop()
-                .into(holder.thumbnail);
+                .noFade()
+                .into(holder.thumbnail, new EntryCallback(convertView));
 
         convertView.setMinimumHeight(h);
 
@@ -116,5 +123,28 @@ public class EntriesAdapter extends BaseAdapter {
         TextView timestamp;
         ImageView thumbnail;
         ImageView star;
+    }
+
+    private static class EntryCallback implements Callback {
+        private final View v;
+
+        public EntryCallback(View v) {
+            this.v = v;
+        }
+
+        @Override
+        @TargetApi(16)
+        @SuppressWarnings("deprecation")
+        public void onSuccess() {
+            if (Build.VERSION.SDK_INT >= 16)
+                this.v.setBackground(null);
+            else
+                this.v.setBackgroundDrawable(null);
+        }
+
+        @Override
+        public void onError() {
+            //
+        }
     }
 }
