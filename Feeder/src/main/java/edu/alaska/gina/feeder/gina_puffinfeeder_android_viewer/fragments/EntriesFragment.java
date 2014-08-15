@@ -55,24 +55,18 @@ public class EntriesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Bundle extras = getArguments();
         this.currentFeed = (Feed) extras.getSerializable("feed");
         this.fadeAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
-        this.loadingView = getActivity().findViewById(R.id.grid_progressBar);
-        this.contentView = (GridView) getActivity().findViewById(R.id.image_grid);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_entries, container, false);
         setHasOptionsMenu(true);
-        return v;
-    }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        this.loadingView = v.findViewById(R.id.grid_progressBar);
+        this.contentView = (GridView) v.findViewById(R.id.image_grid);
 
         Log.d(getResources().getString(R.string.app_tag) + "-flow", "---- Loading " + currentFeed.title + " ----");
         this.data = (ContentDataFragment) getActivity().getFragmentManager().findFragmentByTag(getString(R.string.content_retained_tag));
@@ -89,7 +83,7 @@ public class EntriesFragment extends Fragment {
             Log.d(getResources().getString(R.string.app_tag) + "-flow", "Incorrect retained data found.");
             this.data.firstVisible = 0;
             this.data.retainedFeed = this.currentFeed;
-            this.data.entries = new ArrayList<Entry>(12);
+            this.data.entries.clear();
             this.mImageAdapter = new EntriesAdapter(this.getActivity(), data.entries);
             initialEntriesNetworkRequest();
         } else {
@@ -109,11 +103,12 @@ public class EntriesFragment extends Fragment {
         }
         Log.d(getResources().getString(R.string.app_tag) + "-flow", "---- " + currentFeed.title + " Loaded ----");
 
-        GridView gridView = contentView;
-        gridView.setAdapter(mImageAdapter);
-        gridView.setGravity(Gravity.CENTER_HORIZONTAL);
+        if (this.contentView == null)
+            Log.d(getString(R.string.app_tag), "contentView is null!");
+        this.contentView.setAdapter(mImageAdapter);
+        this.contentView.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        this.contentView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent photoView = new Intent(getActivity(), FullscreenViewerActivity.class);
@@ -159,13 +154,18 @@ public class EntriesFragment extends Fragment {
         if (getActivity().getActionBar() != null)
             getActivity().getActionBar().setTitle(currentFeed.title);
         this.mImageAdapter.notifyDataSetChanged();
+
+        return v;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         this.contentView.setSelection(this.data.firstVisible);
-        this.mSpiceManager.addListenerIfPending(Entry[].class, getString(R.string.entries_cache), new ImageFeedRequestListener());
+        if (!this.mSpiceManager.isStarted()) {
+            Log.d(getString(R.string.app_tag), "Attempting to recover spice request...");
+            this.mSpiceManager.addListenerIfPending(Entry[].class, getString(R.string.entries_cache), new ImageFeedRequestListener());
+        }
     }
 
     @Override
@@ -204,7 +204,8 @@ public class EntriesFragment extends Fragment {
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
-        this.data.loading = true;
+        this.data.loadingMore = true;
+        this.data.loadingNew = true;
 
         mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentFeed.entries_url + "?count=24"), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
     }
@@ -214,7 +215,8 @@ public class EntriesFragment extends Fragment {
         if (!mSpiceManager.isStarted())
             mSpiceManager.start(getActivity().getBaseContext());
 
-        this.data.loading = true;
+        this.data.loadingMore = true;
+        this.data.loadingNew = false;
 
         getActivity().setProgressBarIndeterminateVisibility(true);
         mSpiceManager.execute(new JSONRequest<Entry[]>(Entry[].class, currentFeed.entries_url + "?count=24&max_id=" + maxId), getString(R.string.entries_cache), DurationInMillis.ALWAYS_EXPIRED, new ImageFeedRequestListener());
@@ -224,7 +226,8 @@ public class EntriesFragment extends Fragment {
     public class ImageFeedRequestListener implements PendingRequestListener<Entry[]> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            data.loading = false;
+            data.loadingMore = false;
+            data.loadingNew = false;
 
             getActivity().setProgressBarIndeterminateVisibility(false);
             Log.d(getString(R.string.app_tag), "Failed to load entries " + spiceException.getMessage());
@@ -234,8 +237,10 @@ public class EntriesFragment extends Fragment {
 
         @Override
         public void onRequestSuccess(Entry[] entries) {
-            data.loading = false;
+            data.loadingMore = false;
+            data.loadingNew = false;
 
+            Log.d(getString(R.string.app_tag), "Request Success");
             Collections.addAll(data.entries, entries);
             mImageAdapter.notifyDataSetChanged();
 
@@ -262,9 +267,12 @@ public class EntriesFragment extends Fragment {
 
         @Override
         public void onRequestNotFound() {
-            if (data.loading) {
+            if (data.loadingMore || data.loadingNew) {
                 Log.d(getString(R.string.app_tag) + "-network", "Request Lost, retrying.");
-                initialEntriesNetworkRequest();
+                if (data.loadingNew)
+                    initialEntriesNetworkRequest();
+                if (data.loadingMore)
+                    moreEntriesNetworkRequest(data.firstVisible);
             }
         }
     }
@@ -273,7 +281,8 @@ public class EntriesFragment extends Fragment {
         Feed retainedFeed;
         ArrayList<Entry> entries;
         int firstVisible;
-        boolean loading = false;
+        boolean loadingMore = false;
+        boolean loadingNew = false;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {

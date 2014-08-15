@@ -57,10 +57,11 @@ public class MainActivity extends Activity implements FeederActivity {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment)
+                if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
                     getActionBar().setTitle("GINA Puffin Feeder");
-                else
+                } else if (contentFragment != null) {
                     getActionBar().setTitle(contentFragment.getCurrentFeed().title);
+                }
                 invalidateOptionsMenu();
             }
 
@@ -164,6 +165,7 @@ public class MainActivity extends Activity implements FeederActivity {
                 this.mDrawerLayout.closeDrawer(infoDrawerLayout);
             return true;
         }
+
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 if (mDrawerLayout.isDrawerOpen(navDrawerList)) {

@@ -60,7 +60,6 @@ public class FeedsFragment extends Fragment {
             this.data.feeds = new ArrayList<Feed>(20);
             this.data.current = -2;
             getActivity().getFragmentManager().beginTransaction().add(this.data, getString(R.string.drawer_retained_tag)).commit();
-            reloadFeeds();
         }
 
         super.onCreate(savedInstanceState);
@@ -105,8 +104,13 @@ public class FeedsFragment extends Fragment {
             StartFragment sFrag = new StartFragment();
             getFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
             this.infoDrawerLayout.findViewById(R.id.more_info_button).setVisibility(View.GONE);
+        }
+
+        if (this.data.feeds.size() > 0) {
+            navAdapter.notifyDataSetChanged();
+            showNavList();
         } else {
-            ((FeederActivity) getActivity()).openEntriesFragment(this.data.feeds.get(this.data.current));
+            reloadFeeds();
         }
 
         return v;
@@ -123,6 +127,14 @@ public class FeedsFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (!this.networkManager.isStarted()) {
+            this.networkManager.addListenerIfPending(Feed[].class, getString(R.string.entries_cache), new FeedsRequestListener());
+        }
+    }
+
+    @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
@@ -133,19 +145,15 @@ public class FeedsFragment extends Fragment {
                 menu.findItem(R.id.action_refresh).setVisible(true);
             else
                 menu.findItem(R.id.action_refresh).setVisible(false);
-        }
-
-        else {
+        } else {
             if (this.navDrawer.isDrawerOpen(this.navDrawer)) {
                 menu.findItem(R.id.action_refresh).setVisible(true);
                 menu.findItem(R.id.action_display_short_feed_description).setVisible(false);
-            }
-            else {
+            } else {
                 menu.findItem(R.id.action_refresh).setVisible(true);
                 menu.findItem(R.id.action_display_short_feed_description).setVisible(true);
             }
         }
-
     }
 
     @Override
@@ -160,6 +168,7 @@ public class FeedsFragment extends Fragment {
      * Reloads the list of the feeds.
      */
     public void reloadFeeds() {
+        this.data.loading = true;
         getActivity().setProgressBarIndeterminateVisibility(true);
         if (!this.networkManager.isStarted())
             this.networkManager.start(getActivity());
@@ -223,6 +232,8 @@ public class FeedsFragment extends Fragment {
             navAdapter.notifyDataSetChanged();
             showNavList();
             ((FeederActivity) getActivity()).openNavDrawer();
+
+            data.loading = false;
         }
 
         @Override
@@ -231,18 +242,23 @@ public class FeedsFragment extends Fragment {
             Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             Toast.makeText(getActivity(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
             showListLoadFailScreen();
+
+            data.loading = false;
         }
 
         @Override
         public void onRequestNotFound() {
-            Log.d(getString(R.string.app_tag) + "-network", "Request Lost, retrying.");
-            reloadFeeds();
+            Log.d(getString(R.string.app_tag) + "-network", "Request Not Found.");
+            if (data.loading) {
+                reloadFeeds();
+            }
         }
     }
 
     public static class DrawerDataFragment extends Fragment {
         public ArrayList<Feed> feeds;
         public int current;
+        public boolean loading = false;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
