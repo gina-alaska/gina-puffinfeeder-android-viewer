@@ -46,7 +46,6 @@ public class FeedsFragment extends Fragment {
     private FeedsAdapter navAdapter;
     private ListView navList;
     private DrawerLayout navDrawer;
-    private RelativeLayout infoDrawerLayout;
 
     private DrawerDataFragment data;
     private String baseURL;
@@ -79,10 +78,10 @@ public class FeedsFragment extends Fragment {
         this.progressBar = (ProgressBar) v.findViewById(R.id.drawer_left_nav_progressbar);
         this.retryButton = (Button) v.findViewById(R.id.loadFailRetryButton);
         this.navDrawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-        this.infoDrawerLayout = (RelativeLayout) getActivity().findViewById(R.id.drawer_right_info);
+        RelativeLayout infoDrawerLayout = (RelativeLayout) getActivity().findViewById(R.id.drawer_right_info);
 
         //Set More Info button OnClickListener
-        this.infoDrawerLayout.findViewById(R.id.more_info_button).setOnClickListener(new View.OnClickListener() {
+        infoDrawerLayout.findViewById(R.id.more_info_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.feeds.get(data.current).more_info_url));
@@ -112,7 +111,7 @@ public class FeedsFragment extends Fragment {
         if (this.data.current < 0) {
             StartFragment sFrag = new StartFragment();
             getFragmentManager().beginTransaction().replace(R.id.content_frame, sFrag, "start").commit();
-            this.infoDrawerLayout.findViewById(R.id.more_info_button).setVisibility(View.GONE);
+            infoDrawerLayout.findViewById(R.id.more_info_button).setVisibility(View.GONE);
         }
 
         if (this.data.feeds.size() > 0) {
