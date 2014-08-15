@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.DurationInMillis;
@@ -96,7 +95,6 @@ public class FeedsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ((FeederActivity) getActivity()).openEntriesFragment(data.feeds.get(position));
-                setDescription(data.feeds.get(position));
                 data.current = position;
                 ((FeederActivity) getActivity()).closeNavDrawer();
             }
@@ -184,14 +182,6 @@ public class FeedsFragment extends Fragment {
         if (!this.networkManager.isStarted())
             this.networkManager.start(getActivity());
         this.networkManager.execute(new JSONRequest<Feed[]>(Feed[].class, this.baseURL + getString(R.string.feeds_endpoint)), getString(R.string.categories_cache), DurationInMillis.ALWAYS_EXPIRED, new FeedsRequestListener());
-    }
-
-    private void setDescription(Feed newFeed) {
-        ((TextView) infoDrawerLayout.findViewById(R.id.description_body)).setText(newFeed.description);
-        if (newFeed.more_info_url == null)
-            infoDrawerLayout.findViewById(R.id.more_info_button).setVisibility(View.GONE);
-        else
-            infoDrawerLayout.findViewById(R.id.more_info_button).setVisibility(View.VISIBLE);
     }
 
     private void showNavList() {

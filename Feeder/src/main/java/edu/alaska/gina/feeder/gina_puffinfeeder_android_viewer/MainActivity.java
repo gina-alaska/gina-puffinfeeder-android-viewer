@@ -177,6 +177,9 @@ public class MainActivity extends Activity implements FeederActivity {
                 break;
 
             case R.id.action_display_short_feed_description:
+                if (contentFragment == null)
+                    contentFragment = ((EntriesFragment) getFragmentManager().findFragmentById(R.id.content_frame));
+                setDescription(this.contentFragment.getCurrentFeed());
                 mDrawerLayout.openDrawer(infoDrawerLayout);
                 return true;
 
@@ -185,6 +188,14 @@ public class MainActivity extends Activity implements FeederActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setDescription(Feed newFeed) {
+        ((TextView) infoDrawerLayout.findViewById(R.id.description_body)).setText(newFeed.description);
+        if (newFeed.more_info_url == null)
+            infoDrawerLayout.findViewById(R.id.more_info_button).setVisibility(View.GONE);
+        else
+            infoDrawerLayout.findViewById(R.id.more_info_button).setVisibility(View.VISIBLE);
     }
 
     @Override
