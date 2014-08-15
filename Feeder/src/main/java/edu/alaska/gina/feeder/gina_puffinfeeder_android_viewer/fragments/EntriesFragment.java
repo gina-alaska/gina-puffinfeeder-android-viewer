@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ public class EntriesFragment extends Fragment {
 
     private int fadeAnimationDuration;
     private View loadingView;
+    private Button retryButon;
     private GridView contentView;
 
     private ContentDataFragment data;
@@ -66,6 +68,7 @@ public class EntriesFragment extends Fragment {
         setHasOptionsMenu(true);
 
         this.loadingView = v.findViewById(R.id.grid_progressBar);
+        this.retryButon = (Button) v.findViewById(R.id.entriesRetryButton);
         this.contentView = (GridView) v.findViewById(R.id.image_grid);
 
         Log.d(getResources().getString(R.string.app_tag) + "-flow", "---- Loading " + currentFeed.title + " ----");
@@ -151,6 +154,14 @@ public class EntriesFragment extends Fragment {
             }
         });
 
+        this.retryButon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                data.retainedFeed = new Feed();
+                ((FeederActivity)getActivity()).openEntriesFragment(currentFeed);
+            }
+        });
+
         if (getActivity().getActionBar() != null)
             getActivity().getActionBar().setTitle(currentFeed.title);
         this.mImageAdapter.notifyDataSetChanged();
@@ -233,6 +244,7 @@ public class EntriesFragment extends Fragment {
             Log.d(getString(R.string.app_tag), "Failed to load entries " + spiceException.getMessage());
             Toast.makeText(getActivity(), "Failed to load entries", Toast.LENGTH_SHORT).show();
             loadingView.setVisibility(View.GONE);
+            retryButon.setVisibility(View.VISIBLE);
         }
 
         @Override

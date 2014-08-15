@@ -162,7 +162,7 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
         shareIntent.setType("text/plain");
         shareItem.setShareIntent(shareIntent);
 
-        if (!this.category.equals("Image"))
+        if (this.category == null || !this.category.equals("Image"))
             menu.findItem(R.id.action_download).setVisible(false);
 
         return true;
