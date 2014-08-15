@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -42,6 +43,7 @@ public class FeedsFragment extends Fragment {
     private final FeederSpiceManager networkManager = new FeederSpiceManager(JsonSpiceService.class);
 
     private ProgressBar progressBar;
+    private Button retryButton;
     private FeedsAdapter navAdapter;
     private ListView navList;
     private DrawerLayout navDrawer;
@@ -76,6 +78,7 @@ public class FeedsFragment extends Fragment {
 
         //Initialize views for use later on
         this.progressBar = (ProgressBar) v.findViewById(R.id.drawer_left_nav_progressbar);
+        this.retryButton = (Button) v.findViewById(R.id.loadFailRetryButton);
         this.navDrawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         this.infoDrawerLayout = (RelativeLayout) getActivity().findViewById(R.id.drawer_right_info);
 
@@ -96,6 +99,14 @@ public class FeedsFragment extends Fragment {
                 setDescription(data.feeds.get(position));
                 data.current = position;
                 ((FeederActivity) getActivity()).closeNavDrawer();
+            }
+        });
+
+        this.retryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reloadFeeds();
+                hideListLoadFailScreen();
             }
         });
 
@@ -211,12 +222,39 @@ public class FeedsFragment extends Fragment {
                         progressBar.setVisibility(View.GONE);
                     }
                 });
-        this.navList.animate().alpha(1f)
+        this.navList.animate().alpha(0f)
                 .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        navList.setVisibility(View.VISIBLE);
+                        navList.setVisibility(View.GONE);
+                    }
+                });
+        this.retryButton.animate().alpha(1f)
+                .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        retryButton.setVisibility(View.VISIBLE);
+                    }
+                });
+    }
+
+    private void hideListLoadFailScreen() {
+        this.retryButton.animate().alpha(0f)
+                .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        retryButton.setVisibility(View.GONE);
+                    }
+                });
+        this.progressBar.animate().alpha(1f)
+                .setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        progressBar.setVisibility(View.VISIBLE);
                     }
                 });
     }
@@ -242,6 +280,7 @@ public class FeedsFragment extends Fragment {
             Log.d(getString(R.string.app_tag), "Feeds list load fail! " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             Toast.makeText(getActivity(), "Feed list load fail!", Toast.LENGTH_SHORT).show();
             showListLoadFailScreen();
+            ((FeederActivity) getActivity()).openNavDrawer();
 
             data.loading = false;
         }
