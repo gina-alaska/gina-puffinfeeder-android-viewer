@@ -59,7 +59,9 @@ public class MainActivity extends Activity implements FeederActivity {
                 super.onDrawerClosed(drawerView);
                 if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof StartFragment) {
                     getActionBar().setTitle("GINA Puffin Feeder");
-                } else if (contentFragment != null) {
+                } else {
+                    if (contentFragment == null)
+                        contentFragment = ((EntriesFragment) getFragmentManager().findFragmentById(R.id.content_frame));
                     getActionBar().setTitle(contentFragment.getCurrentFeed().title);
                 }
                 invalidateOptionsMenu();
