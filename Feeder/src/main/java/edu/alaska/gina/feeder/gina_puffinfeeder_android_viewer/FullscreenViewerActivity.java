@@ -225,13 +225,16 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
     private class TouchDetector extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            if (getActionBar().isShowing()) {
-                hideUI();
-                return true;
-            } else {
-                showUI();
-                return false;
+            if (!content.isVideoFullscreen()) {
+                if (getActionBar().isShowing()) {
+                    hideUI();
+                    return true;
+                } else {
+                    showUI();
+                    return false;
+                }
             }
+            return false;
         }
     }
 
