@@ -77,6 +77,7 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
             @Override
             public void toggledFullscreen(boolean fullscreen) {
                 if (fullscreen) {
+                    hideUI();
                     WindowManager.LayoutParams attrs = getWindow().getAttributes();
                     attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
                     attrs.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
@@ -85,6 +86,7 @@ public class FullscreenViewerActivity extends Activity implements View.OnTouchLi
                         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
                     }
                 } else {
+                    showUI();
                     WindowManager.LayoutParams attrs = getWindow().getAttributes();
                     attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
                     attrs.flags &= ~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
